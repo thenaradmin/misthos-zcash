@@ -3,12 +3,14 @@
 //! This crate has no chain I/O. A finalized [`run::PayRun`] is the input to the
 //! (later) ZIP-321 / zcash_client_backend proposal step.
 
+pub mod attest;
 pub mod audit;
 pub mod config;
 pub mod csv;
 pub mod chain;
 pub mod disclosure;
 pub mod date;
+pub mod delay;
 pub mod employee;
 pub mod engine;
 pub mod money;

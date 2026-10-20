@@ -25,6 +25,8 @@ sapling = { package = "sapling-crypto", version = "0.9" }
 bip0039 = "0.12"
 blake2b_simd = "1"
 hex = "0.4"
+ed25519-dalek = { version = "2", features = ["std", "zeroize"] }
+getrandom = "0.2"
 
 [[bin]]
 name = "payroll"

@@ -1,0 +1,6 @@
+# Published ed25519 public key of this demo employer (testnet only).
+# `payroll verify-proof` uses the first non-comment line of this file as the expected
+# employer key unless --employer-pubkey or PAYROLL_EMPLOYER_PUBKEY is given.
+# The matching signing key is in a 0600 file outside git (PAYROLL_EMPLOYER_SIGNING_KEY_FILE).
+# A different employer runs `payroll keygen-signing <file>` and replaces the line below.
+97609f1a6af56e99319c9b1ee0f17fd005eec2e9f23d12bef62cd3fdee576266

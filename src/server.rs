@@ -1,33 +1,29 @@
-//! Employer dashboard: a dependency-free HTTP server on std::net.
+//! Employer dashboard: a dependency-free HTTP server on std::net. Read-only.
 //!
 //!   GET  /            embedded UI (ui/index.html)
 //!   GET  /api/state   env check, roster, runs
-//!   POST /api/run     start one shielded testnet payout in a background thread
-//!   GET  /api/feed?since=N   payout feed events after index N
 //!   GET  /api/audit   accountant ledger + UFVK (view-only)
+//!   POST /api/run     410 Gone: payouts run only from the CLI (`payroll pay --two-step`)
+//!   GET  /api/proof   410 Gone: signed proofs come only from the CLI (`payroll export-proof --employee`)
 //!
-//! Every chain step goes through the real wallet CLI; a missing var is reported
-//! in the feed and the state banner by name, never papered over.
+//! The dashboard cannot move funds or hand out viewing keys. A direct treasury payout
+//! here would not be covered by employee proofs, and an unauthenticated proof endpoint
+//! would give every employee's viewing key to anyone who can reach the port.
 
-use crate::{audit, config, employee::Employee, wallet, zip321, CapPolicy, Engine, RunStatus};
+use crate::{audit, config, employee::Employee, CapPolicy, Engine, RunStatus};
 use std::io::{BufRead, BufReader, Write};
 use std::net::{TcpListener, TcpStream};
 use std::sync::{Arc, Mutex};
 
 const INDEX: &str = include_str!("../ui/index.html");
 
-pub struct Event {
-    pub kind: &'static str, // info | ok | err | slip
-    pub text: String,
-}
+pub const RUN_GONE: &str = "{\"error\":\"The dashboard no longer pays: a direct treasury payout cannot be proven per employee. Run `payroll pay <roster.csv> --two-step --label <period>` from the CLI.\"}";
+pub const PROOF_GONE: &str = "{\"error\":\"Proof download is disabled (it had no login). Export one employee's signed proof from the CLI: `payroll export-proof <roster.csv> --employee <id> --label <period>`.\"}";
 
 pub struct State {
     pub engine: Engine,
     pub roster: Vec<Employee>,
     pub roster_path: String,
-    pub feed: Vec<Event>,
-    pub running: bool,
-    pub runs_started: u32,
 }
 
 type Shared = Arc<Mutex<State>>;
@@ -102,7 +98,7 @@ fn state_json(s: &State) -> String {
         .collect();
     let total = s.roster.iter().filter(|e| e.active).map(|e| e.pay.0).sum::<u64>();
     format!(
-        "{{\"network\":{},\"lwd\":{},\"config_error\":{},\"missing\":[{}],\"roster_path\":{},\"roster\":[{}],\"roster_total\":{},\"runs\":[{}],\"running\":{},\"feed_len\":{}}}",
+        "{{\"network\":{},\"lwd\":{},\"config_error\":{},\"missing\":[{}],\"roster_path\":{},\"roster\":[{}],\"roster_total\":{},\"runs\":[{}]}}",
         json_str(&env("ZCASH_NETWORK").unwrap_or_default()),
         json_str(&env("ZCASH_LWD_URL").unwrap_or_default()),
         cfg_err.map_or("null".into(), |e| json_str(&e)),
@@ -110,105 +106,8 @@ fn state_json(s: &State) -> String {
         json_str(&s.roster_path),
         roster.join(","),
         json_str(&crate::money::Zat(total).to_string()),
-        runs.join(","),
-        s.running,
-        s.feed.len()
+        runs.join(",")
     )
-}
-
-fn feed_json(s: &State, since: usize) -> String {
-    let ev: Vec<String> = s
-        .feed
-        .iter()
-        .skip(since)
-        .map(|e| format!("{{\"kind\":\"{}\",\"text\":{}}}", e.kind, json_str(&e.text)))
-        .collect();
-    format!("{{\"next\":{},\"running\":{},\"events\":[{}]}}", s.feed.len(), s.running, ev.join(","))
-}
-
-fn push(st: &Shared, kind: &'static str, text: impl Into<String>) {
-    st.lock().unwrap().feed.push(Event { kind, text: text.into() });
-}
-
-/// The real payout, step by step. Stops at the first failure and says why.
-fn payout(st: Shared) {
-    let fail = |st: &Shared, msg: String| {
-        push(st, "err", msg);
-        st.lock().unwrap().running = false;
-    };
-    let (batch, label) = {
-        let mut s = st.lock().unwrap();
-        s.runs_started += 1;
-        // One live dashboard run per roster per UTC day: the engine's double-pay
-        // guard refuses a second click until the earlier run is marked Failed.
-        // (A per-click counter label made every click a fresh period = pay twice.)
-        let days = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .map(|d| (d.as_secs() / 86_400) as i64)
-            .unwrap_or(0);
-        (s.roster.clone(), format!("dashboard@{}", crate::date::Date::from_days(days)))
-    };
-    push(&st, "info", format!("validating {} roster lines (testnet UAs, amounts, memos)", batch.len()));
-
-    let cfg = match config::load_from_env() {
-        Ok(c) => c,
-        Err(e) => return fail(&st, e.to_string()),
-    };
-    let bin = match wallet::wallet_cli(|k| std::env::var(k).ok()) {
-        Ok(b) => b,
-        Err(e) => return fail(&st, e.to_string()),
-    };
-
-    let (id, uri, lines) = {
-        let mut s = st.lock().unwrap();
-        let id = match s.engine.plan_adhoc(&label, batch) {
-            Ok(id) => id,
-            Err(e) => {
-                drop(s);
-                return fail(&st, format!("plan: {e}"));
-            }
-        };
-        if let Err(e) = s.engine.approve(id) {
-            drop(s);
-            return fail(&st, format!("approve: {e}"));
-        }
-        let run = s.engine.run(id).expect("planned");
-        let lines = run.lines.clone();
-        match zip321::payout_uri(run) {
-            Ok(u) => (id, u, lines),
-            Err(e) => {
-                drop(s);
-                return fail(&st, format!("zip321: {e}"));
-            }
-        }
-    };
-    push(&st, "ok", format!("run #{id} approved; ZIP-321 proposal with {} shielded outputs", lines.len()));
-
-    push(&st, "info", format!("ZIP-321 (display only): {uri}"));
-    let res = wallet::send_payout_steps(&bin, &cfg, &lines, |step| push(&st, "info", step));
-    match res {
-        Ok(txids) => {
-            let txid = txids[0].clone();
-            let mut s = st.lock().unwrap();
-            if let Err(e) = s.engine.mark_broadcast(id, &txid) {
-                s.feed.push(Event { kind: "err", text: format!("broadcast {txid} but could not record it: {e}") });
-            }
-            s.feed.push(Event { kind: "ok", text: format!("broadcast shielded tx(s) {}", txids.join(", ")) });
-            for l in &lines {
-                s.feed.push(Event {
-                    kind: "slip",
-                    text: format!("{} · {} · tx {}… · memo \"{}\"", l.name, l.amount, &txid[..12], l.memo),
-                });
-            }
-            s.running = false;
-        }
-        Err(e) => {
-            if let Err(me) = st.lock().unwrap().engine.mark_failed(id, &e.to_string()) {
-                push(&st, "err", format!("could not mark run #{id} failed: {me}"));
-            }
-            fail(&st, e.to_string())
-        }
-    }
 }
 
 fn respond(mut s: TcpStream, code: &str, ctype: &str, body: &str) {
@@ -232,7 +131,7 @@ fn handle(stream: TcpStream, st: Shared) {
     }
     let mut parts = first.split_whitespace();
     let (method, target) = (parts.next().unwrap_or(""), parts.next().unwrap_or("/"));
-    let (path, query) = target.split_once('?').unwrap_or((target, ""));
+    let path = target.split_once('?').map_or(target, |(p, _)| p);
     let json = "application/json";
     match (method, path) {
         ("GET", "/") => respond(stream, "200 OK", "text/html; charset=utf-8", INDEX),
@@ -240,28 +139,7 @@ fn handle(stream: TcpStream, st: Shared) {
             let body = state_json(&st.lock().unwrap());
             respond(stream, "200 OK", json, &body)
         }
-        ("GET", "/api/feed") => {
-            let since = query.strip_prefix("since=").and_then(|v| v.parse().ok()).unwrap_or(0);
-            let body = feed_json(&st.lock().unwrap(), since);
-            respond(stream, "200 OK", json, &body)
-        }
-        ("POST", "/api/run") => {
-            let mut s = st.lock().unwrap();
-            if s.running {
-                drop(s);
-                return respond(stream, "409 Conflict", json, "{\"error\":\"a payout is already running\"}");
-            }
-            if s.roster.is_empty() {
-                drop(s);
-                return respond(stream, "400 Bad Request", json, "{\"error\":\"PAYROLL_ROSTER_CSV not configured\"}");
-            }
-            s.running = true;
-            let since = s.feed.len();
-            drop(s);
-            let st2 = st.clone();
-            std::thread::spawn(move || payout(st2));
-            respond(stream, "202 Accepted", json, &format!("{{\"since\":{since}}}"))
-        }
+        ("POST", "/api/run") => respond(stream, "410 Gone", json, RUN_GONE),
         ("GET", "/api/audit") => {
             let ufvk = std::env::var("ZCASH_AUDITOR_UFVK").ok().filter(|v| !v.trim().is_empty());
             let Some(ufvk) = ufvk else {
@@ -273,19 +151,7 @@ fn handle(stream: TcpStream, st: Shared) {
                 Err(e) => respond(stream, "400 Bad Request", json, &format!("{{\"error\":{}}}", json_str(&e.to_string()))),
             }
         }
-        ("GET", "/api/proof") => {
-            let emp = query.strip_prefix("employee=").unwrap_or("").to_string();
-            let found = st.lock().unwrap().roster.iter().find(|e| e.id == emp).map(|e| (e.address.clone(), e.name.clone()));
-            let Some((addr, name)) = found else {
-                return respond(stream, "404 Not Found", json, "{\"error\":\"no such employee\"}");
-            };
-            let res = crate::disclosure::EmployerSeed::from_env(|k| std::env::var(k).ok())
-                .and_then(|s| crate::disclosure::export(&s, &addr, &emp, &name));
-            match res {
-                Ok(t) => respond(stream, "200 OK", "text/plain; charset=utf-8", &t),
-                Err(e) => respond(stream, "400 Bad Request", json, &format!("{{\"error\":{}}}", json_str(&e.to_string()))),
-            }
-        }
+        ("GET", "/api/proof") => respond(stream, "410 Gone", json, PROOF_GONE),
         _ => respond(stream, "404 Not Found", json, "{\"error\":\"not found\"}"),
     }
 }
@@ -296,9 +162,6 @@ pub fn serve(addr: &str, roster_path: String, roster: Vec<Employee>, caps: CapPo
         engine: Engine::new(caps),
         roster,
         roster_path,
-        feed: Vec::new(),
-        running: false,
-        runs_started: 0,
     }));
     println!("dashboard on http://{addr}");
     for stream in listener.incoming().flatten() {
@@ -321,5 +184,44 @@ mod tests {
     fn lists_every_missing_var() {
         let got = missing_vars(|k| (k == "ZCASH_NETWORK").then(|| "testnet".to_string()));
         assert_eq!(got, ["ZCASH_LWD_URL", "ZCASH_WALLET_DB", "ZCASH_WALLET_CLI", "ZCASH_AUDITOR_UFVK"]);
+    }
+
+    /// One real HTTP request through `handle` on a loopback socket; returns the raw response.
+    fn request(req: &str) -> String {
+        use std::io::Read;
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let addr = listener.local_addr().unwrap();
+        let st: Shared = Arc::new(Mutex::new(State {
+            engine: Engine::new(CapPolicy::default()),
+            roster: vec![crate::employee::tests::emp("emp-a", "1")],
+            roster_path: "roster.csv".into(),
+        }));
+        let server = std::thread::spawn(move || {
+            let (s, _) = listener.accept().unwrap();
+            handle(s, st)
+        });
+        let mut c = TcpStream::connect(addr).unwrap();
+        c.write_all(req.as_bytes()).unwrap();
+        let mut out = String::new();
+        c.read_to_string(&mut out).unwrap();
+        server.join().unwrap();
+        out
+    }
+
+    #[test]
+    fn proof_endpoint_is_gone_and_leaks_no_key() {
+        let r = request("GET /api/proof?employee=emp-a HTTP/1.1\r\nHost: x\r\n\r\n");
+        assert!(r.starts_with("HTTP/1.1 410 Gone"), "{r}");
+        assert!(r.contains("payroll export-proof") && !r.contains("uviewtest"), "{r}");
+        let r = request("GET /api/proof HTTP/1.1\r\n\r\n");
+        assert!(r.starts_with("HTTP/1.1 410 Gone"), "{r}");
+    }
+
+    #[test]
+    fn run_endpoint_is_gone_and_points_to_the_cli() {
+        let r = request("POST /api/run HTTP/1.1\r\nHost: x\r\n\r\n");
+        assert!(r.starts_with("HTTP/1.1 410 Gone"), "{r}");
+        assert!(r.contains("pay <roster.csv> --two-step"), "{r}");
+        assert!(request("GET /api/state HTTP/1.1\r\n\r\n").starts_with("HTTP/1.1 200 OK"));
     }
 }

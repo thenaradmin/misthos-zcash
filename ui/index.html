@@ -27,16 +27,8 @@ td.amt{text-align:right;font-family:var(--mono);white-space:nowrap}
 button{appearance:none;border:0;border-radius:10px;padding:13px 20px;font:600 15px system-ui;cursor:pointer;background:var(--gold);color:#1a1300;width:100%;margin-top:14px;transition:transform .08s,opacity .2s}
 button:active{transform:scale(.98)}button:disabled{opacity:.45;cursor:not-allowed}
 button.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
-button.proof{display:block;margin-left:auto;white-space:normal;max-width:9rem;text-align:center}
-#feed{list-style:none;margin:0;padding:0;font:13px/1.45 var(--mono);max-height:380px;overflow:auto}
-#feed li{padding:7px 0 7px 18px;border-bottom:1px dashed var(--line);position:relative;animation:in .25s ease-out;word-break:break-all}
-#feed li::before{content:"";position:absolute;left:2px;top:13px;width:7px;height:7px;border-radius:50%;background:var(--mute)}
-#feed li.ok::before{background:var(--ok)}#feed li.err{color:#ffb4b4}#feed li.err::before{background:var(--err)}
-#feed li.slip{color:var(--gold)}#feed li.slip::before{background:var(--gold)}
-#feed li.pending::before{animation:pulse 1s infinite}
+.cmd{font:12px/1.5 var(--mono);background:#0d1014;border:1px solid var(--line);border-radius:8px;padding:10px;margin:8px 0 0;white-space:pre-wrap;word-break:break-all;color:var(--text)}
 .empty{color:var(--mute);font-size:14px}
-@keyframes in{from{opacity:0;transform:translateY(-4px)}}
-@keyframes pulse{50%{opacity:.2}}
 .key{font:12px var(--mono);word-break:break-all;background:#0d1014;border:1px solid var(--line);border-radius:8px;padding:10px;color:var(--mute)}
 .note{color:var(--mute);font-size:13px;margin:8px 0 0}
 @media (max-width:820px){main{grid-template-columns:1fr;padding:16px}header{padding:14px 16px}.banner{margin:16px 16px 0}.hide-sm{display:none}}
@@ -54,11 +46,17 @@ button.proof{display:block;margin-left:auto;white-space:normal;max-width:9rem;te
     <table><thead><tr><th>Employee</th><th class="hide-sm">Address</th><th style="text-align:right">Pay</th></tr></thead>
       <tbody id="roster"></tbody></table>
     <div class="total"><span class="empty" id="rpath"></span><strong id="total">—</strong></div>
-    <button id="run">Run payroll · one shielded tx</button>
+    <button id="run" disabled aria-describedby="run-why">Run payroll · disabled here</button>
+    <p class="note" id="run-why">The dashboard does not pay. A one-click payout straight from the treasury could not be proven per employee, so payouts run only from the CLI with <code>pay --two-step</code>.</p>
   </section>
   <section>
-    <h2>Live shielded payout</h2>
-    <ul id="feed"><li class="empty" style="border:0;padding-left:0">Press “Run payroll”. Each step is the real testnet wallet; failures name the missing piece.</li></ul>
+    <h2>Pay &amp; prove · CLI only</h2>
+    <p class="note">1. Pay through per-employee child wallets, with random block delays between funding and payouts:</p>
+    <pre class="cmd">payroll pay <span class="rp">roster.csv</span> --two-step --label oct-2026</pre>
+    <p class="note">2. Export ONE employee's employer-signed proof (no download here: it had no login):</p>
+    <pre class="cmd">payroll export-proof <span class="rp">roster.csv</span> --employee &lt;id&gt; --label oct-2026</pre>
+    <p class="note">3. The employee's lender checks the signature and the chain:</p>
+    <pre class="cmd">payroll verify-proof proof.txt &lt;txid&gt; --lwd https://&lt;testnet lightwalletd&gt;:443</pre>
   </section>
   <section class="span2">
     <h2>Auditor · viewing key</h2>
@@ -69,7 +67,6 @@ button.proof{display:block;margin-left:auto;white-space:normal;max-width:9rem;te
 <script>
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-let since=0,polling=false;
 
 async function state(){
   const s=await (await fetch('/api/state')).json();
@@ -80,45 +77,12 @@ async function state(){
     b.innerHTML=(s.config_error?'<code>'+esc(s.config_error)+'</code>':'')+
       (s.missing.length?(s.config_error?' · ':'')+'Not configured: '+s.missing.map(v=>'<code>'+esc(v)+'</code>').join(', '):'');
   } else b.style.display='none';
-  $('roster').innerHTML=s.roster.map(e=>`<tr><td>${esc(e.name)}<div class="addr">${esc(e.memo)}</div></td><td class="addr hide-sm">${esc(e.address.slice(0,14))}…${esc(e.address.slice(-6))}</td><td class="amt">${esc(e.amount)}<button class="ghost proof" data-id="${esc(e.id)}" style="width:auto;padding:6px 10px;margin-top:6px;font-size:12px">Export proof for employee</button></td></tr>`).join('');
+  $('roster').innerHTML=s.roster.map(e=>`<tr><td>${esc(e.name)}<div class="addr">${esc(e.memo)}</div></td><td class="addr hide-sm">${esc(e.address.slice(0,14))}…${esc(e.address.slice(-6))}</td><td class="amt">${esc(e.amount)}<div class="addr">id ${esc(e.id)}</div></td></tr>`).join('');
   $('total').textContent=s.roster_total;
   $('rpath').textContent=s.roster.length+' employees · '+s.roster_path;
-  $('run').disabled=s.running;
+  document.querySelectorAll('.rp').forEach(x=>x.textContent=s.roster_path||'roster.csv');
   return s;
 }
-
-function add(e){
-  const f=$('feed'); f.querySelector('.empty')?.remove();
-  f.querySelectorAll('.pending').forEach(x=>x.classList.remove('pending'));
-  const li=document.createElement('li'); li.className=e.kind+(e.kind==='info'?' pending':''); li.textContent=e.text;
-  f.appendChild(li); f.scrollTop=f.scrollHeight;
-}
-
-document.addEventListener('click',async ev=>{
-  const b=ev.target.closest('button.proof'); if(!b) return;
-  const id=b.dataset.id, r=await fetch('/api/proof?employee='+encodeURIComponent(id));
-  if(!r.ok){ alert((await r.json()).error); return; }
-  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([await r.text()],{type:'text/plain'}));
-  a.download='payroll-proof-'+id+'.txt'; a.click();
-});
-
-async function poll(){
-  if(polling)return; polling=true;
-  for(;;){
-    const r=await (await fetch('/api/feed?since='+since)).json();
-    r.events.forEach(add); since=r.next;
-    if(!r.running){ document.querySelectorAll('#feed .pending').forEach(x=>x.classList.remove('pending')); break; }
-    await new Promise(z=>setTimeout(z,400));
-  }
-  polling=false; state();
-}
-
-$('run').onclick=async()=>{
-  $('run').disabled=true;
-  const r=await fetch('/api/run',{method:'POST'}); const j=await r.json();
-  if(!r.ok){ add({kind:'err',text:j.error}); $('run').disabled=false; return; }
-  since=j.since; poll();
-};
 
 $('loadAudit').onclick=async()=>{
   const r=await fetch('/api/audit'), box=$('audit');
@@ -130,7 +94,7 @@ $('loadAudit').onclick=async()=>{
   box.innerHTML='<div class="key">UFVK (view-only) '+esc(ufvk)+'</div>'+
     (rows.length?'<table style="margin-top:12px"><thead><tr>'+want.map(w=>'<th>'+w+'</th>').join('')+'</tr></thead><tbody>'+
       rows.map(r=>'<tr>'+ix.map(i=>'<td class="addr">'+esc((r[i]||'').slice(0,24))+'</td>').join('')+'</tr>').join('')+'</tbody></table>'
-     :'<p class="note">No pay runs yet in this session.</p>')+
+     :'<p class="note">No pay runs in this session (the dashboard does not pay). For a ledger of a CLI run: <code>payroll audit-export &lt;roster.csv&gt; &lt;txid&gt;</code>.</p>')+
     '<p class="note">Import this UFVK into a view-only testnet wallet to check every output on-chain yourself.</p>';
 };
 

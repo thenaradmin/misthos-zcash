@@ -26,10 +26,25 @@ use zcash_transparent::{
     builder::TransparentSigningSet,
     bundle::{OutPoint, TxOut},
 };
+use zec_payroll::attest::EmployerKey;
 use zec_payroll::disclosure::{self as d, Direction, DisclosureError, EmployerSeed, NETWORK};
 
 fn employer() -> EmployerSeed {
     EmployerSeed::from_bytes(&[0x5a; 32])
+}
+
+/// The employer's ed25519 attestation key (fixed bytes for tests).
+fn signer() -> EmployerKey {
+    EmployerKey::from_bytes(&[0x5c; 32])
+}
+
+/// What a verifier trusts, e.g. from docs/employer-pubkey.txt.
+fn employer_pubkey() -> ed25519_dalek::VerifyingKey {
+    zec_payroll::attest::parse_pubkey(&signer().public_hex()).unwrap()
+}
+
+fn payout(txid: &str, amount_zat: u64) -> d::Payout<'_> {
+    d::Payout { txid, amount_zat, pay_period: "adhoc:2026-10" }
 }
 
 /// An employee's own wallet (not derived from the employer seed).
@@ -120,10 +135,15 @@ fn employee_a_proves_own_payout_and_b_key_sees_nothing() {
     let tx_a = build_tx(vec![Out::Sapling(Some(ka.clone()), *ua_a.sapling().unwrap(), PAY_A, "payroll 2026-10 emp-a")]);
     let tx_b = build_tx(vec![Out::Sapling(Some(kb.clone()), *ua_b.sapling().unwrap(), PAY_B, "payroll 2026-10 emp-b")]);
 
-    // A's exported proof file, as a lender would receive it.
-    let (id, lender_key) = d::parse_export(&d::export(&s, "emp-a", "emp-a", "Ada").unwrap()).unwrap();
-    assert_eq!(id, "emp-a");
+    // A's employer-signed proof file, as a lender would receive it.
+    let txid_a = d::verify_tx(&ka, &tx_a, None, height()).unwrap().txid;
+    let text = d::export(&s, &signer(), "emp-a", "emp-a", "Ada", &payout(&txid_a, PAY_A)).unwrap();
+    let signed = d::parse_export(&text).unwrap();
+    assert_eq!(signed.employee_id, "emp-a");
+    d::verify_signature(&signed, &employer_pubkey()).unwrap();
+    let lender_key = signed.ufvk.clone();
     let p = d::verify_tx(&lender_key, &tx_a, None, height()).unwrap();
+    d::check_payout(&signed.attestation, &p).unwrap();
     assert_eq!(p.paid_out_zat(), PAY_A);
     assert_eq!(p.outputs.len(), 1);
     assert_eq!(p.outputs[0].direction, Direction::PayoutOut);
@@ -137,6 +157,50 @@ fn employee_a_proves_own_payout_and_b_key_sees_nothing() {
     assert!(matches!(d::verify_tx(&lender_key, &tx_b, None, height()), Err(DisclosureError::NothingVisible)));
     assert!(matches!(d::verify_tx(&kb, &tx_a, None, height()), Err(DisclosureError::NothingVisible)));
     assert_eq!(d::verify_tx(&kb, &tx_b, None, height()).unwrap().paid_out_zat(), PAY_B);
+}
+
+/// The employer signature binds the proof to one real payout: amount, txid, child wallet, period, network.
+#[test]
+fn signed_proof_is_bound_to_the_real_payout() {
+    let s = employer();
+    let (ka, kb) = (d::employee_ufvk(&s, "emp-a").unwrap(), d::employee_ufvk(&s, "emp-b").unwrap());
+    let ua_a = personal_ua(0xA1);
+    let tx_a = build_tx(vec![Out::Sapling(Some(ka.clone()), *ua_a.sapling().unwrap(), PAY_A, "payroll emp-a")]);
+    let tx_b = build_tx(vec![Out::Sapling(Some(kb.clone()), *personal_ua(0xB2).sapling().unwrap(), PAY_B, "payroll emp-b")]);
+    let txid_a = d::verify_tx(&ka, &tx_a, None, height()).unwrap().txid;
+    let seen_a = d::verify_tx(&ka, &tx_a, None, height()).unwrap();
+    let full_check = |text: &str, raw: &[u8]| -> Result<(), DisclosureError> {
+        let p = d::parse_export(text)?;
+        d::verify_signature(&p, &employer_pubkey())?;
+        let seen = d::verify_tx(&p.ufvk, raw, Some(&p.attestation.txid), height())?;
+        d::check_payout(&p.attestation, &seen)
+    };
+    let good = d::export(&s, &signer(), "emp-a", "emp-a", "Ada", &payout(&txid_a, PAY_A)).unwrap();
+    full_check(&good, &tx_a).unwrap();
+
+    // Employer signed the wrong amount (or the roster changed): the chain disagrees.
+    let wrong_amount = d::export(&s, &signer(), "emp-a", "emp-a", "Ada", &payout(&txid_a, PAY_A + 1)).unwrap();
+    let signed = d::parse_export(&wrong_amount).unwrap();
+    assert!(matches!(d::check_payout(&signed.attestation, &seen_a), Err(DisclosureError::AmountMismatch { .. })));
+    // Employee edits the amount in the file: signature fails before any tx is read.
+    assert!(matches!(full_check(&good.replace(&format!("amount_zat={PAY_A}"), "amount_zat=99000000"), &tx_a), Err(DisclosureError::Attest(_))));
+    // Changed period / network swap.
+    assert!(matches!(full_check(&good.replace("pay_period=adhoc:2026-10", "pay_period=adhoc:2026-11"), &tx_a), Err(DisclosureError::Attest(_))));
+    assert!(matches!(full_check(&good.replace("network=testnet", "network=mainnet"), &tx_a), Err(DisclosureError::WrongNetwork(_))));
+    // A's valid proof presented with B's tx: txid mismatch (the signed txid is A's).
+    assert!(matches!(full_check(&good, &tx_b), Err(DisclosureError::TxidMismatch { .. })));
+
+    // Forged: an employee pays themselves from their own wallet and signs with their own key.
+    let forger_seed = EmployerSeed::from_bytes(&[0xEE; 32]);
+    let fk = d::employee_ufvk(&forger_seed, "emp-a").unwrap();
+    let forged_tx = build_tx(vec![Out::Sapling(Some(fk.clone()), *ua_a.sapling().unwrap(), 99_000_000, "payroll emp-a")]);
+    let ftxid = d::verify_tx(&fk, &forged_tx, None, height()).unwrap().txid;
+    let forger_key = EmployerKey::from_bytes(&[0xEE; 32]);
+    let forged = d::export(&forger_seed, &forger_key, "emp-a", "emp-a", "Ada", &payout(&ftxid, 99_000_000)).unwrap();
+    assert!(matches!(full_check(&forged, &forged_tx), Err(DisclosureError::Attest(ref m)) if m.contains("not the expected employer key")));
+    // Same forgery, but the file claims the employer's public key: signature invalid.
+    let claimed = forged.replace(&forger_key.public_hex(), &signer().public_hex());
+    assert!(matches!(full_check(&claimed, &forged_tx), Err(DisclosureError::Attest(ref m)) if m.contains("does not match")));
 }
 
 #[test]
@@ -211,20 +275,20 @@ fn verify_proof_attacks() {
     // never checked against a chain. (Trust-only; README says so.)
     assert!(d::verify_tx(&ka, &tx_a, Some(&txid), height() + 50_000).is_ok());
 
-    // Forged proof files.
-    for bad in ["", "zec-payroll-proof v1\nemployee_id=x\n", "zec-payroll-proof v1\nemployee_id=x\nufvk=uviewtest1garbage\n", "nope\nufvk=x"] {
+    // Malformed / unsigned proof files.
+    for bad in ["", "zec-payroll-proof v1\nemployee_id=x\n", "zec-payroll-proof v2\nemployee_id=x\nufvk=uviewtest1garbage\n", "nope\nufvk=x"] {
         assert!(matches!(d::parse_export(bad), Err(DisclosureError::BadExport(_))), "{bad:?}");
     }
-    // A self-made proof (any UFVK the forger owns) over a self-made tx VERIFIES: nothing binds
-    // the key to this employer, and this tx's Sapling proofs are dummy bytes the chain would
-    // reject. verify-proof proves "this key sees this tx", not "the employer paid this on chain".
+    // Trial decryption alone still accepts any key over a self-made tx (these Sapling proofs are
+    // dummy bytes the chain would reject); that is why verify-proof checks the employer signature
+    // first (see signed_proof_is_bound_to_the_real_payout) and the chain with --lwd.
     let forger = UnifiedSpendingKey::from_seed(&NETWORK, &[0xEE; 32], zip32::AccountId::ZERO).unwrap().to_unified_full_viewing_key();
     let forged_tx = build_tx(vec![Out::Sapling(Some(forger.clone()), *ua_a.sapling().unwrap(), 99_000_000, "payroll emp-a")]);
     assert_eq!(d::verify_tx(&forger, &forged_tx, None, height()).unwrap().paid_out_zat(), 99_000_000);
 
     // Treasury key never comes out of export, and child keys differ from it and each other.
     let t = d::encode_ufvk(&d::treasury_ufvk(&s).unwrap()).unwrap();
-    let e = d::export(&s, "emp-a", "emp-a", "A").unwrap();
+    let e = d::export(&s, &signer(), "emp-a", "emp-a", "A", &payout(&txid, PAY_A)).unwrap();
     assert!(!e.contains(&t));
     assert_ne!(d::encode_ufvk(&ka).unwrap(), d::encode_ufvk(&d::employee_ufvk(&s, "emp-b").unwrap()).unwrap());
     // Duplicate address (only possible "collision" with 256-bit derivation) is refused.

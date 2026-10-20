@@ -23,6 +23,17 @@ fn lightwalletd_reports_chain_height() {
     assert!(out.chars().any(|c| c.is_ascii_digit()), "no height in wallet output: {out}");
 }
 
+/// The payout delays poll this (gRPC GetLatestBlock, no wallet, no zingo-cli).
+#[test]
+#[ignore = "hits real testnet lightwalletd; run with --ignored"]
+fn lightwalletd_grpc_tip_height_for_delays() {
+    let url = env("ZCASH_LWD_URL").filter(|v| !v.trim().is_empty());
+    let url = url.unwrap_or_else(|| panic!("TESTNET TEST CANNOT RUN: ZCASH_LWD_URL not configured"));
+    let tip = need(zec_payroll::chain::tip_height(&url));
+    assert!(tip > 3_000_000, "implausible testnet tip {tip}");
+    println!("testnet tip {tip} via {url}");
+}
+
 #[test]
 #[ignore = "spends testnet ZEC; run with --ignored"]
 fn sends_one_shielded_tx_to_all_csv_recipients() {

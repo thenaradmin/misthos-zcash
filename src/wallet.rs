@@ -175,11 +175,43 @@ pub fn send_from_child(bin: &str, cfg: &ChainConfig, line: &PayLine) -> Result<V
 /// `pay --two-step` never re-funds or re-pays. Lines: `<state> <period> [txid]`, where
 /// state is `fund-pending`, `funded`, `pay-pending` or `paid`. A `*-pending` line with no
 /// matching completion means a broadcast may or may not have happened: the run refuses.
+/// `pay-at <period> <height>` is the chosen payout height (delay); it never changes the
+/// step, and the FIRST one per period wins, so a rerun reuses it instead of redrawing.
 pub mod ledger {
     use std::io::Write;
     #[derive(Debug, PartialEq, Eq, Clone, Copy)]
     pub enum Step { Fresh, FundPending, Funded, PayPending, Paid }
     fn path(dir: &str) -> String { format!("{dir}/payroll-ledger") }
+    /// Third field of every `<what> <period> ...` line, in file order.
+    fn values(dir: &str, what: &str, period: &str) -> Vec<String> {
+        let text = std::fs::read_to_string(path(dir)).unwrap_or_default();
+        text.lines()
+            .filter_map(|l| {
+                let mut it = l.split_whitespace();
+                (it.next() == Some(what) && it.next() == Some(period)).then(|| it.next().unwrap_or("").to_string())
+            })
+            .collect()
+    }
+    /// The persisted payout height for `period`, if one was chosen.
+    pub fn target(dir: &str, period: &str) -> Option<u32> {
+        values(dir, "pay-at", period).iter().find_map(|v| v.parse().ok())
+    }
+    /// Persist the payout height before waiting on it. Keeps an existing one.
+    pub fn set_target(dir: &str, period: &str, height: u32) -> std::io::Result<u32> {
+        if let Some(h) = target(dir, period) {
+            return Ok(h);
+        }
+        record(dir, "pay-at", period, &height.to_string())?;
+        Ok(height)
+    }
+    fn txids(dir: &str, what: &str, period: &str) -> Vec<String> {
+        let last = values(dir, what, period).pop().unwrap_or_default();
+        last.split(',').filter(|t| t.len() == 64).map(str::to_string).collect()
+    }
+    /// Txids of the funding tx(s) recorded for `period` (step 1).
+    pub fn funding_txids(dir: &str, period: &str) -> Vec<String> { txids(dir, "funded", period) }
+    /// Txids of the payout tx(s) recorded for `period` (step 2).
+    pub fn paid_txids(dir: &str, period: &str) -> Vec<String> { txids(dir, "paid", period) }
     pub fn state(dir: &str, period: &str) -> Step {
         let text = std::fs::read_to_string(path(dir)).unwrap_or_default();
         let mut st = Step::Fresh;
@@ -192,6 +224,11 @@ pub mod ledger {
         st
     }
     pub fn record(dir: &str, what: &str, period: &str, txid: &str) -> std::io::Result<()> {
+        // Lines are whitespace-split: a period with a space would never match itself on read,
+        // so every rerun would look Fresh and fund again.
+        if period.is_empty() || period.contains(char::is_whitespace) {
+            return Err(std::io::Error::new(std::io::ErrorKind::InvalidInput, format!("period {period:?} is empty or contains whitespace")));
+        }
         let mut f = std::fs::OpenOptions::new().create(true).append(true).open(path(dir))?;
         writeln!(f, "{what} {period} {txid}")?;
         f.sync_all()
@@ -258,6 +295,35 @@ mod tests {
         record(d, "paid", "p1", "t2").unwrap();
         assert_eq!(state(d, "p1"), Step::Paid);
         assert_eq!(state(d, "p2"), Step::Fresh);
+        std::fs::remove_dir_all(d).ok();
+    }
+
+    #[test]
+    fn persisted_delay_target_is_reused_and_never_changes_the_step() {
+        use ledger::{funding_txids, paid_txids, record, set_target, state, target, Step};
+        let d = std::env::temp_dir().join(format!("zpp-ledger-target-{}", std::process::id()));
+        std::fs::create_dir_all(&d).unwrap();
+        let d = d.to_str().unwrap();
+        let (t1, t2) = ("1".repeat(64), "2".repeat(64));
+        record(d, "fund-pending", "p1", "-").unwrap();
+        record(d, "funded", "p1", &t1).unwrap();
+        assert_eq!(target(d, "p1"), None);
+        assert_eq!(set_target(d, "p1", 1005).unwrap(), 1005);
+        // A rerun that drew a different delay keeps the first persisted height.
+        assert_eq!(set_target(d, "p1", 1009).unwrap(), 1005);
+        assert_eq!(target(d, "p1"), Some(1005));
+        // Waiting on the delay is still `Funded`: never Fresh (no re-funding), never Paid.
+        assert_eq!(state(d, "p1"), Step::Funded);
+        assert_eq!(funding_txids(d, "p1"), vec![t1.clone()]);
+        assert!(paid_txids(d, "p1").is_empty());
+        record(d, "pay-pending", "p1", "-").unwrap();
+        record(d, "paid", "p1", &t2).unwrap();
+        assert_eq!(state(d, "p1"), Step::Paid);
+        assert_eq!(paid_txids(d, "p1"), vec![t2]);
+        // Another period has its own (absent) target.
+        assert_eq!(target(d, "p2"), None);
+        // A period with whitespace could never be read back (rerun = re-fund): refused.
+        assert!(record(d, "fund-pending", "adhoc:/Volumes/Extreme SSD/pay.csv", "-").is_err());
         std::fs::remove_dir_all(d).ok();
     }
 
