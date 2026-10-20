@@ -3,8 +3,8 @@
 # Never prints the seed. Fails loudly on anything missing.
 #
 # Needs: PAYROLL_EMPLOYER_SEED, ZCASH_NETWORK=testnet, ZCASH_LWD_URL, ZCASH_WALLET_DB,
-#        ZCASH_WALLET_CLI, and a funded treasury (account 0).
-# Then, after step 2 payouts exist (NOT automated; see README):
+#        ZCASH_WALLET_CLI, PAYROLL_CHILD_BIRTHDAY, and a funded treasury.
+# Then, after `pay --two-step` printed both PAYOUT BROADCAST txids:
 #        PAYROLL_PAYOUT_A / PAYROLL_PAYOUT_B = <txid>:<height>:<raw-tx-hex-file>
 #        PAYROLL_EMPLOYEE_A_UA / PAYROLL_EMPLOYEE_B_UA = the two roster UAs (for the cargo test)
 set -euo pipefail
@@ -18,7 +18,7 @@ cargo run -q --bin payroll -- export-proof "$ROSTER" emp-b > .data/proofs/emp-b.
 echo "proof files: .data/proofs/emp-a.txt .data/proofs/emp-b.txt"
 
 if [ -z "${PAYROLL_PAYOUT_A:-}" ]; then
-  echo "Step 1 (funding both payroll accounts, spends testnet ZEC):"
+  echo "Run both steps (spends testnet ZEC):"
   echo "  cargo run --bin payroll -- pay $ROSTER --two-step"
   echo "ERROR: PAYROLL_PAYOUT_A / PAYROLL_PAYOUT_B not configured: no step-2 payout exists to verify" >&2
   exit 1

@@ -1,12 +1,14 @@
-//! Per-employee payroll accounts and the proof-of-pay export.
+//! Per-employee child wallets and the proof-of-pay export.
 //!
-//! Every employee gets their own ZIP 32 account under the employer's seed
-//! (account 0 stays the employer treasury and is never exported). A payout is
-//! two transactions:
+//! Every employee gets their own child wallet: a seed derived from the employer
+//! seed and their payout address (see [`child_wallet`]), used at account 0 in its
+//! own zingo-cli data dir. The employer treasury key is never exported. A payout
+//! is two transactions:
 //!
-//! 1. **Funding**: treasury (account 0) -> the employee's payroll account UA,
+//! 1. **Funding**: treasury -> the employee's child wallet (account 0) UA,
 //!    `pay + PAYOUT_FEE`.
-//! 2. **Payout**: employee payroll account -> the employee's own address, `pay`.
+//! 2. **Payout**: child wallet -> the employee's own address, `pay`, as an ordinary
+//!    zingo-cli `quicksend` from the child wallet's own data dir.
 //!    Its outputs are encrypted with that account's outgoing viewing key.
 //!
 //! The export is that account's **full** viewing key (UFVK). It shows the
@@ -35,8 +37,6 @@ pub const NETWORK: Network = Network::TestNetwork;
 /// so 2 * 5_000 zat.
 pub const PAYOUT_FEE_ZAT: u64 = 10_000;
 
-/// ZIP 32 accounts are hardened indices below 2^31; account 0 is the treasury.
-const ACCOUNT_SPACE: u32 = (1 << 31) - 1;
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum DisclosureError {
@@ -57,8 +57,8 @@ impl std::fmt::Display for DisclosureError {
         match self {
             NoSeed => write!(f, "PAYROLL_EMPLOYER_SEED not configured (24-word BIP 39 mnemonic of the employer wallet)"),
             BadSeed => write!(f, "PAYROLL_EMPLOYER_SEED is not a valid BIP 39 mnemonic (value not shown)"),
-            Treasury => write!(f, "refusing to export account 0: that is the employer treasury and would reveal all of payroll"),
-            AccountCollision(a, b) => write!(f, "employees `{a}` and `{b}` map to the same ZIP 32 account; rename one id"),
+            Treasury => write!(f, "refusing to export the employer treasury viewing key: it would reveal all of payroll"),
+            AccountCollision(a, _) => write!(f, "payout address `{a}` appears twice in the roster; each employee needs their own"),
             Key(e) => write!(f, "key derivation failed: {e}"),
             BadExport(e) => write!(f, "not a zec-payroll proof file: {e}"),
             Unparseable(e) => write!(f, "transaction did not parse: {e}"),
@@ -94,47 +94,74 @@ impl EmployerSeed {
     }
 }
 
-/// Account index for an employee, keyed by their payout address (roster ids are
-/// row numbers, so they would move on reorder): 1 + BLAKE2b(address) mod (2^31 - 1).
-/// Never 0. A new payout address means a new payroll account. Collisions are
-/// checked by [`check_accounts`].
-pub fn account_index(employee_id: &str) -> u32 {
-    let h = blake2b_simd::Params::new().hash_length(8).personal(b"zecpayroll_acct_").hash(employee_id.as_bytes());
-    let n = u64::from_le_bytes(h.as_bytes().try_into().expect("8 bytes"));
-    1 + (n % u64::from(ACCOUNT_SPACE - 1)) as u32
+/// The employee's child wallet: 32 bytes of entropy from a keyed, domain-separated
+/// BLAKE2b-256 (key = employer seed, personalization `zecpayroll_child`, input =
+/// payout address), encoded as a 24-word BIP 39 mnemonic so zingo-cli can restore it
+/// (`ZINGO_SEED`). Keys come from that mnemonic's BIP 39 seed at ZIP 32 account 0,
+/// exactly as zingo-cli derives them. A new payout address means a new child wallet.
+pub struct ChildWallet {
+    mnemonic: bip0039::Mnemonic<bip0039::English>,
 }
 
-pub fn check_accounts<'a>(ids: impl IntoIterator<Item = &'a str>) -> Result<(), DisclosureError> {
-    let mut seen: HashMap<u32, &str> = HashMap::new();
-    for id in ids {
-        if let Some(prev) = seen.insert(account_index(id), id) {
-            return Err(DisclosureError::AccountCollision(prev.into(), id.into()));
+impl std::fmt::Debug for ChildWallet {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("ChildWallet(<redacted>)")
+    }
+}
+
+impl ChildWallet {
+    /// The mnemonic, for handing to zingo-cli through the `ZINGO_SEED` env var only.
+    pub fn phrase_for_wallet_env(&self) -> &str {
+        self.mnemonic.phrase()
+    }
+    pub fn ufvk(&self) -> Result<UnifiedFullViewingKey, DisclosureError> {
+        let usk = UnifiedSpendingKey::from_seed(&NETWORK, &self.mnemonic.to_seed(""), zip32::AccountId::ZERO)
+            .map_err(|e| DisclosureError::Key(format!("{e:?}")))?;
+        Ok(usk.to_unified_full_viewing_key())
+    }
+}
+
+pub fn child_wallet(seed: &EmployerSeed, payout_address: &str) -> Result<ChildWallet, DisclosureError> {
+    if seed.0.len() < 32 || seed.0.len() > 64 {
+        return Err(DisclosureError::BadSeed);
+    }
+    let h = blake2b_simd::Params::new()
+        .hash_length(32)
+        .key(&seed.0)
+        .personal(b"zecpayroll_child")
+        .hash(payout_address.trim().as_bytes());
+    let mnemonic = bip0039::Mnemonic::<bip0039::English>::from_entropy(h.as_bytes().to_vec())
+        .map_err(|e| DisclosureError::Key(e.to_string()))?;
+    Ok(ChildWallet { mnemonic })
+}
+
+/// Public, non-secret directory name for an employee's child wallet.
+pub fn child_dir_name(payout_address: &str) -> String {
+    let h = blake2b_simd::Params::new().hash_length(8).personal(b"zecpayroll_cdir_").hash(payout_address.trim().as_bytes());
+    format!("child-{}", h.to_hex())
+}
+
+/// Duplicate payout addresses would share one child wallet; refuse them.
+pub fn check_accounts<'a>(addresses: impl IntoIterator<Item = &'a str>) -> Result<(), DisclosureError> {
+    let mut seen = std::collections::HashSet::new();
+    for a in addresses {
+        if !seen.insert(a.trim()) {
+            return Err(DisclosureError::AccountCollision(a.into(), a.into()));
         }
     }
     Ok(())
 }
 
-fn usk(seed: &EmployerSeed, account: u32) -> Result<UnifiedSpendingKey, DisclosureError> {
-    let id = zip32::AccountId::try_from(account).map_err(|_| DisclosureError::Key("account out of range".into()))?;
-    UnifiedSpendingKey::from_seed(&NETWORK, &seed.0, id).map_err(|e| DisclosureError::Key(format!("{e:?}")))
+/// UFVK of an employee's child wallet (account 0 of the child seed).
+pub fn employee_ufvk(seed: &EmployerSeed, payout_address: &str) -> Result<UnifiedFullViewingKey, DisclosureError> {
+    child_wallet(seed, payout_address)?.ufvk()
 }
 
-/// UFVK of an employee's payroll account.
-pub fn employee_ufvk(seed: &EmployerSeed, employee_id: &str) -> Result<UnifiedFullViewingKey, DisclosureError> {
-    Ok(usk(seed, account_index(employee_id))?.to_unified_full_viewing_key())
-}
-
-/// UFVK of any account, refusing the treasury.
-pub fn account_ufvk(seed: &EmployerSeed, account: u32) -> Result<UnifiedFullViewingKey, DisclosureError> {
-    if account == 0 {
-        return Err(DisclosureError::Treasury);
-    }
-    Ok(usk(seed, account)?.to_unified_full_viewing_key())
-}
-
-/// Treasury UFVK; for tests and the funding step only, never exported.
+/// Treasury UFVK (employer seed, account 0); used only to refuse exporting it.
 pub fn treasury_ufvk(seed: &EmployerSeed) -> Result<UnifiedFullViewingKey, DisclosureError> {
-    Ok(usk(seed, 0)?.to_unified_full_viewing_key())
+    let usk = UnifiedSpendingKey::from_seed(&NETWORK, &seed.0, zip32::AccountId::ZERO)
+        .map_err(|e| DisclosureError::Key(format!("{e:?}")))?;
+    Ok(usk.to_unified_full_viewing_key())
 }
 
 /// Default (diversifier 0+) UA with Orchard + Sapling receivers: the funding destination.
@@ -153,12 +180,16 @@ pub fn encode_ufvk(k: &UnifiedFullViewingKey) -> Result<String, DisclosureError>
 }
 
 /// The proof file handed to the employee. Contains the account UFVK, never a spending key.
-/// `key` is the employee's payout address (see [`account_index`]).
+/// `key` is the employee's payout address (see [`child_wallet`]).
 pub fn export(seed: &EmployerSeed, key: &str, employee_id: &str, name: &str) -> Result<String, DisclosureError> {
-    let account = account_index(key);
-    let ufvk = encode_ufvk(&account_ufvk(seed, account)?)?;
+    let child = encode_ufvk(&employee_ufvk(seed, key)?)?;
+    if child == encode_ufvk(&treasury_ufvk(seed)?)? {
+        return Err(DisclosureError::Treasury);
+    }
+    let ufvk = child;
+    let wallet = child_dir_name(key);
     Ok(format!(
-        "zec-payroll-proof v1\nnetwork=testnet\nemployee_id={employee_id}\nname={name}\naccount={account}\nufvk={ufvk}\n\
+        "zec-payroll-proof v1\nnetwork=testnet\nemployee_id={employee_id}\nname={name}\nwallet={wallet}\nufvk={ufvk}\n\
          # This UFVK shows every payout this employer sent to this employee from their payroll\n\
          # account, and the funding into it. It shows nothing from other employees or the treasury.\n\
          # Verify with: payroll verify-proof <this file> <raw-tx-hex-file> <txid> <block-height>\n"
@@ -178,11 +209,11 @@ pub fn parse_export(text: &str) -> Result<(String, UnifiedFullViewingKey), Discl
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Direction {
-    /// Funding note received by the payroll account.
+    /// Funding note received by the child wallet.
     FundingIn,
-    /// Payout sent from the payroll account to the employee (recovered with the OVK).
+    /// Payout sent from the child wallet to the employee (recovered with the OVK).
     PayoutOut,
-    /// Change back to the payroll account.
+    /// Change back to the child wallet.
     Change,
 }
 
@@ -279,7 +310,7 @@ pub fn receiver_hexes(ua: &str) -> Vec<String> {
 }
 
 /// Step 1 of the two-step payout: the same lines, re-pointed at each employee's
-/// payroll account UA and topped up by [`PAYOUT_FEE_ZAT`] so step 2 needs no change output.
+/// child wallet UA and topped up by [`PAYOUT_FEE_ZAT`] so step 2 needs no change output.
 pub fn funding_lines(seed: &EmployerSeed, lines: &[crate::PayLine]) -> Result<Vec<crate::PayLine>, DisclosureError> {
     check_accounts(lines.iter().map(|l| l.address.as_str()))?;
     lines
@@ -305,17 +336,20 @@ mod tests {
     }
 
     #[test]
-    fn accounts_are_stable_nonzero_and_distinct() {
-        assert_eq!(account_index("emp-001"), account_index("emp-001"));
-        assert_ne!(account_index("emp-001"), account_index("emp-002"));
-        assert!(account_index("emp-001") > 0);
+    fn child_wallets_are_stable_distinct_and_keyed_on_the_employer_seed() {
+        let k = |s: &EmployerSeed, a: &str| encode_ufvk(&employee_ufvk(s, a).unwrap()).unwrap();
+        assert_eq!(k(&seed(), "emp-001"), k(&seed(), "emp-001"));
+        assert_ne!(k(&seed(), "emp-001"), k(&seed(), "emp-002"));
+        assert_ne!(k(&seed(), "emp-001"), k(&EmployerSeed::from_bytes(&[8u8; 32]), "emp-001"));
+        assert_ne!(k(&seed(), "emp-001"), encode_ufvk(&treasury_ufvk(&seed()).unwrap()).unwrap());
+        assert_eq!(child_wallet(&seed(), "emp-001").unwrap().phrase_for_wallet_env().split(' ').count(), 24);
+        assert_eq!(format!("{:?}", child_wallet(&seed(), "emp-001").unwrap()), "ChildWallet(<redacted>)");
         check_accounts(["emp-001", "emp-002", "emp-003"]).unwrap();
         assert!(matches!(check_accounts(["a", "a"]), Err(DisclosureError::AccountCollision(..))));
     }
 
     #[test]
     fn treasury_is_never_exported_and_export_has_no_spending_key() {
-        assert_eq!(account_ufvk(&seed(), 0).unwrap_err(), DisclosureError::Treasury);
         let text = export(&seed(), "emp-001", "emp-001", "Ada").unwrap();
         crate::audit::check_viewing_key(text.lines().find_map(|l| l.strip_prefix("ufvk=")).unwrap()).unwrap();
         assert!(!text.contains("secret") && !text.contains("usk"));

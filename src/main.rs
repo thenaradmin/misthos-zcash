@@ -9,8 +9,8 @@
 //!   payroll audit-export <file.csv> [txid]
 //!       Accountant CSV ledger + ZCASH_AUDITOR_UFVK (view-only; spending keys refused).
 //!   payroll pay <file.csv> --two-step [cap flags]
-//!       Step 1 only: fund each employee's own payroll account (needs PAYROLL_EMPLOYER_SEED).
-//!       Step 2 (payroll account -> employee) exits 2: zingo-cli is single-account.
+//!       Checks every employee's child wallet syncs, then step 1 (treasury -> child wallets),
+//!       then step 2 (each child wallet -> employee). Needs PAYROLL_EMPLOYER_SEED, PAYROLL_CHILD_BIRTHDAY.
 //!   payroll export-proof <file.csv> <employee_id|name>
 //!       Proof file with that employee's payroll-account UFVK (never the treasury key).
 //!   payroll verify-proof <proof-file> <raw-tx-hex-file> <txid> <block-height>
@@ -137,25 +137,59 @@ fn print_plan(engine: &Engine, id: u64) {
 }
 
 fn pay_two_step(args: &[String]) {
+    let env = |k: &str| std::env::var(k).ok().filter(|v| !v.trim().is_empty());
     let cfg = config::load_from_env().unwrap_or_else(|e| die(e));
-    let bin = wallet::wallet_cli(|k| std::env::var(k).ok()).unwrap_or_else(|e| die(e));
-    let seed = disclosure::EmployerSeed::from_env(|k| std::env::var(k).ok()).unwrap_or_else(|e| die(e));
+    let bin = wallet::wallet_cli(env).unwrap_or_else(|e| die(e));
+    let seed = disclosure::EmployerSeed::from_env(env).unwrap_or_else(|e| die(e));
+    let birthday: u32 = env("PAYROLL_CHILD_BIRTHDAY")
+        .unwrap_or_else(|| die("PAYROLL_CHILD_BIRTHDAY not configured (testnet height to restore child wallets from)"))
+        .parse()
+        .unwrap_or_else(|_| die("PAYROLL_CHILD_BIRTHDAY: not a number"));
+    let wait_secs: u64 = env("PAYROLL_STEP2_TIMEOUT_SECS").and_then(|v| v.parse().ok()).unwrap_or(1800);
     let (mut engine, id) = build(args);
     engine.approve(id).unwrap_or_else(|e| die(e));
     let lines = engine.run(id).expect("planned").lines.clone();
     let funding = disclosure::funding_lines(&seed, &lines).unwrap_or_else(|e| die(e));
+
+    // Pre-broadcast check: every step-2 wallet must open and sync, or nothing is sent.
+    for l in &lines {
+        let child = disclosure::child_wallet(&seed, &l.address).unwrap_or_else(|e| die(e));
+        wallet::init_child(&bin, &cfg, &child, &l.address, birthday)
+            .unwrap_or_else(|e| die(format!("step-2 wallet for {} not ready; step 1 NOT sent: {e}", l.employee_id)));
+        println!("READY child wallet {} -> {}", l.employee_id, wallet::child_data_dir(&cfg, &l.address));
+    }
+
     for f in &funding {
-        println!("FUND {} account={} {} -> {}", f.employee_id, disclosure::account_index(&l_addr(&lines, &f.employee_id)), f.amount, f.address);
+        println!("FUND {} {} -> {}", f.employee_id, f.amount, f.address);
     }
     let txids = wallet::send_payout(&bin, &cfg, &funding).unwrap_or_else(|e| die(e));
     for t in &txids {
         println!("FUNDING BROADCAST txid={t}");
     }
-    eprintln!(
-        "STEP 2 NOT AUTOMATED: spending from each payroll account (ZIP 32 account N) needs a multi-account wallet; \
-zingo-cli creates exactly one account (no_of_accounts=1). The funds sit in accounts the employer seed controls."
-    );
-    exit(2)
+
+    // Step 2: retry each child's quicksend until the funding note is spendable or we time out.
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(wait_secs);
+    let mut pending: Vec<_> = lines.clone();
+    while !pending.is_empty() {
+        pending.retain(|l| match wallet::send_from_child(&bin, &cfg, l) {
+            Ok(t) => {
+                println!("PAYOUT BROADCAST {} txid={}", l.employee_id, t.join(","));
+                false
+            }
+            Err(e) => {
+                eprintln!("step 2 {} not yet: {e}", l.employee_id);
+                true
+            }
+        });
+        if pending.is_empty() {
+            break;
+        }
+        if std::time::Instant::now() > deadline {
+            let ids: Vec<_> = pending.iter().map(|l| l.employee_id.as_str()).collect();
+            die(format!("step 2 timed out after {wait_secs}s for {ids:?}; funds are in their child wallets, rerun later"));
+        }
+        std::thread::sleep(std::time::Duration::from_secs(60));
+    }
 }
 
 fn export_proof(args: &[String]) {
@@ -184,6 +218,3 @@ fn verify_proof(args: &[String]) {
     println!("PAID OUT {}", money::Zat(p.paid_out_zat()));
 }
 
-fn l_addr(lines: &[zec_payroll::PayLine], id: &str) -> String {
-    lines.iter().find(|l| l.employee_id == id).map(|l| l.address.clone()).unwrap_or_default()
-}

@@ -1,7 +1,7 @@
 //! Proof-of-pay against real shielded transactions built in-process:
-//! real ZIP 32 keys from a fixed employer seed (treasury = account 0, one
-//! payroll account per employee), real note encryption with each payroll
-//! account's OVK, real trial decryption by the lender-side verifier.
+//! real keys from a fixed employer seed (treasury = account 0; each employee's
+//! child wallet seed derived from it), real note encryption with each child
+//! wallet's OVK, real trial decryption by the lender-side verifier.
 //! Each tx is funded by a transparent input spending a made-up outpoint (so the
 //! chain would reject it) and Sapling uses sapling-crypto's mock zk-proof bytes;
 //! Ironwood bundles carry real Halo2 proofs. Every byte the verifier reads is genuine.
@@ -48,7 +48,7 @@ fn memo(t: &str) -> MemoBytes {
 }
 
 enum Out {
-    /// (sender payroll account UFVK for the OVK, recipient, value, memo)
+    /// (sender child wallet UFVK for the OVK, recipient, value, memo)
     Sapling(Option<UnifiedFullViewingKey>, sapling::PaymentAddress, u64, &'static str),
     Ironwood(Option<UnifiedFullViewingKey>, orchard::Address, u64, &'static str),
 }
@@ -116,7 +116,7 @@ fn employee_a_proves_own_payout_and_b_key_sees_nothing() {
     let (ka, kb) = (d::employee_ufvk(&s, "emp-a").unwrap(), d::employee_ufvk(&s, "emp-b").unwrap());
     let (ua_a, ua_b) = (personal_ua(0xA1), personal_ua(0xB2));
 
-    // Step 2 payouts, one tx per employee, each encrypted with its own payroll account's OVK.
+    // Step 2 payouts, one tx per employee, each encrypted with its own child wallet's OVK.
     let tx_a = build_tx(vec![Out::Sapling(Some(ka.clone()), *ua_a.sapling().unwrap(), PAY_A, "payroll 2026-10 emp-a")]);
     let tx_b = build_tx(vec![Out::Sapling(Some(kb.clone()), *ua_b.sapling().unwrap(), PAY_B, "payroll 2026-10 emp-b")]);
 
@@ -146,7 +146,7 @@ fn shared_tx_reveals_only_the_holders_outputs() {
     let (fa, fb) = (d::account_address(&ka).unwrap(), d::account_address(&kb).unwrap());
     let fee = d::PAYOUT_FEE_ZAT;
 
-    // Step 1 funding: one treasury tx funds both payroll accounts (pay + payout fee).
+    // Step 1 funding: one treasury tx funds both child wallets (pay + payout fee).
     let funding = build_tx(vec![
         Out::Sapling(None, *fa.sapling().unwrap(), PAY_A + fee, "funding emp-a"),
         Out::Sapling(None, *fb.sapling().unwrap(), PAY_B + fee, "funding emp-b"),
@@ -156,7 +156,7 @@ fn shared_tx_reveals_only_the_holders_outputs() {
     assert_eq!((p.outputs[0].direction.clone(), p.outputs[0].amount_zat), (Direction::FundingIn, PAY_A + fee));
     assert_eq!(p.paid_out_zat(), 0);
 
-    // Even if two payroll accounts' outputs share one tx, each key sees only its own.
+    // Even if two child wallets' outputs share one tx, each key sees only its own.
     let (ua_a, ua_b) = (personal_ua(0xA1), personal_ua(0xB2));
     let both = build_tx(vec![
         Out::Sapling(Some(ka.clone()), *ua_a.sapling().unwrap(), PAY_A, "a"),

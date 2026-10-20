@@ -44,8 +44,19 @@ pub fn wallet_cli(get: impl Fn(&str) -> Option<String>) -> Result<String, Wallet
 }
 
 fn run(bin: &str, cfg: &ChainConfig, cmd: &[&str]) -> Result<String, WalletError> {
-    let out = Command::new(bin)
-        .args(["--chain", "testnet", "--server", &cfg.lwd_url, "--data-dir", &cfg.wallet_db, "--waitsync"])
+    run_in(bin, cfg, &cfg.wallet_db, None, cmd)
+}
+
+/// Run zingo-cli against `data_dir`. A seed for a first-time restore goes through the
+/// `ZINGO_SEED` env var (never argv, so it is not in the process list).
+fn run_in(bin: &str, cfg: &ChainConfig, data_dir: &str, seed: Option<(&str, u32)>, cmd: &[&str]) -> Result<String, WalletError> {
+    let mut c = Command::new(bin);
+    c.args(["--chain", "testnet", "--server", &cfg.lwd_url, "--data-dir", data_dir, "--waitsync"]);
+    c.env_remove("ZINGO_SEED");
+    if let Some((phrase, birthday)) = seed {
+        c.env("ZINGO_SEED", phrase).args(["--birthday", &birthday.to_string()]);
+    }
+    let out = c
         .args(cmd)
         .output()
         .map_err(|e| WalletError::Spawn { bin: bin.into(), err: e.to_string() })?;
@@ -126,6 +137,35 @@ pub fn chain_height(bin: &str, cfg: &ChainConfig) -> Result<String, WalletError>
     run(bin, cfg, &["height"])
 }
 
+/// Where an employee's child wallet lives: `<ZCASH_WALLET_DB>/children/<child-dir-name>`.
+pub fn child_data_dir(cfg: &ChainConfig, payout_address: &str) -> String {
+    format!("{}/children/{}", cfg.wallet_db.trim_end_matches('/'), crate::disclosure::child_dir_name(payout_address))
+}
+
+/// Pre-broadcast check for step 2: create (first time, restoring from the child
+/// mnemonic at `birthday`) or open the child wallet and sync it to the tip. Any
+/// failure here must stop the run BEFORE step 1 is broadcast.
+pub fn init_child(
+    bin: &str,
+    cfg: &ChainConfig,
+    child: &crate::disclosure::ChildWallet,
+    payout_address: &str,
+    birthday: u32,
+) -> Result<String, WalletError> {
+    let dir = child_data_dir(cfg, payout_address);
+    let fresh = std::fs::read_dir(&dir).map(|mut d| d.next().is_none()).unwrap_or(true);
+    std::fs::create_dir_all(&dir).map_err(|e| WalletError::Spawn { bin: bin.into(), err: format!("{dir}: {e}") })?;
+    let seed = fresh.then(|| (child.phrase_for_wallet_env(), birthday));
+    run_in(bin, cfg, &dir, seed, &["balance"])
+}
+
+/// Step 2: one ordinary `quicksend` from the child wallet to the employee.
+pub fn send_from_child(bin: &str, cfg: &ChainConfig, line: &PayLine) -> Result<Vec<String>, WalletError> {
+    let dir = child_data_dir(cfg, &line.address);
+    let out = run_in(bin, cfg, &dir, None, &["quicksend", &receivers_json(std::slice::from_ref(line))])?;
+    extract_txids(&out).ok_or(WalletError::NoTxid(out))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -160,5 +200,25 @@ mod tests {
         // exit 0 but no txids => NoTxid, never a fake success
         assert!(matches!(send_payout("true", &cfg, &[l]), Err(WalletError::NoTxid(_))));
         assert!(matches!(send_payout("true", &cfg, &[]), Err(WalletError::Empty)));
+    }
+
+    #[test]
+    fn child_init_refuses_on_cli_failure_and_keeps_seed_out_of_argv() {
+        let dir = std::env::temp_dir().join(format!("zpp-child-{}", std::process::id()));
+        let cfg = ChainConfig { network: "testnet".into(), lwd_url: "https://x".into(), wallet_db: dir.display().to_string() };
+        let seed = crate::disclosure::EmployerSeed::from_bytes(&[4u8; 32]);
+        let child = crate::disclosure::child_wallet(&seed, "utest1x").unwrap();
+        // An unusable wallet CLI is an error (the caller then refuses to send step 1).
+        assert!(init_child("false", &cfg, &child, "utest1x", 1).is_err());
+        // `sh -c` echoes argv and whether ZINGO_SEED is set; the phrase must not be in argv.
+        std::fs::remove_dir_all(&dir).ok();
+        let probe = dir.with_extension("sh");
+        std::fs::write(&probe, "#!/bin/sh\necho \"$@\" seed_set=${ZINGO_SEED:+yes}\n").unwrap();
+        std::process::Command::new("chmod").args(["+x"]).arg(&probe).status().unwrap();
+        let out = init_child(probe.to_str().unwrap(), &cfg, &child, "utest1x", 7).unwrap();
+        assert!(out.contains("seed_set=yes") && out.contains("--birthday 7"));
+        assert!(!out.contains(child.phrase_for_wallet_env()));
+        std::fs::remove_dir_all(&dir).ok();
+        std::fs::remove_file(&probe).ok();
     }
 }
