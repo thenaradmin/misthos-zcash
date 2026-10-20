@@ -41,9 +41,12 @@ fn pay(args: &[String]) {
     engine.approve(id).unwrap_or_else(|e| die(e));
     let uri = zip321::payout_uri(engine.run(id).expect("planned")).unwrap_or_else(|e| die(e));
     println!("ZIP-321: {uri}");
-    let txid = wallet::send_payout(&bin, &cfg, &uri).unwrap_or_else(|e| die(e));
-    engine.mark_broadcast(id, &txid).unwrap_or_else(|e| die(e));
-    println!("BROADCAST txid={txid}");
+    let lines = engine.run(id).expect("planned").lines.clone();
+    let txids = wallet::send_payout(&bin, &cfg, &lines).unwrap_or_else(|e| die(e));
+    engine.mark_broadcast(id, &txids[0]).unwrap_or_else(|e| die(e));
+    for t in &txids {
+        println!("BROADCAST txid={t}");
+    }
 }
 
 fn audit_export(args: &[String]) {

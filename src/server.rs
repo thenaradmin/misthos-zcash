@@ -176,22 +176,28 @@ fn payout(st: Shared) {
     };
     push(&st, "ok", format!("run #{id} approved; ZIP-321 proposal with {} shielded outputs", lines.len()));
 
-    let res = wallet::send_payout_steps(&bin, &cfg, &uri, |step| push(&st, "info", step));
+    push(&st, "info", format!("ZIP-321 (display only): {uri}"));
+    let res = wallet::send_payout_steps(&bin, &cfg, &lines, |step| push(&st, "info", step));
     match res {
-        Ok(txid) => {
+        Ok(txids) => {
+            let txid = txids[0].clone();
             let mut s = st.lock().unwrap();
-            let _ = s.engine.mark_broadcast(id, &txid);
-            s.feed.push(Event { kind: "ok", text: format!("broadcast one shielded tx {txid}") });
-            for (i, l) in lines.iter().enumerate() {
+            if let Err(e) = s.engine.mark_broadcast(id, &txid) {
+                s.feed.push(Event { kind: "err", text: format!("broadcast {txid} but could not record it: {e}") });
+            }
+            s.feed.push(Event { kind: "ok", text: format!("broadcast shielded tx(s) {}", txids.join(", ")) });
+            for l in &lines {
                 s.feed.push(Event {
                     kind: "slip",
-                    text: format!("{} · {} · output {i} · tx {}… · memo \"{}\"", l.name, l.amount, &txid[..12], l.memo),
+                    text: format!("{} · {} · tx {}… · memo \"{}\"", l.name, l.amount, &txid[..12], l.memo),
                 });
             }
             s.running = false;
         }
         Err(e) => {
-            let _ = st.lock().unwrap().engine.mark_failed(id, &e.to_string());
+            if let Err(me) = st.lock().unwrap().engine.mark_failed(id, &e.to_string()) {
+                push(&st, "err", format!("could not mark run #{id} failed: {me}"));
+            }
             fail(&st, e.to_string())
         }
     }

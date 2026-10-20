@@ -35,9 +35,11 @@ fn sends_one_shielded_tx_to_all_csv_recipients() {
     let mut engine = Engine::new(CapPolicy::default());
     let id = engine.plan_adhoc("testnet-it", batch).expect("plan");
     engine.approve(id).expect("approve");
-    let uri = zip321::payout_uri(engine.run(id).unwrap()).expect("uri");
-    let txid = need(wallet::send_payout(&bin, &cfg, &uri));
-    engine.mark_broadcast(id, &txid).expect("mark");
+    zip321::payout_uri(engine.run(id).unwrap()).expect("uri");
+    let lines = engine.run(id).unwrap().lines.clone();
+    let txids = need(wallet::send_payout(&bin, &cfg, &lines));
+    let txid = &txids[0];
+    engine.mark_broadcast(id, txid).expect("mark");
     assert!(matches!(engine.run(id).unwrap().status, RunStatus::Broadcast { .. }));
-    println!("broadcast txid={txid}");
+    println!("broadcast txids={txids:?}");
 }
