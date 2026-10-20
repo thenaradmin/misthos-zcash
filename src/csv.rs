@@ -99,7 +99,7 @@ pub fn parse_payroll_csv(text: &str) -> Result<Vec<Employee>, Vec<String>> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::employee::tests::ua;
+    use crate::employee::tests::{main_ua, ua};
 
     #[test]
     fn quoting() {
@@ -120,8 +120,9 @@ mod tests {
     #[test]
     fn reports_every_bad_row() {
         let csv = format!(
-            "name,ua,amountZEC\nA,u1mainnet,1\nB,{u},-2\nC,{u},1\nc,{u},1\n,{u},1\n",
-            u = ua('q')
+            "name,ua,amountZEC\nA,{m},1\nB,{u},-2\nC,{u},1\nc,{u},1\n,{u},1\n",
+            u = ua('q'),
+            m = main_ua()
         );
         let errs = parse_payroll_csv(&csv).unwrap_err();
         assert_eq!(errs.len(), 4, "{errs:?}");

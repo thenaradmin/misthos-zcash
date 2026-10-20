@@ -1,9 +1,8 @@
 //! Employee records and recipient-address checks.
 //!
-//! NOTE: `check_testnet_address` is a structural pre-check only (HRP + bech32
-//! charset + length). Full Unified Address decoding (F4Jumble, receiver
-//! typecodes, checksum) is milestone M1 and will use the `zcash_address`
-//! crate once its version is verified on crates.io.
+//! `check_testnet_address` fully decodes the address with `zcash_address`
+//! (bech32/bech32m checksum, F4Jumble, receiver typecodes), then requires the
+//! TESTNET network and a shielded (Sapling or Orchard) receiver.
 
 use crate::money::Zat;
 use std::fmt;
@@ -28,8 +27,8 @@ pub enum EmployeeError {
     EmptyId,
     EmptyName,
     MainnetAddress(String),
-    NotUnifiedTestnet(String),
-    BadCharset(String),
+    NotShieldedTestnet(String),
+    Invalid(String, String),
     MemoTooLong { id: String, bytes: usize },
 }
 
@@ -41,10 +40,11 @@ impl fmt::Display for EmployeeError {
             EmployeeError::MainnetAddress(a) => {
                 write!(f, "address `{a}` is a MAINNET address; this rail is testnet-only")
             }
-            EmployeeError::NotUnifiedTestnet(a) => {
-                write!(f, "address `{a}` is not a testnet Unified Address (expected `utest1...`)")
-            }
-            EmployeeError::BadCharset(a) => write!(f, "address `{a}` has non-bech32 characters"),
+            EmployeeError::NotShieldedTestnet(a) => write!(
+                f,
+                "address `{a}` is not a shielded testnet address (need a `utest1...` UA with a Sapling/Orchard receiver, or `ztestsapling1...`)"
+            ),
+            EmployeeError::Invalid(a, e) => write!(f, "address `{a}` is not a valid Zcash address: {e}"),
             EmployeeError::MemoTooLong { id, bytes } => {
                 write!(f, "memo for `{id}` is {bytes} bytes (max {MAX_MEMO_BYTES})")
             }
@@ -54,23 +54,46 @@ impl fmt::Display for EmployeeError {
 
 impl std::error::Error for EmployeeError {}
 
-const BECH32_CHARSET: &str = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
+use zcash_address::{unified, ConversionError, TryFromAddress, ZcashAddress};
+use zcash_protocol::{consensus::NetworkType, PoolType};
+
+/// Decoded network of an address; the payload itself is not needed here.
+struct Net(NetworkType);
+
+impl TryFromAddress for Net {
+    type Error = std::convert::Infallible;
+    fn try_from_sapling(net: NetworkType, _: [u8; 43]) -> Result<Self, ConversionError<Self::Error>> {
+        Ok(Net(net))
+    }
+    fn try_from_unified(net: NetworkType, _: unified::Address) -> Result<Self, ConversionError<Self::Error>> {
+        Ok(Net(net))
+    }
+    fn try_from_transparent_p2pkh(net: NetworkType, _: [u8; 20]) -> Result<Self, ConversionError<Self::Error>> {
+        Ok(Net(net))
+    }
+    fn try_from_transparent_p2sh(net: NetworkType, _: [u8; 20]) -> Result<Self, ConversionError<Self::Error>> {
+        Ok(Net(net))
+    }
+    fn try_from_tex(net: NetworkType, _: [u8; 20]) -> Result<Self, ConversionError<Self::Error>> {
+        Ok(Net(net))
+    }
+}
 
 pub fn check_testnet_address(addr: &str) -> Result<(), EmployeeError> {
     let a = addr.trim();
-    if a.starts_with("u1") || a.starts_with("zs1") || a.starts_with("t1") || a.starts_with("t3") {
+    let parsed = ZcashAddress::try_from_encoded(a).map_err(|e| EmployeeError::Invalid(a.to_string(), e.to_string()))?;
+    let Net(net) = parsed
+        .clone()
+        .convert::<Net>()
+        .map_err(|e| EmployeeError::Invalid(a.to_string(), e.to_string()))?;
+    if net == NetworkType::Main {
         return Err(EmployeeError::MainnetAddress(a.to_string()));
     }
-    let Some(data) = a.strip_prefix("utest1") else {
-        return Err(EmployeeError::NotUnifiedTestnet(a.to_string()));
-    };
-    // A UA carries at least one receiver + 6-char checksum; anything this
-    // short cannot be a real UA.
-    if data.len() < 40 {
-        return Err(EmployeeError::NotUnifiedTestnet(a.to_string()));
+    if net != NetworkType::Test {
+        return Err(EmployeeError::NotShieldedTestnet(a.to_string()));
     }
-    if !data.chars().all(|c| BECH32_CHARSET.contains(c)) {
-        return Err(EmployeeError::BadCharset(a.to_string()));
+    if !(parsed.can_receive_as(PoolType::SAPLING) || parsed.can_receive_as(PoolType::ORCHARD)) {
+        return Err(EmployeeError::NotShieldedTestnet(a.to_string()));
     }
     Ok(())
 }
@@ -95,10 +118,21 @@ impl Employee {
 pub(crate) mod tests {
     use super::*;
 
-    /// Shape-valid placeholder used only by offline unit tests of the engine;
-    /// never broadcast. Real recipients come from real testnet wallets.
+    use zcash_address::unified::{Encoding, Receiver, Revision, Uitem};
+    use zcash_address::ToAddress;
+
+    /// Correctly encoded testnet UA (Orchard receiver; bytes derived from `tag`).
+    /// Used only by offline unit tests; never broadcast.
     pub fn ua(tag: char) -> String {
-        format!("utest1{}", std::iter::repeat(tag).take(60).collect::<String>())
+        let r = Receiver::Orchard([tag as u8; 43]);
+        let ua = unified::Address::try_from_items(Revision::R0, vec![Uitem::Data(r)]).unwrap();
+        ZcashAddress::from_unified(NetworkType::Test, ua).encode()
+    }
+
+    /// Correctly encoded MAINNET UA, to prove mainnet is refused.
+    pub fn main_ua() -> String {
+        let ua = unified::Address::try_from_items(Revision::R0, vec![Uitem::Data(Receiver::Orchard([1; 43]))]).unwrap();
+        ZcashAddress::from_unified(NetworkType::Main, ua).encode()
     }
 
     pub fn emp(id: &str, zec: &str) -> Employee {
@@ -114,13 +148,26 @@ pub(crate) mod tests {
 
     #[test]
     fn address_checks() {
-        assert!(check_testnet_address(&ua('p')).is_ok());
-        assert!(matches!(check_testnet_address("u1abc"), Err(EmployeeError::MainnetAddress(_))));
-        assert!(matches!(check_testnet_address("zs1abc"), Err(EmployeeError::MainnetAddress(_))));
-        assert!(matches!(check_testnet_address("ztestsapling1xyz"), Err(EmployeeError::NotUnifiedTestnet(_))));
-        assert!(matches!(check_testnet_address("utest1short"), Err(EmployeeError::NotUnifiedTestnet(_))));
-        let bad = format!("utest1{}", "b".repeat(60)); // 'b' is not in bech32 charset
-        assert!(matches!(check_testnet_address(&bad), Err(EmployeeError::BadCharset(_))));
+        let good = ua('p');
+        assert!(good.starts_with("utest1"));
+        assert!(check_testnet_address(&good).is_ok());
+        let sap = ZcashAddress::from_sapling(NetworkType::Test, [7; 43]).encode();
+        assert!(check_testnet_address(&sap).is_ok());
+        // Mainnet encodings of real receivers are rejected as mainnet.
+        assert!(matches!(check_testnet_address(&main_ua()), Err(EmployeeError::MainnetAddress(_))));
+        // Transparent testnet is not private payroll.
+        let t = ZcashAddress::from_transparent_p2pkh(NetworkType::Test, [3; 20]).encode();
+        assert!(matches!(check_testnet_address(&t), Err(EmployeeError::NotShieldedTestnet(_))));
+        // The old structural check accepted these; they must now fail.
+        let shape_only = format!("utest1{}", "q".repeat(60));
+        assert!(matches!(check_testnet_address(&shape_only), Err(EmployeeError::Invalid(..))));
+        let mut flipped: Vec<char> = good.chars().collect();
+        let i = flipped.len() - 3;
+        flipped[i] = if flipped[i] == 'q' { 'p' } else { 'q' };
+        let flipped: String = flipped.into_iter().collect();
+        assert!(matches!(check_testnet_address(&flipped), Err(EmployeeError::Invalid(..))));
+        assert!(check_testnet_address("u1abc").is_err());
+        assert!(check_testnet_address("ztestsapling1xyz").is_err());
     }
 
     #[test]

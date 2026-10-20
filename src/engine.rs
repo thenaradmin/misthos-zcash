@@ -436,7 +436,7 @@ mod tests {
         assert_eq!(e.run(id).unwrap().total, Zat::parse_zec("3").unwrap());
         assert!(matches!(e.plan_adhoc("oct-bonus", vec![emp("x", "1")]), Err(EngineError::AlreadyPaid { .. })));
         let mut bad = emp("z", "1");
-        bad.address = "u1mainnetaddr".into();
+        bad.address = crate::employee::tests::main_ua();
         assert!(matches!(e.plan_adhoc("other", vec![bad]), Err(EngineError::Employee(EmployeeError::MainnetAddress(_)))));
     }
 }
