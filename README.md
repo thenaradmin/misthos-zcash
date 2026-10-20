@@ -10,7 +10,7 @@ This is a batch payroll tool for the Zcash **testnet**. An employer uploads a CS
 | Env config that fails loudly | **Done** |
 | Recipient address decoding (`zcash_address` 0.14.0-pre.2) | **Done**: full decode (checksum, F4Jumble, typecodes); testnet only; must have a Sapling or Orchard receiver (`utest1…` UA or `ztestsapling1…`). Mainnet and transparent-only are refused |
 | ZIP-321 URI (`src/zip321.rs`) | **Done**, offline-tested. Shown for display/audit only; zingo-cli does not accept ZIP-321 URIs |
-| Building + broadcasting the tx | **Delegated to zingo-cli** (`ZCASH_WALLET_CLI`) via one `quicksend` with a JSON receiver list. Syntax checked against zingolib source (0a5cb69, 2026-10-19). **Never run against a funded wallet: no testnet payout has happened yet.** No in-process `zcash_client_backend` builder |
+| Building + broadcasting the tx | **Delegated to zingo-cli** (`ZCASH_WALLET_CLI`) via one `quicksend` with a JSON receiver list. Syntax checked against zingolib source (0a5cb69, 2026-10-19) and run live against testnet with an unfunded wallet: it syncs and stops at `Insufficient balance (have 0, need 110000 including fee)`. **Never run against a funded wallet: no testnet payout has happened yet.** No in-process `zcash_client_backend` builder |
 | Dashboard UI (`payroll serve`): roster, run button, live payout feed, payslips, auditor UFVK panel | Built; offline build + endpoint smoke test pass. No real testnet payout through it yet |
 
 The tool does not use NEAR Intents, does not use the `zakura-one-time-ivk` crate, and has received no grant funding.
@@ -18,6 +18,11 @@ The tool does not use NEAR Intents, does not use the `zakura-one-time-ivk` crate
 ## Requirements
 - Rust **1.89**, pinned in `rust-toolchain.toml`. Testnet has activated NU7 (consensus branch `0x77190ad9`, v6 txs): stable `zcash_primitives` 0.30.1 rejects current testnet txs (`invalid consensus branch id 0x77190ad9`) and the stable crates also need Rust ≥1.88, so this repo pins the same prerelease line as zec-shielded-x402 (`zcash_address =0.14.0-pre.2`, `zcash_protocol =0.11.0-pre.1`).
 - The only dependencies are those two crates; after one `cargo fetch`, `cargo test --offline` works.
+
+- `zingo-cli` from current zingolib needs `nym-proxy` beside it (Mixnet Mode is mandatory for online sessions): `makers bundle-nym-proxy`, or `cargo run --manifest-path tools/workbench/Cargo.toml --bin bundle-nym-proxy -- --release --dest <dir of zingo-cli>`. Without it every wallet call fails with `Mixnet Mode is required for a connected session`.
+
+## Known limits
+- The address check decodes and checks network + receiver types, but does not check that the receiver bytes are valid curve points. zingo-cli does, and rejects such an address loudly at send time (`Invalid Orchard receiver in Unified Address`), before anything is broadcast.
 
 ## Do X, see Y
 1. Run `cargo test`. You should see `38 passed; 0 failed` (plus 2 ignored live-testnet tests).
