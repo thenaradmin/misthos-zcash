@@ -12,6 +12,28 @@ license = "MIT"
 zcash_address = "=0.14.0-pre.2"
 zcash_protocol = "=0.11.0-pre.1"
 
+# Per-employee payroll accounts (ZIP 32 account indices) and their viewing keys.
+zcash_keys = { version = "=0.17.0-pre.2", features = ["orchard", "sapling"] }
+zcash_primitives = "=0.31.0-pre.2"
+zcash_client_backend = { version = "=0.25.0-pre.2", default-features = false, features = ["orchard"] }
+zip32 = "0.3"
+orchard = "0.16"
+sapling = { package = "sapling-crypto", version = "0.9" }
+bip0039 = "0.12"
+blake2b_simd = "1"
+hex = "0.4"
+
 [[bin]]
 name = "payroll"
 path = "src/main.rs"
+
+[dev-dependencies]
+# Tests build real shielded transactions (real keys, real note encryption) in-process.
+zcash_primitives = { version = "=0.31.0-pre.2", features = ["transparent-inputs", "test-dependencies"] }
+zcash_transparent = { version = "=0.11.0-pre.2", features = ["transparent-inputs", "test-dependencies"] }
+sapling = { package = "sapling-crypto", version = "0.9", features = ["test-dependencies"] }
+secp256k1 = "0.33"
+rand10 = { package = "rand", version = "0.10" }
+
+[profile.dev.package."*"]
+opt-level = 3

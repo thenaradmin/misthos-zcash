@@ -6,6 +6,7 @@
 pub mod audit;
 pub mod config;
 pub mod csv;
+pub mod disclosure;
 pub mod date;
 pub mod employee;
 pub mod engine;
