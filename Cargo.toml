@@ -1,0 +1,16 @@
+[package]
+name = "zec-payroll"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.85"
+description = "Private payroll rail for Zcash testnet: employees, schedules, capped pay runs"
+license = "MIT"
+
+# Core engine is deliberately dependency-free so it builds and tests offline.
+# librustzcash crates (zcash_client_backend etc.) are added in M2 after their
+# versions/feature flags are checked against crates.io + docs.rs.
+[dependencies]
+
+[[bin]]
+name = "payroll"
+path = "src/main.rs"
