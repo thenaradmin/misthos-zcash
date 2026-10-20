@@ -148,47 +148,121 @@ fn pay_two_step(args: &[String]) {
     let wait_secs: u64 = env("PAYROLL_STEP2_TIMEOUT_SECS").and_then(|v| v.parse().ok()).unwrap_or(1800);
     let (mut engine, id) = build(args);
     engine.approve(id).unwrap_or_else(|e| die(e));
-    let lines = engine.run(id).expect("planned").lines.clone();
-    let funding = disclosure::funding_lines(&seed, &lines).unwrap_or_else(|e| die(e));
+    let run = engine.run(id).expect("planned");
+    let (period, lines) = (run.period_key.clone(), run.lines.clone());
+    disclosure::check_accounts(lines.iter().map(|l| l.address.as_str())).unwrap_or_else(|e| die(e));
+    use wallet::ledger::{self, Step};
+    let dir_of = |l: &zec_payroll::PayLine| wallet::child_data_dir(&cfg, &l.address);
+
+    // Durable ledger first: a rerun must not re-fund or re-pay, and an ambiguous
+    // earlier broadcast (pending with no outcome) stops the whole run.
+    let mut states = Vec::new();
+    for l in &lines {
+        let st = ledger::state(&dir_of(l), &period);
+        if matches!(st, Step::FundPending | Step::PayPending) {
+            die(format!("{}: an earlier `{period}` broadcast for this child has no recorded outcome ({st:?}); check its wallet on chain and fix {}/payroll-ledger by hand. Nothing sent.", l.employee_id, dir_of(l)));
+        }
+        states.push(st);
+    }
 
     // Pre-broadcast check: every step-2 wallet must open and sync, or nothing is sent.
     for l in &lines {
         let child = disclosure::child_wallet(&seed, &l.address).unwrap_or_else(|e| die(e));
         wallet::init_child(&bin, &cfg, &child, &l.address, birthday)
             .unwrap_or_else(|e| die(format!("step-2 wallet for {} not ready; step 1 NOT sent: {e}", l.employee_id)));
-        println!("READY child wallet {} -> {}", l.employee_id, wallet::child_data_dir(&cfg, &l.address));
+        println!("READY child wallet {} -> {}", l.employee_id, dir_of(l));
     }
 
-    for f in &funding {
-        println!("FUND {} {} -> {}", f.employee_id, f.amount, f.address);
+    let to_fund: Vec<_> = lines.iter().zip(&states).filter(|(_, s)| **s == Step::Fresh).map(|(l, _)| l.clone()).collect();
+    for (l, s) in lines.iter().zip(&states) {
+        if *s != Step::Fresh {
+            println!("SKIP FUNDING {} (ledger: {s:?} for {period})", l.employee_id);
+        }
     }
-    let txids = wallet::send_payout(&bin, &cfg, &funding).unwrap_or_else(|e| die(e));
-    for t in &txids {
-        println!("FUNDING BROADCAST txid={t}");
-    }
-
-    // Step 2: retry each child's quicksend until the funding note is spendable or we time out.
-    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(wait_secs);
-    let mut pending: Vec<_> = lines.clone();
-    while !pending.is_empty() {
-        pending.retain(|l| match wallet::send_from_child(&bin, &cfg, l) {
-            Ok(t) => {
-                println!("PAYOUT BROADCAST {} txid={}", l.employee_id, t.join(","));
-                false
+    if !to_fund.is_empty() {
+        let funding = disclosure::funding_lines(&seed, &to_fund).unwrap_or_else(|e| die(e));
+        for f in &funding {
+            println!("FUND {} {} -> {}", f.employee_id, f.amount, f.address);
+        }
+        for l in &to_fund {
+            ledger::record(&dir_of(l), "fund-pending", &period, "-").unwrap_or_else(|e| die(format!("ledger: {e}; nothing sent")));
+        }
+        match wallet::send_payout(&bin, &cfg, &funding) {
+            Ok(txids) => {
+                for l in &to_fund {
+                    ledger::record(&dir_of(l), "funded", &period, &txids.join(",")).unwrap_or_else(|e| die(format!("ledger after broadcast: {e}")));
+                }
+                for t in &txids {
+                    println!("FUNDING BROADCAST txid={t}");
+                }
             }
-            Err(e) => {
-                eprintln!("step 2 {} not yet: {e}", l.employee_id);
-                true
+            Err(e) if wallet::failed_before_broadcast(&e) => {
+                // Proposal failed: funding never left the treasury, so reset to Fresh.
+                clear_fund_pending(&to_fund, &dir_of, &period);
+                die(e)
+            }
+            Err(e) => die(format!("{e}; funding outcome unknown, ledger left at fund-pending so a rerun refuses")),
+        }
+    }
+
+    // Step 2: retry each funded child's quicksend until spendable or timeout. Paid children are skipped.
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(wait_secs);
+    let mut pending: Vec<_> = lines.iter().filter(|l| ledger::state(&dir_of(l), &period) == Step::Funded).cloned().collect();
+    for l in lines.iter().filter(|l| ledger::state(&dir_of(l), &period) == Step::Paid) {
+        println!("SKIP PAYOUT {} (already paid for {period})", l.employee_id);
+    }
+    while !pending.is_empty() {
+        let mut ambiguous = Vec::new();
+        pending.retain(|l| {
+            let d = dir_of(l);
+            ledger::record(&d, "pay-pending", &period, "-").unwrap_or_else(|e| die(format!("ledger: {e}")));
+            match wallet::send_from_child(&bin, &cfg, l) {
+                Ok(t) => {
+                    ledger::record(&d, "paid", &period, &t.join(",")).unwrap_or_else(|e| die(format!("ledger after broadcast: {e}")));
+                    println!("PAYOUT BROADCAST {} txid={}", l.employee_id, t.join(","));
+                    false
+                }
+                Err(e) if wallet::failed_before_broadcast(&e) => {
+                    ledger::record(&d, "pay-failed", &period, "-").ok();
+                    eprintln!("step 2 {} not yet spendable: {e}", l.employee_id);
+                    true
+                }
+                Err(e) => {
+                    eprintln!("step 2 {}: outcome unknown, not retrying: {e}", l.employee_id);
+                    ambiguous.push(l.employee_id.clone());
+                    false
+                }
             }
         });
+        if !ambiguous.is_empty() {
+            die(format!("step 2 outcome unknown for {ambiguous:?}; their ledgers stay at pay-pending so a rerun refuses until checked"));
+        }
         if pending.is_empty() {
             break;
         }
         if std::time::Instant::now() > deadline {
             let ids: Vec<_> = pending.iter().map(|l| l.employee_id.as_str()).collect();
-            die(format!("step 2 timed out after {wait_secs}s for {ids:?}; funds are in their child wallets, rerun later"));
+            die(format!("step 2 timed out after {wait_secs}s for {ids:?}; funds are in their child wallets; rerun with the same --label to pay only these (no re-funding)"));
         }
         std::thread::sleep(std::time::Duration::from_secs(60));
+    }
+}
+
+/// A funding send that failed at proposal never broadcast: drop the pending marker.
+fn clear_fund_pending(lines: &[zec_payroll::PayLine], dir_of: &dyn Fn(&zec_payroll::PayLine) -> String, period: &str) {
+    for l in lines {
+        let p = format!("{}/payroll-ledger", dir_of(l));
+        let text = std::fs::read_to_string(&p).unwrap_or_default();
+        let kept: String = text
+            .lines()
+            .filter(|x| {
+                let mut it = x.split_whitespace();
+                let (k, per) = (it.next(), it.next());
+                !(per == Some(period) && matches!(k, Some("fund-pending")))
+            })
+            .map(|x| format!("{x}\n"))
+            .collect();
+        std::fs::write(&p, kept).ok();
     }
 }
 
@@ -202,19 +276,38 @@ fn export_proof(args: &[String]) {
 }
 
 fn verify_proof(args: &[String]) {
-    let [proof, raw, txid, height] = args else {
-        die("usage: payroll verify-proof <proof-file> <raw-tx-hex-file> <txid> <block-height>")
+    let usage = "usage: payroll verify-proof <proof-file> <txid> --lwd <https://lightwalletd:443>   (checks the chain)\n   or: payroll verify-proof <proof-file> <raw-tx-hex-file> <txid> <block-height>   (OFFLINE, trusts the supplier)";
+    let (proof, bytes, txid, height, onchain) = match args {
+        [proof, txid, flag, url] if flag == "--lwd" => {
+            if !url.starts_with("https://") {
+                die("--lwd must be https://");
+            }
+            let t = zec_payroll::chain::fetch_tx(url, txid).unwrap_or_else(|e| die(e));
+            let h = t.height.unwrap_or_else(|| die(format!("{txid} is not mined in the best chain according to {url}")));
+            (proof, t.raw, txid, h, Some(url.clone()))
+        }
+        [proof, raw, txid, height] => {
+            let hexs = std::fs::read_to_string(raw).unwrap_or_else(|e| die(format!("{raw}: {e}")));
+            let bytes = hex::decode(hexs.trim()).unwrap_or_else(|e| die(format!("{raw}: not hex: {e}")));
+            let h: u32 = height.parse().unwrap_or_else(|_| die("block-height: not a number"));
+            (proof, bytes, txid, h, None)
+        }
+        _ => die(usage),
     };
     let text = std::fs::read_to_string(proof).unwrap_or_else(|e| die(format!("{proof}: {e}")));
     let (emp, ufvk) = disclosure::parse_export(&text).unwrap_or_else(|e| die(e));
-    let hexs = std::fs::read_to_string(raw).unwrap_or_else(|e| die(format!("{raw}: {e}")));
-    let bytes = hex::decode(hexs.trim()).unwrap_or_else(|e| die(format!("{raw}: not hex: {e}")));
-    let h: u32 = height.parse().unwrap_or_else(|_| die("block-height: not a number"));
-    let p = disclosure::verify_tx(&ufvk, &bytes, Some(txid), h).unwrap_or_else(|e| die(e));
-    println!("VERIFIED employee={emp} txid={} height={} (read the date from this block)", p.txid, p.height);
+    let p = disclosure::verify_tx(&ufvk, &bytes, Some(txid), height).unwrap_or_else(|e| die(e));
+    match &onchain {
+        Some(url) => println!("VERIFIED ON CHAIN via {url}: employee={emp} txid={} mined at height {}", p.txid, p.height),
+        None => println!(
+            "DECRYPTED OFFLINE (NOT checked on chain: the tx bytes and height {} are whatever the supplier gave you; use --lwd): employee={emp} txid={}",
+            p.height, p.txid
+        ),
+    }
     for o in &p.outputs {
         println!("  {:?} {:?} {} recipient={} memo={:?}", o.direction, o.pool, money::Zat(o.amount_zat), o.recipient_hex, o.memo);
     }
     println!("PAID OUT {}", money::Zat(p.paid_out_zat()));
+    println!("NOTE: this shows what the key in the proof file sees. It does not prove that key belongs to this employer; get the employer's published child-wallet UA or signature for that.");
 }
 

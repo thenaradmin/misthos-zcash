@@ -181,3 +181,54 @@ fn ironwood_payout_verifies_with_real_halo2_bundle() {
     assert!(d::receiver_hexes(&ua_a.encode(&NETWORK)).contains(&p.outputs[0].recipient_hex));
     assert!(matches!(d::verify_tx(&kb, &tx, None, height()), Err(DisclosureError::NothingVisible)));
 }
+
+/// Verifier attacks (audit 7). Documents what verify-proof does and does NOT check.
+#[test]
+fn verify_proof_attacks() {
+    let s = employer();
+    let ka = d::employee_ufvk(&s, "emp-a").unwrap();
+    let ua_a = personal_ua(0xA1);
+    let tx_a = build_tx(vec![Out::Sapling(Some(ka.clone()), *ua_a.sapling().unwrap(), PAY_A, "payroll emp-a")]);
+    let txid = d::verify_tx(&ka, &tx_a, None, height()).unwrap().txid;
+
+    // Tampered tx hex. The v6 txid (ZIP 244) commits to effects, not to proofs/signatures, so
+    // a flip in authorizing data can keep the txid; it must then decrypt to the SAME outputs.
+    // Every other flip must be a parse error, txid mismatch or nothing-visible.
+    let want = d::verify_tx(&ka, &tx_a, None, height()).unwrap().outputs;
+    for i in 0..tx_a.len() {
+        let mut t = tx_a.clone();
+        t[i] ^= 1;
+        if let Ok(p) = d::verify_tx(&ka, &t, Some(&txid), height()) {
+            assert_eq!(p.outputs, want, "tamper at {i} changed what the lender sees");
+        }
+    }
+    // Truncated tx.
+    assert!(d::verify_tx(&ka, &tx_a[..tx_a.len() - 1], Some(&txid), height()).is_err());
+
+    // A pre-NU7 height is rejected (wrong branch / decryption rules for that height).
+    assert!(d::verify_tx(&ka, &tx_a, Some(&txid), 1).is_err());
+    // A different post-NU7 height is ACCEPTED: height only picks the consensus branch and is
+    // never checked against a chain. (Trust-only; README says so.)
+    assert!(d::verify_tx(&ka, &tx_a, Some(&txid), height() + 50_000).is_ok());
+
+    // Forged proof files.
+    for bad in ["", "zec-payroll-proof v1\nemployee_id=x\n", "zec-payroll-proof v1\nemployee_id=x\nufvk=uviewtest1garbage\n", "nope\nufvk=x"] {
+        assert!(matches!(d::parse_export(bad), Err(DisclosureError::BadExport(_))), "{bad:?}");
+    }
+    // A self-made proof (any UFVK the forger owns) over a self-made tx VERIFIES: nothing binds
+    // the key to this employer, and this tx's Sapling proofs are dummy bytes the chain would
+    // reject. verify-proof proves "this key sees this tx", not "the employer paid this on chain".
+    let forger = UnifiedSpendingKey::from_seed(&NETWORK, &[0xEE; 32], zip32::AccountId::ZERO).unwrap().to_unified_full_viewing_key();
+    let forged_tx = build_tx(vec![Out::Sapling(Some(forger.clone()), *ua_a.sapling().unwrap(), 99_000_000, "payroll emp-a")]);
+    assert_eq!(d::verify_tx(&forger, &forged_tx, None, height()).unwrap().paid_out_zat(), 99_000_000);
+
+    // Treasury key never comes out of export, and child keys differ from it and each other.
+    let t = d::encode_ufvk(&d::treasury_ufvk(&s).unwrap()).unwrap();
+    let e = d::export(&s, "emp-a", "emp-a", "A").unwrap();
+    assert!(!e.contains(&t));
+    assert_ne!(d::encode_ufvk(&ka).unwrap(), d::encode_ufvk(&d::employee_ufvk(&s, "emp-b").unwrap()).unwrap());
+    // Duplicate address (only possible "collision" with 256-bit derivation) is refused.
+    assert!(matches!(d::check_accounts(["emp-a", " emp-a "]), Err(DisclosureError::AccountCollision(..))));
+    // Child seed depends on the employer seed: another employer, same address -> different key.
+    assert_ne!(d::encode_ufvk(&ka).unwrap(), d::encode_ufvk(&d::employee_ufvk(&EmployerSeed::from_bytes(&[0x5b; 32]), "emp-a").unwrap()).unwrap());
+}

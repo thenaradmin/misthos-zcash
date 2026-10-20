@@ -155,6 +155,11 @@ pub fn init_child(
     let dir = child_data_dir(cfg, payout_address);
     let fresh = std::fs::read_dir(&dir).map(|mut d| d.next().is_none()).unwrap_or(true);
     std::fs::create_dir_all(&dir).map_err(|e| WalletError::Spawn { bin: bin.into(), err: format!("{dir}: {e}") })?;
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let p = std::fs::Permissions::from_mode(0o700);
+        std::fs::set_permissions(&dir, p).map_err(|e| WalletError::Spawn { bin: bin.into(), err: format!("chmod {dir}: {e}") })?;
+    }
     let seed = fresh.then(|| (child.phrase_for_wallet_env(), birthday));
     run_in(bin, cfg, &dir, seed, &["balance"])
 }
@@ -164,6 +169,39 @@ pub fn send_from_child(bin: &str, cfg: &ChainConfig, line: &PayLine) -> Result<V
     let dir = child_data_dir(cfg, &line.address);
     let out = run_in(bin, cfg, &dir, None, &["quicksend", &receivers_json(std::slice::from_ref(line))])?;
     extract_txids(&out).ok_or(WalletError::NoTxid(out))
+}
+
+/// Durable per-child ledger (`<child dir>/payroll-ledger`) so a rerun or restart of
+/// `pay --two-step` never re-funds or re-pays. Lines: `<state> <period> [txid]`, where
+/// state is `fund-pending`, `funded`, `pay-pending` or `paid`. A `*-pending` line with no
+/// matching completion means a broadcast may or may not have happened: the run refuses.
+pub mod ledger {
+    use std::io::Write;
+    #[derive(Debug, PartialEq, Eq, Clone, Copy)]
+    pub enum Step { Fresh, FundPending, Funded, PayPending, Paid }
+    fn path(dir: &str) -> String { format!("{dir}/payroll-ledger") }
+    pub fn state(dir: &str, period: &str) -> Step {
+        let text = std::fs::read_to_string(path(dir)).unwrap_or_default();
+        let mut st = Step::Fresh;
+        for l in text.lines() {
+            let mut it = l.split_whitespace();
+            let (Some(k), Some(p)) = (it.next(), it.next()) else { continue };
+            if p != period { continue }
+            st = match k { "fund-pending" => Step::FundPending, "funded" => Step::Funded, "pay-pending" => Step::PayPending, "paid" => Step::Paid, "pay-failed" => Step::Funded, _ => st };
+        }
+        st
+    }
+    pub fn record(dir: &str, what: &str, period: &str, txid: &str) -> std::io::Result<()> {
+        let mut f = std::fs::OpenOptions::new().create(true).append(true).open(path(dir))?;
+        writeln!(f, "{what} {period} {txid}")?;
+        f.sync_all()
+    }
+}
+
+/// zingo-cli errors that come from proposing, i.e. before anything is broadcast.
+pub fn failed_before_broadcast(e: &WalletError) -> bool {
+    let s = e.to_string();
+    s.contains("Propose send error") || s.contains("Insufficient balance")
 }
 
 #[cfg(test)]
@@ -200,6 +238,27 @@ mod tests {
         // exit 0 but no txids => NoTxid, never a fake success
         assert!(matches!(send_payout("true", &cfg, &[l]), Err(WalletError::NoTxid(_))));
         assert!(matches!(send_payout("true", &cfg, &[]), Err(WalletError::Empty)));
+    }
+
+    #[test]
+    fn ledger_blocks_refund_and_repay() {
+        use ledger::{record, state, Step};
+        let d = std::env::temp_dir().join(format!("zpp-ledger-{}", std::process::id()));
+        std::fs::create_dir_all(&d).unwrap();
+        let d = d.to_str().unwrap();
+        assert_eq!(state(d, "p1"), Step::Fresh);
+        record(d, "fund-pending", "p1", "-").unwrap();
+        assert_eq!(state(d, "p1"), Step::FundPending);
+        record(d, "funded", "p1", "t1").unwrap();
+        record(d, "pay-pending", "p1", "-").unwrap();
+        assert_eq!(state(d, "p1"), Step::PayPending);
+        record(d, "pay-failed", "p1", "-").unwrap();
+        assert_eq!(state(d, "p1"), Step::Funded);
+        record(d, "pay-pending", "p1", "-").unwrap();
+        record(d, "paid", "p1", "t2").unwrap();
+        assert_eq!(state(d, "p1"), Step::Paid);
+        assert_eq!(state(d, "p2"), Step::Fresh);
+        std::fs::remove_dir_all(d).ok();
     }
 
     #[test]

@@ -15,7 +15,10 @@ zcash_protocol = "=0.11.0-pre.1"
 # Per-employee payroll accounts (ZIP 32 account indices) and their viewing keys.
 zcash_keys = { version = "=0.17.0-pre.2", features = ["orchard", "sapling"] }
 zcash_primitives = "=0.31.0-pre.2"
-zcash_client_backend = { version = "=0.25.0-pre.2", default-features = false, features = ["orchard"] }
+zcash_client_backend = { version = "=0.25.0-pre.2", default-features = false, features = ["orchard", "lightwalletd-tonic-transport", "lightwalletd-tonic-tls-webpki-roots"] }
+tonic = { version = "0.14", features = ["tls-webpki-roots", "transport"] }
+rustls = { version = "0.23", default-features = false, features = ["ring", "std"] }
+tokio = { version = "1", features = ["rt", "macros"] }
 zip32 = "0.3"
 orchard = "0.16"
 sapling = { package = "sapling-crypto", version = "0.9" }
