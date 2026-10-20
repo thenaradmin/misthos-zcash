@@ -10,7 +10,7 @@ This is a batch payroll tool for the Zcash **testnet**. An employer uploads a CS
 | Env config that fails loudly | **Done** |
 | Full Unified Address decoding (`zcash_address`) | Not started. Today there is only a structural check: the `utest1` prefix, the bech32 charset and the length |
 | ZIP-321 URI, building and broadcasting the tx (`zcash_client_backend`) | Not started (M2) |
-| Payslips, auditor UFVK view, UI | Not started (M3/M4) |
+| Dashboard UI (`payroll serve`): roster, run button, live payout feed, payslips, auditor UFVK panel | Built; offline build + endpoint smoke test pass. No real testnet payout through it yet |
 
 The tool does not use NEAR Intents, does not use the `zakura-one-time-ivk` crate, and has received no grant funding.
 
@@ -49,3 +49,14 @@ The tool does not use NEAR Intents, does not use the `zakura-one-time-ivk` crate
 
 ## Rules
 The tool uses only the real Zcash testnet, with no mocks and no fake chain data. Secrets go only in `.env` (see `.env.example`). Mainnet is refused in code.
+
+## Employer dashboard
+
+Do: `set -a; . ./.env; set +a; cargo run -- serve` (default `--addr 127.0.0.1:8787`), then open http://127.0.0.1:8787.
+See, within a few seconds of opening the page:
+- a red banner listing every unset var by name (e.g. `ZCASH_LWD_URL not configured`), or none if `.env` is complete;
+- the roster from `PAYROLL_ROSTER_CSV` with the run total;
+- **Run payroll**, which fills the live feed step by step: validate → approve → ZIP-321 proposal → wallet sync → send → confirm → one txid, then one payslip line per employee (name, amount, output index, txid, memo). Each step is the real `ZCASH_WALLET_CLI`. The first failure stops the run and shows the CLI's own error;
+- **Open auditor view**, which shows the UFVK (view-only; spending keys are refused) and the ledger of this session's runs.
+
+The UI is one dependency-free HTML file (`ui/index.html`), compiled into the binary. Run history lives in memory and is lost on restart.

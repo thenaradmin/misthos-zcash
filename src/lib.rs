@@ -11,6 +11,7 @@ pub mod employee;
 pub mod engine;
 pub mod money;
 pub mod schedule;
+pub mod server;
 pub mod wallet;
 pub mod zip321;
 

@@ -56,8 +56,21 @@ pub fn extract_txid(out: &str) -> Option<String> {
 
 /// Sync, then send one tx paying every output of the ZIP-321 URI. Returns the txid.
 pub fn send_payout(bin: &str, cfg: &ChainConfig, zip321_uri: &str) -> Result<String, WalletError> {
+    send_payout_steps(bin, cfg, zip321_uri, |_| {})
+}
+
+/// As [`send_payout`], reporting each wallet step before it runs (for the UI feed).
+pub fn send_payout_steps(
+    bin: &str,
+    cfg: &ChainConfig,
+    zip321_uri: &str,
+    mut step: impl FnMut(&str),
+) -> Result<String, WalletError> {
+    step("wallet: sync run (lightwalletd)");
     run(bin, cfg, &["sync", "run"])?;
+    step("wallet: send ZIP-321 proposal");
     run(bin, cfg, &["send", zip321_uri])?;
+    step("wallet: confirm + broadcast");
     let out = run(bin, cfg, &["confirm"])?;
     extract_txid(&out).ok_or(WalletError::NoTxid(out))
 }

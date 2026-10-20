@@ -8,6 +8,8 @@
 //!       Plan, approve and send ONE shielded testnet tx to every line via ZCASH_WALLET_CLI.
 //!   payroll audit-export <file.csv> [txid]
 //!       Accountant CSV ledger + ZCASH_AUDITOR_UFVK (view-only; spending keys refused).
+//!   payroll serve [--addr 127.0.0.1:8787]
+//!       Employer dashboard for the roster in PAYROLL_ROSTER_CSV.
 
 use std::process::exit;
 use zec_payroll::{audit, config, csv, money::Zat, wallet, zip321, CapPolicy, Engine};
@@ -27,7 +29,8 @@ fn main() {
         Some("plan") => plan(&args[1..]),
         Some("pay") => pay(&args[1..]),
         Some("audit-export") => audit_export(&args[1..]),
-        _ => die("usage: payroll plan|pay <file.csv> [--label L] [--max-total ZEC] [--max-per ZEC] [--max-recipients N] | payroll audit-export <file.csv> [txid] | payroll check-env"),
+        Some("serve") => serve(&args[1..]),
+        _ => die("usage: payroll plan|pay <file.csv> [--label L] [--max-total ZEC] [--max-per ZEC] [--max-recipients N] | payroll audit-export <file.csv> [txid] | payroll serve [--addr HOST:PORT] | payroll check-env"),
     }
 }
 
@@ -53,6 +56,24 @@ fn audit_export(args: &[String]) {
         engine.mark_broadcast(id, &t).unwrap_or_else(|e| die(e));
     }
     print!("{}", audit::export_csv(engine.runs(), &ufvk).unwrap_or_else(|e| die(e)));
+}
+
+fn serve(args: &[String]) {
+    let addr = match args {
+        [] => "127.0.0.1:8787".to_string(),
+        [f, v] if f == "--addr" => v.clone(),
+        _ => die("usage: payroll serve [--addr HOST:PORT]"),
+    };
+    let path = std::env::var("PAYROLL_ROSTER_CSV").ok().filter(|v| !v.trim().is_empty());
+    let path = path.unwrap_or_else(|| die("PAYROLL_ROSTER_CSV not configured"));
+    let text = std::fs::read_to_string(&path).unwrap_or_else(|e| die(format!("PAYROLL_ROSTER_CSV {path}: {e}")));
+    let roster = csv::parse_payroll_csv(&text).unwrap_or_else(|errs| {
+        for e in &errs {
+            eprintln!("ERROR: {e}");
+        }
+        exit(1)
+    });
+    zec_payroll::server::serve(&addr, path, roster, CapPolicy::default()).unwrap_or_else(|e| die(format!("{addr}: {e}")));
 }
 
 fn plan(args: &[String]) {

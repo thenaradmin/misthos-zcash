@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shielded Payroll</title>
+<style>
+:root{--bg:#0b0d10;--panel:#12161b;--line:#1f262e;--text:#e6e9ee;--mute:#8a94a3;--gold:#f4b728;--ok:#3ecf8e;--err:#ff5d5d;--mono:ui-monospace,SFMono-Regular,Menlo,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 24px;border-bottom:1px solid var(--line)}
+.brand{font-weight:650;letter-spacing:-.01em}.brand b{color:var(--gold)}
+.pill{font:12px var(--mono);padding:4px 10px;border:1px solid var(--line);border-radius:99px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:55vw}
+.banner{display:none;margin:16px 24px 0;padding:12px 16px;border:1px solid var(--err);background:#2a1214;color:#ffd0d0;border-radius:10px;font-weight:550}
+.banner code{font-family:var(--mono);color:#fff}
+main{display:grid;grid-template-columns:1.2fr 1fr;gap:16px;padding:16px 24px 32px;max-width:1280px;margin:0 auto}
+section{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0}
+h2{margin:0 0 12px;font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--mute);font-weight:600}
+.span2{grid-column:1/-1}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:9px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--mute);font-weight:500;font-size:12px}
+td.amt{text-align:right;font-family:var(--mono);white-space:nowrap}
+.addr{font-family:var(--mono);font-size:12px;color:var(--mute)}
+.total{display:flex;justify-content:space-between;align-items:baseline;margin-top:14px}
+.total strong{font:600 26px var(--mono);color:var(--gold)}
+button{appearance:none;border:0;border-radius:10px;padding:13px 20px;font:600 15px system-ui;cursor:pointer;background:var(--gold);color:#1a1300;width:100%;margin-top:14px;transition:transform .08s,opacity .2s}
+button:active{transform:scale(.98)}button:disabled{opacity:.45;cursor:not-allowed}
+button.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+#feed{list-style:none;margin:0;padding:0;font:13px/1.45 var(--mono);max-height:380px;overflow:auto}
+#feed li{padding:7px 0 7px 18px;border-bottom:1px dashed var(--line);position:relative;animation:in .25s ease-out;word-break:break-all}
+#feed li::before{content:"";position:absolute;left:2px;top:13px;width:7px;height:7px;border-radius:50%;background:var(--mute)}
+#feed li.ok::before{background:var(--ok)}#feed li.err{color:#ffb4b4}#feed li.err::before{background:var(--err)}
+#feed li.slip{color:var(--gold)}#feed li.slip::before{background:var(--gold)}
+#feed li.pending::before{animation:pulse 1s infinite}
+.empty{color:var(--mute);font-size:14px}
+@keyframes in{from{opacity:0;transform:translateY(-4px)}}
+@keyframes pulse{50%{opacity:.2}}
+.key{font:12px var(--mono);word-break:break-all;background:#0d1014;border:1px solid var(--line);border-radius:8px;padding:10px;color:var(--mute)}
+.note{color:var(--mute);font-size:13px;margin:8px 0 0}
+@media (max-width:820px){main{grid-template-columns:1fr;padding:16px}header{padding:14px 16px}.banner{margin:16px 16px 0}.hide-sm{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><b>ⓩ</b> Shielded Payroll</div>
+  <div class="pill" id="net">loading…</div>
+</header>
+<div class="banner" id="banner"></div>
+<main>
+  <section>
+    <h2>Roster</h2>
+    <table><thead><tr><th>Employee</th><th class="hide-sm">Address</th><th style="text-align:right">Pay</th></tr></thead>
+      <tbody id="roster"></tbody></table>
+    <div class="total"><span class="empty" id="rpath"></span><strong id="total">—</strong></div>
+    <button id="run">Run payroll · one shielded tx</button>
+  </section>
+  <section>
+    <h2>Live shielded payout</h2>
+    <ul id="feed"><li class="empty" style="border:0;padding-left:0">Press “Run payroll”. Each step is the real testnet wallet; failures name the missing piece.</li></ul>
+  </section>
+  <section class="span2">
+    <h2>Auditor · viewing key</h2>
+    <div id="audit"><p class="empty">Read-only ledger built from ZCASH_AUDITOR_UFVK. It can see payroll; it cannot spend.</p></div>
+    <button class="ghost" id="loadAudit">Open auditor view</button>
+  </section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let since=0,polling=false;
+
+async function state(){
+  const s=await (await fetch('/api/state')).json();
+  $('net').textContent=(s.network||'network unset')+' · '+(s.lwd||'no lightwalletd');
+  const b=$('banner');
+  if(s.missing.length||s.config_error){
+    b.style.display='block';
+    b.innerHTML=(s.config_error?'<code>'+esc(s.config_error)+'</code>':'')+
+      (s.missing.length?(s.config_error?' · ':'')+'Not configured: '+s.missing.map(v=>'<code>'+esc(v)+'</code>').join(', '):'');
+  } else b.style.display='none';
+  $('roster').innerHTML=s.roster.map(e=>`<tr><td>${esc(e.name)}<div class="addr">${esc(e.memo)}</div></td><td class="addr hide-sm">${esc(e.address.slice(0,14))}…${esc(e.address.slice(-6))}</td><td class="amt">${esc(e.amount)}</td></tr>`).join('');
+  $('total').textContent=s.roster_total;
+  $('rpath').textContent=s.roster.length+' employees · '+s.roster_path;
+  $('run').disabled=s.running;
+  return s;
+}
+
+function add(e){
+  const f=$('feed'); f.querySelector('.empty')?.remove();
+  f.querySelectorAll('.pending').forEach(x=>x.classList.remove('pending'));
+  const li=document.createElement('li'); li.className=e.kind+(e.kind==='info'?' pending':''); li.textContent=e.text;
+  f.appendChild(li); f.scrollTop=f.scrollHeight;
+}
+
+async function poll(){
+  if(polling)return; polling=true;
+  for(;;){
+    const r=await (await fetch('/api/feed?since='+since)).json();
+    r.events.forEach(add); since=r.next;
+    if(!r.running){ document.querySelectorAll('#feed .pending').forEach(x=>x.classList.remove('pending')); break; }
+    await new Promise(z=>setTimeout(z,400));
+  }
+  polling=false; state();
+}
+
+$('run').onclick=async()=>{
+  $('run').disabled=true;
+  const r=await fetch('/api/run',{method:'POST'}); const j=await r.json();
+  if(!r.ok){ add({kind:'err',text:j.error}); $('run').disabled=false; return; }
+  since=j.since; poll();
+};
+
+$('loadAudit').onclick=async()=>{
+  const r=await fetch('/api/audit'), box=$('audit');
+  if(!r.ok){ const j=await r.json(); box.innerHTML='<p class="banner" style="display:block;margin:0">'+esc(j.error)+'</p>'; return; }
+  const lines=(await r.text()).trim().split('\n');
+  const ufvk=(lines.find(l=>l.startsWith('# ufvk='))||'').slice(7);
+  const rows=lines.filter(l=>!l.startsWith('#')).map(l=>l.split(','));
+  const head=rows.shift()||[], want=['run_id','status','txid','name','amount_zec','memo'], ix=want.map(w=>head.indexOf(w));
+  box.innerHTML='<div class="key">UFVK (view-only) '+esc(ufvk)+'</div>'+
+    (rows.length?'<table style="margin-top:12px"><thead><tr>'+want.map(w=>'<th>'+w+'</th>').join('')+'</tr></thead><tbody>'+
+      rows.map(r=>'<tr>'+ix.map(i=>'<td class="addr">'+esc((r[i]||'').slice(0,24))+'</td>').join('')+'</tr>').join('')+'</tbody></table>'
+     :'<p class="note">No pay runs yet in this session.</p>')+
+    '<p class="note">Import this UFVK into a view-only testnet wallet to check every output on-chain yourself.</p>';
+};
+
+state();
+</script>
+</body>
+</html>
