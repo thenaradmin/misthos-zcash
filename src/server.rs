@@ -67,7 +67,8 @@ fn state_json(s: &State) -> String {
         .iter()
         .map(|e| {
             format!(
-                "{{\"name\":{},\"address\":{},\"amount\":{},\"memo\":{},\"active\":{}}}",
+                "{{\"id\":{},\"name\":{},\"address\":{},\"amount\":{},\"memo\":{},\"active\":{}}}",
+                json_str(&e.id),
                 json_str(&e.name),
                 json_str(&e.address),
                 json_str(&e.pay.to_string()),
@@ -269,6 +270,19 @@ fn handle(stream: TcpStream, st: Shared) {
             let res = audit::export_csv(st.lock().unwrap().engine.runs(), &ufvk);
             match res {
                 Ok(csv) => respond(stream, "200 OK", "text/csv; charset=utf-8", &csv),
+                Err(e) => respond(stream, "400 Bad Request", json, &format!("{{\"error\":{}}}", json_str(&e.to_string()))),
+            }
+        }
+        ("GET", "/api/proof") => {
+            let emp = query.strip_prefix("employee=").unwrap_or("").to_string();
+            let found = st.lock().unwrap().roster.iter().find(|e| e.id == emp).map(|e| (e.address.clone(), e.name.clone()));
+            let Some((addr, name)) = found else {
+                return respond(stream, "404 Not Found", json, "{\"error\":\"no such employee\"}");
+            };
+            let res = crate::disclosure::EmployerSeed::from_env(|k| std::env::var(k).ok())
+                .and_then(|s| crate::disclosure::export(&s, &addr, &emp, &name));
+            match res {
+                Ok(t) => respond(stream, "200 OK", "text/plain; charset=utf-8", &t),
                 Err(e) => respond(stream, "400 Bad Request", json, &format!("{{\"error\":{}}}", json_str(&e.to_string()))),
             }
         }

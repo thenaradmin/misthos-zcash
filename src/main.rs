@@ -8,11 +8,18 @@
 //!       Plan, approve and send ONE shielded testnet tx to every line via ZCASH_WALLET_CLI.
 //!   payroll audit-export <file.csv> [txid]
 //!       Accountant CSV ledger + ZCASH_AUDITOR_UFVK (view-only; spending keys refused).
+//!   payroll pay <file.csv> --two-step [cap flags]
+//!       Step 1 only: fund each employee's own payroll account (needs PAYROLL_EMPLOYER_SEED).
+//!       Step 2 (payroll account -> employee) exits 2: zingo-cli is single-account.
+//!   payroll export-proof <file.csv> <employee_id|name>
+//!       Proof file with that employee's payroll-account UFVK (never the treasury key).
+//!   payroll verify-proof <proof-file> <raw-tx-hex-file> <txid> <block-height>
+//!       Third-party check: what this employee's key sees in that tx (amount, recipient, memo).
 //!   payroll serve [--addr 127.0.0.1:8787]
 //!       Employer dashboard for the roster in PAYROLL_ROSTER_CSV.
 
 use std::process::exit;
-use zec_payroll::{audit, config, csv, money::Zat, wallet, zip321, CapPolicy, Engine};
+use zec_payroll::{audit, config, csv, disclosure, money, money::Zat, wallet, zip321, CapPolicy, Engine};
 
 fn die(msg: impl std::fmt::Display) -> ! {
     eprintln!("ERROR: {msg}");
@@ -29,12 +36,18 @@ fn main() {
         Some("plan") => plan(&args[1..]),
         Some("pay") => pay(&args[1..]),
         Some("audit-export") => audit_export(&args[1..]),
+        Some("export-proof") => export_proof(&args[1..]),
+        Some("verify-proof") => verify_proof(&args[1..]),
         Some("serve") => serve(&args[1..]),
-        _ => die("usage: payroll plan|pay <file.csv> [--label L] [--max-total ZEC] [--max-per ZEC] [--max-recipients N] | payroll audit-export <file.csv> [txid] | payroll serve [--addr HOST:PORT] | payroll check-env"),
+        _ => die("usage: payroll plan|pay <file.csv> [--label L] [--max-total ZEC] [--max-per ZEC] [--max-recipients N] | payroll audit-export <file.csv> [txid] | payroll export-proof <file.csv> <employee_id|name> | payroll verify-proof <proof> <rawtx-hex> <txid> <height> | payroll serve [--addr HOST:PORT] | payroll check-env"),
     }
 }
 
 fn pay(args: &[String]) {
+    if args.iter().any(|a| a == "--two-step") {
+        let rest: Vec<String> = args.iter().filter(|a| *a != "--two-step").cloned().collect();
+        return pay_two_step(&rest);
+    }
     let cfg = config::load_from_env().unwrap_or_else(|e| die(e));
     let bin = wallet::wallet_cli(|k| std::env::var(k).ok()).unwrap_or_else(|e| die(e));
     let (mut engine, id) = build(args);
@@ -121,4 +134,56 @@ fn print_plan(engine: &Engine, id: u64) {
         println!("  {:<20} {:>18}  {}…  memo={:?}", l.name, l.amount.to_string(), &l.address[..16], l.memo);
     }
     println!("  TOTAL {} across {} outputs (one shielded tx, built in M2)", run.total, run.lines.len());
+}
+
+fn pay_two_step(args: &[String]) {
+    let cfg = config::load_from_env().unwrap_or_else(|e| die(e));
+    let bin = wallet::wallet_cli(|k| std::env::var(k).ok()).unwrap_or_else(|e| die(e));
+    let seed = disclosure::EmployerSeed::from_env(|k| std::env::var(k).ok()).unwrap_or_else(|e| die(e));
+    let (mut engine, id) = build(args);
+    engine.approve(id).unwrap_or_else(|e| die(e));
+    let lines = engine.run(id).expect("planned").lines.clone();
+    let funding = disclosure::funding_lines(&seed, &lines).unwrap_or_else(|e| die(e));
+    for f in &funding {
+        println!("FUND {} account={} {} -> {}", f.employee_id, disclosure::account_index(&l_addr(&lines, &f.employee_id)), f.amount, f.address);
+    }
+    let txids = wallet::send_payout(&bin, &cfg, &funding).unwrap_or_else(|e| die(e));
+    for t in &txids {
+        println!("FUNDING BROADCAST txid={t}");
+    }
+    eprintln!(
+        "STEP 2 NOT AUTOMATED: spending from each payroll account (ZIP 32 account N) needs a multi-account wallet; \
+zingo-cli creates exactly one account (no_of_accounts=1). The funds sit in accounts the employer seed controls."
+    );
+    exit(2)
+}
+
+fn export_proof(args: &[String]) {
+    let [path, emp] = args else { die("usage: payroll export-proof <file.csv> <employee_id|name>") };
+    let seed = disclosure::EmployerSeed::from_env(|k| std::env::var(k).ok()).unwrap_or_else(|e| die(e));
+    let text = std::fs::read_to_string(path).unwrap_or_else(|e| die(format!("{path}: {e}")));
+    let roster = csv::parse_payroll_csv(&text).unwrap_or_else(|errs| die(errs.join("; ")));
+    let e = roster.iter().find(|e| &e.id == emp || &e.name == emp).unwrap_or_else(|| die(format!("no employee `{emp}` in {path}")));
+    print!("{}", disclosure::export(&seed, &e.address, &e.id, &e.name).unwrap_or_else(|e| die(e)));
+}
+
+fn verify_proof(args: &[String]) {
+    let [proof, raw, txid, height] = args else {
+        die("usage: payroll verify-proof <proof-file> <raw-tx-hex-file> <txid> <block-height>")
+    };
+    let text = std::fs::read_to_string(proof).unwrap_or_else(|e| die(format!("{proof}: {e}")));
+    let (emp, ufvk) = disclosure::parse_export(&text).unwrap_or_else(|e| die(e));
+    let hexs = std::fs::read_to_string(raw).unwrap_or_else(|e| die(format!("{raw}: {e}")));
+    let bytes = hex::decode(hexs.trim()).unwrap_or_else(|e| die(format!("{raw}: not hex: {e}")));
+    let h: u32 = height.parse().unwrap_or_else(|_| die("block-height: not a number"));
+    let p = disclosure::verify_tx(&ufvk, &bytes, Some(txid), h).unwrap_or_else(|e| die(e));
+    println!("VERIFIED employee={emp} txid={} height={} (read the date from this block)", p.txid, p.height);
+    for o in &p.outputs {
+        println!("  {:?} {:?} {} recipient={} memo={:?}", o.direction, o.pool, money::Zat(o.amount_zat), o.recipient_hex, o.memo);
+    }
+    println!("PAID OUT {}", money::Zat(p.paid_out_zat()));
+}
+
+fn l_addr(lines: &[zec_payroll::PayLine], id: &str) -> String {
+    lines.iter().find(|l| l.employee_id == id).map(|l| l.address.clone()).unwrap_or_default()
 }

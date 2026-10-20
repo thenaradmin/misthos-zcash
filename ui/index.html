@@ -79,7 +79,7 @@ async function state(){
     b.innerHTML=(s.config_error?'<code>'+esc(s.config_error)+'</code>':'')+
       (s.missing.length?(s.config_error?' · ':'')+'Not configured: '+s.missing.map(v=>'<code>'+esc(v)+'</code>').join(', '):'');
   } else b.style.display='none';
-  $('roster').innerHTML=s.roster.map(e=>`<tr><td>${esc(e.name)}<div class="addr">${esc(e.memo)}</div></td><td class="addr hide-sm">${esc(e.address.slice(0,14))}…${esc(e.address.slice(-6))}</td><td class="amt">${esc(e.amount)}</td></tr>`).join('');
+  $('roster').innerHTML=s.roster.map(e=>`<tr><td>${esc(e.name)}<div class="addr">${esc(e.memo)}</div></td><td class="addr hide-sm">${esc(e.address.slice(0,14))}…${esc(e.address.slice(-6))}</td><td class="amt">${esc(e.amount)}<button class="ghost proof" data-id="${esc(e.id)}" style="width:auto;padding:6px 10px;margin-top:6px;font-size:12px">Export proof for employee</button></td></tr>`).join('');
   $('total').textContent=s.roster_total;
   $('rpath').textContent=s.roster.length+' employees · '+s.roster_path;
   $('run').disabled=s.running;
@@ -92,6 +92,14 @@ function add(e){
   const li=document.createElement('li'); li.className=e.kind+(e.kind==='info'?' pending':''); li.textContent=e.text;
   f.appendChild(li); f.scrollTop=f.scrollHeight;
 }
+
+document.addEventListener('click',async ev=>{
+  const b=ev.target.closest('button.proof'); if(!b) return;
+  const id=b.dataset.id, r=await fetch('/api/proof?employee='+encodeURIComponent(id));
+  if(!r.ok){ alert((await r.json()).error); return; }
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([await r.text()],{type:'text/plain'}));
+  a.download='payroll-proof-'+id+'.txt'; a.click();
+});
 
 async function poll(){
   if(polling)return; polling=true;

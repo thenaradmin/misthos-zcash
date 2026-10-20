@@ -12,6 +12,7 @@ This is a batch payroll tool for the Zcash **testnet**. An employer uploads a CS
 | ZIP-321 URI (`src/zip321.rs`) | **Done**, offline-tested. Shown for display/audit only; zingo-cli does not accept ZIP-321 URIs |
 | Building + broadcasting the tx | **Delegated to zingo-cli** (`ZCASH_WALLET_CLI`) via one `quicksend` with a JSON receiver list. Syntax checked against zingolib source (0a5cb69, 2026-10-19) and run live against testnet with an unfunded wallet: it syncs and stops at `Insufficient balance (have 0, need 110000 including fee)`. **Never run against a funded wallet: no testnet payout has happened yet.** No in-process `zcash_client_backend` builder |
 | Dashboard UI (`payroll serve`): roster, run button, live payout feed, payslips, auditor UFVK panel | Built; offline build + endpoint smoke test pass. No real testnet payout through it yet |
+| Per-employee proof of pay: payroll account per employee (ZIP 32), `export-proof`, `verify-proof`, dashboard **Export proof for employee** | Built. 3 real-key tests on in-process shielded txs pass (Sapling + Ironwood). Step-1 funding is wired to zingo-cli; step 2 (payout from the employee account) is NOT automated. No funded testnet run yet |
 
 The tool does not use NEAR Intents, does not use the `zakura-one-time-ivk` crate, and has received no grant funding.
 
@@ -67,3 +68,33 @@ See, within a few seconds of opening the page:
 - **Open auditor view**, which shows the UFVK (view-only; spending keys are refused) and the ledger of this session's runs.
 
 The UI is one dependency-free HTML file (`ui/index.html`), compiled into the binary. Run history lives in memory and is lost on restart.
+
+## Per-employee proof of pay
+
+An employee can prove their own pay (amount, recipient, memo, txid, block) to a lender or tax office without exposing the rest of payroll.
+
+**Design chosen: one payroll account per employee.** Each employee gets their own ZIP 32 account under the employer's seed. Account 0 is the employer treasury and is **never exported**: `export-proof` refuses it, and so does the code. The account index is `1 + BLAKE2b(payout address) mod (2^31 - 1)`, keyed on the address because roster ids are row numbers that change when rows are reordered. Collisions are checked before funding. A new payout address means a new account.
+
+Why not ZIP 311 payment disclosures: ZIP 311 is still a draft, and the pinned crates have no implementation of it. It is future work. It would allow a per-*payment* proof without the extra funding transaction.
+
+**Two-step payout (one extra tx per run):**
+1. **Funding:** treasury (account 0) sends `pay + 0.0001 ZEC` to each employee's payroll-account UA, in one `quicksend` (`payroll pay <csv> --two-step`). This costs the normal ZIP 317 fee of `5_000 zat x max(2, logical actions)`.
+2. **Payout:** the employee's payroll account sends `pay` to the employee's own address. Funding is exact, so this is 1 note in and 1 output with no change, which costs `10_000 zat` (2 padded actions x 5_000). That fee is what the 0.0001 ZEC top-up covers. Outputs are encrypted with that account's OVK.
+
+**Not automated yet:** step 2. zingo-cli creates exactly one account per wallet (`no_of_accounts = 1`), so it cannot spend from account N. `pay --two-step` broadcasts step 1, then exits **2** with that reason. The funds stay in accounts the employer seed controls. Automating step 2 needs a multi-account wallet (zcash_client_sqlite or zcash-devtool) with a lightwalletd sync.
+
+**What the export contains:** the payroll account's **full** viewing key (UFVK `uviewtest1...`). It is a full key, not an incoming-only one, because payouts are *outgoing* from that account and are recovered with its OVK. Trust model:
+- It reveals **all** of that employee's payouts from this employer, past and future (not just one), plus the funding notes into that account, the amounts, and the employer-chosen memos. Anyone holding the file can see this forever. There is no revocation.
+- It reveals nothing about other employees' accounts or the treasury. Tests show that A's key cannot decrypt B's payout, even when both outputs are in the same transaction, and that it sees only its own funding output in a shared funding transaction.
+- The lender trusts that the employer controls this account. The proof shows "this employer-seed account paid X to address Y", and linking the account to the employer is a social claim (for example, the employer signs or publishes the account UA).
+- The sending side of the treasury -> account funding tx is not hidden from the treasury key holder, of course. Timing correlation between funding and payout transactions is visible on-chain as two shielded transactions.
+- The seed (`PAYROLL_EMPLOYER_SEED`, a BIP 39 mnemonic) is never printed. `EmployerSeed`'s `Debug` output is redacted.
+
+**Commands:**
+- `payroll export-proof <roster.csv> <employee id|name>`: prints the proof file.
+- `payroll verify-proof <proof-file> <raw-tx-hex-file> <txid> <block-height>`: the third-party check. It parses the raw transaction (from any explorer or lightwalletd), checks that the txid matches, trial-decrypts it with the UFVK, and prints each visible output with its direction (`PayoutOut`/`FundingIn`/`Change`), pool, amount, recipient receiver bytes and memo. Read the date from the block at `<block-height>`. It exits 1 with "sees nothing" if the transaction isn't this employee's.
+- Dashboard: an **Export proof for employee** button on each roster row downloads the proof file (`GET /api/proof?employee=<id>`).
+
+**Tests:** `tests/proof_real_tx.rs` uses real ZIP 32 keys, real note encryption with each account's OVK, and real Halo2 proofs for Ironwood. The transparent inputs are made up, and Sapling zk-proof bytes are mocks, so the chain would reject these transactions. Every byte the verifier reads is real. The live check `scripts/testnet-two-employees.sh` and the `--ignored` test `testnet_employee_a_key_cannot_see_employee_b_payout` exit or panic, naming the missing variable, because no funded step-2 payout exists yet.
+
+The older auditor export (`ZCASH_AUDITOR_UFVK`) is the *employer* key and shows all of payroll. It is for the company's accountant only, never for employees.

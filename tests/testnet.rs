@@ -43,3 +43,29 @@ fn sends_one_shielded_tx_to_all_csv_recipients() {
     assert!(matches!(engine.run(id).unwrap().status, RunStatus::Broadcast { .. }));
     println!("broadcast txids={txids:?}");
 }
+
+/// `PAYROLL_PAYOUT_A` / `PAYROLL_PAYOUT_B` = `<txid>:<height>:<raw-tx-hex-file>` of real step-2
+/// payouts from employee A's and B's payroll accounts (keyed by PAYROLL_EMPLOYEE_A_UA / _B_UA). None exist yet (no funded wallet, and
+/// step 2 is not automated), so this panics naming the first missing variable.
+#[test]
+#[ignore = "needs two real funded testnet payouts; run with --ignored"]
+fn testnet_employee_a_key_cannot_see_employee_b_payout() {
+    use zec_payroll::disclosure::{self as d, DisclosureError, EmployerSeed};
+    let seed = need(EmployerSeed::from_env(env));
+    let load = |k: &str| {
+        let v = env(k).unwrap_or_else(|| panic!("TESTNET TEST CANNOT RUN: {k} not configured (txid:height:rawhexfile)"));
+        let mut it = v.splitn(3, ':');
+        let (txid, h, f) = (it.next().unwrap().to_string(), it.next().expect("height"), it.next().expect("file"));
+        let raw = hex::decode(std::fs::read_to_string(f).unwrap().trim()).unwrap();
+        (txid, h.parse::<u32>().unwrap(), raw)
+    };
+    let (ta, ha, ra) = load("PAYROLL_PAYOUT_A");
+    let (tb, hb, rb) = load("PAYROLL_PAYOUT_B");
+    let addr = |k: &str| env(k).unwrap_or_else(|| panic!("TESTNET TEST CANNOT RUN: {k} not configured (employee payout UA)"));
+    let ka = need(d::employee_ufvk(&seed, &addr("PAYROLL_EMPLOYEE_A_UA")));
+    let kb = need(d::employee_ufvk(&seed, &addr("PAYROLL_EMPLOYEE_B_UA")));
+    assert!(need(d::verify_tx(&ka, &ra, Some(&ta), ha)).paid_out_zat() > 0);
+    assert!(need(d::verify_tx(&kb, &rb, Some(&tb), hb)).paid_out_zat() > 0);
+    assert!(matches!(d::verify_tx(&ka, &rb, Some(&tb), hb), Err(DisclosureError::NothingVisible)));
+    assert!(matches!(d::verify_tx(&kb, &ra, Some(&ta), ha), Err(DisclosureError::NothingVisible)));
+}
