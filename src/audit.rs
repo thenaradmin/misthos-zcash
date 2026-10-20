@@ -44,10 +44,12 @@ fn csv_field(s: &str) -> String {
 }
 
 /// CSV with one row per output. `txid`/`height` are blank until the run is broadcast/confirmed.
+/// `line_index` is the row order in the run, NOT the on-chain output/action index
+/// (wallets shuffle and pad shielded outputs).
 pub fn export_csv(runs: &[PayRun], ufvk: &str) -> Result<String, AuditError> {
     check_viewing_key(ufvk)?;
     let mut out = format!("# network=testnet\n# ufvk={}\n", ufvk.trim());
-    out.push_str("run_id,period,status,txid,height,output_index,employee_id,name,address,amount_zec,memo\n");
+    out.push_str("run_id,period,status,txid,height,line_index,employee_id,name,address,amount_zec,memo\n");
     for r in runs {
         let (status, txid, height) = match &r.status {
             RunStatus::Draft => ("draft", "", String::new()),
