@@ -38,7 +38,14 @@ The tool does not use NEAR Intents, does not use the `zakura-one-time-ivk` crate
 - Memos are limited to 512 bytes (ZIP-321).
 
 ## Layout
-`src/money.rs` · `date.rs` · `employee.rs` · `schedule.rs` · `engine.rs` · `csv.rs` · `config.rs` · `main.rs` (the CLI).
+`src/money.rs` · `date.rs` · `employee.rs` · `schedule.rs` · `engine.rs` · `csv.rs` · `config.rs` · `zip321.rs` · `wallet.rs` · `audit.rs` · `main.rs` (the CLI) · `tests/testnet.rs`.
+
+## Shielded payout + accountant export
+- `payroll pay <file.csv>`: plans and approves the run, builds one ZIP-321 URI with many outputs, and sends it as ONE shielded testnet tx through `ZCASH_WALLET_CLI` (zingo-cli) using `ZCASH_LWD_URL`. It prints `BROADCAST txid=…`. If a var is missing it prints `ERROR: <VAR> not configured` and exits 1.
+- `payroll audit-export <file.csv> [txid]`: writes a CSV ledger (run, txid, output index, name, address, amount, memo), headed by `ZCASH_AUDITOR_UFVK`. It refuses spending keys and seed phrases.
+- `cargo test --offline`: offline unit tests (ZIP-321 encoding, key checks).
+- `cargo test --test testnet -- --ignored`: real testnet tests. Without env vars they FAIL with `TESTNET TEST CANNOT RUN: <VAR> not configured`.
+- Not verified yet: the exact `send`/`confirm` argument syntax of zingo-cli. Check it before the first real run.
 
 ## Rules
 The tool uses only the real Zcash testnet, with no mocks and no fake chain data. Secrets go only in `.env` (see `.env.example`). Mainnet is refused in code.

@@ -4,9 +4,13 @@
 //!       Validate a CSV and print the capped pay run (offline; no chain I/O).
 //!   payroll check-env
 //!       Verify chain config; exits non-zero naming the first missing var.
+//!   payroll pay <file.csv> [same cap flags]
+//!       Plan, approve and send ONE shielded testnet tx to every line via ZCASH_WALLET_CLI.
+//!   payroll audit-export <file.csv> [txid]
+//!       Accountant CSV ledger + ZCASH_AUDITOR_UFVK (view-only; spending keys refused).
 
 use std::process::exit;
-use zec_payroll::{config, csv, money::Zat, CapPolicy, Engine};
+use zec_payroll::{audit, config, csv, money::Zat, wallet, zip321, CapPolicy, Engine};
 
 fn die(msg: impl std::fmt::Display) -> ! {
     eprintln!("ERROR: {msg}");
@@ -21,11 +25,42 @@ fn main() {
             Err(e) => die(e),
         },
         Some("plan") => plan(&args[1..]),
-        _ => die("usage: payroll plan <file.csv> [--label L] [--max-total ZEC] [--max-per ZEC] [--max-recipients N] | payroll check-env"),
+        Some("pay") => pay(&args[1..]),
+        Some("audit-export") => audit_export(&args[1..]),
+        _ => die("usage: payroll plan|pay <file.csv> [--label L] [--max-total ZEC] [--max-per ZEC] [--max-recipients N] | payroll audit-export <file.csv> [txid] | payroll check-env"),
     }
 }
 
+fn pay(args: &[String]) {
+    let cfg = config::load_from_env().unwrap_or_else(|e| die(e));
+    let bin = wallet::wallet_cli(|k| std::env::var(k).ok()).unwrap_or_else(|e| die(e));
+    let (mut engine, id) = build(args);
+    engine.approve(id).unwrap_or_else(|e| die(e));
+    let uri = zip321::payout_uri(engine.run(id).expect("planned")).unwrap_or_else(|e| die(e));
+    println!("ZIP-321: {uri}");
+    let txid = wallet::send_payout(&bin, &cfg, &uri).unwrap_or_else(|e| die(e));
+    engine.mark_broadcast(id, &txid).unwrap_or_else(|e| die(e));
+    println!("BROADCAST txid={txid}");
+}
+
+fn audit_export(args: &[String]) {
+    let ufvk = std::env::var("ZCASH_AUDITOR_UFVK").ok().filter(|v| !v.trim().is_empty());
+    let ufvk = ufvk.unwrap_or_else(|| die("ZCASH_AUDITOR_UFVK not configured"));
+    let txid = args.get(1).cloned();
+    let (mut engine, id) = build(&args[..1.min(args.len())]);
+    if let Some(t) = txid {
+        engine.approve(id).unwrap_or_else(|e| die(e));
+        engine.mark_broadcast(id, &t).unwrap_or_else(|e| die(e));
+    }
+    print!("{}", audit::export_csv(engine.runs(), &ufvk).unwrap_or_else(|e| die(e)));
+}
+
 fn plan(args: &[String]) {
+    let (engine, id) = build(args);
+    print_plan(&engine, id);
+}
+
+fn build(args: &[String]) -> (Engine, u64) {
     let Some(path) = args.first() else { die("plan: missing <file.csv>") };
     let mut caps = CapPolicy::default();
     let mut label = path.clone();
@@ -52,6 +87,10 @@ fn plan(args: &[String]) {
     });
     let mut engine = Engine::new(caps);
     let id = engine.plan_adhoc(&label, batch).unwrap_or_else(|e| die(e));
+    (engine, id)
+}
+
+fn print_plan(engine: &Engine, id: u64) {
     let run = engine.run(id).expect("just planned");
     println!("Run #{} [{}] status=Draft", run.id, run.period_key);
     for l in &run.lines {
