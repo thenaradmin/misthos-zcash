@@ -150,6 +150,9 @@ fn print_plan(engine: &Engine, id: u64) {
 }
 
 fn pay_two_step(args: &[String]) {
+    if !args.iter().skip(1).any(|a| a == "--label") {
+        die("pay --two-step needs an explicit --label <period> (the CSV path is not a stable period: `./x.csv` and `x.csv` would be different periods and fund/pay again). Nothing sent.");
+    }
     let env = |k: &str| std::env::var(k).ok().filter(|v| !v.trim().is_empty());
     // Timing config first: a bad value must stop the run before anything else happens.
     let delays = delay::range_from(env).unwrap_or_else(|e| die(e));
@@ -373,7 +376,11 @@ fn wait_mined(lwd: &str, txids: &[String], timeout_secs: u64) -> u32 {
 fn clear_fund_pending(lines: &[zec_payroll::PayLine], dir_of: &dyn Fn(&zec_payroll::PayLine) -> String, period: &str) {
     for l in lines {
         let p = format!("{}/payroll-ledger", dir_of(l));
-        let text = std::fs::read_to_string(&p).unwrap_or_default();
+        let text = match std::fs::read_to_string(&p) {
+            Ok(t) => t,
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => continue,
+            Err(e) => die(format!("{p}: {e}; ledger left as is (fund-pending), a rerun refuses until checked")),
+        };
         let kept: String = text
             .lines()
             .filter(|x| {
@@ -383,24 +390,37 @@ fn clear_fund_pending(lines: &[zec_payroll::PayLine], dir_of: &dyn Fn(&zec_payro
             })
             .map(|x| format!("{x}\n"))
             .collect();
-        std::fs::write(&p, kept).ok();
+        // Atomic replace: a crash mid-write must never truncate the ledger (that would erase
+        // `paid` history and make every period look Fresh, i.e. fund and pay again).
+        let tmp = format!("{p}.tmp");
+        let res = (|| -> std::io::Result<()> {
+            use std::io::Write;
+            let mut f = std::fs::File::create(&tmp)?;
+            f.write_all(kept.as_bytes())?;
+            f.sync_all()?;
+            std::fs::rename(&tmp, &p)
+        })();
+        if let Err(e) = res {
+            die(format!("{p}: could not clear fund-pending ({e}); a rerun refuses until checked"));
+        }
     }
 }
 
 fn export_proof(args: &[String]) {
-    let usage = "usage: payroll export-proof <file.csv> --employee <employee_id|name> [--label L]   (same --label as `pay --two-step`)";
+    let usage = "usage: payroll export-proof <file.csv> --employee <employee_id|name> --label L   (same --label as `pay --two-step`)";
     let Some((path, flags)) = args.split_first() else { die(usage) };
-    let (mut emp, mut label) = (None, path.clone());
+    let (mut emp, mut label) = (None, None::<String>);
     let mut it = flags.iter();
     while let Some(f) = it.next() {
         let v = it.next().unwrap_or_else(|| die(usage)).clone();
         match f.as_str() {
             "--employee" => emp = Some(v),
-            "--label" => label = v,
+            "--label" => label = Some(v),
             _ => die(usage),
         }
     }
     let emp = emp.unwrap_or_else(|| die(usage));
+    let label = label.unwrap_or_else(|| die("export-proof needs --label <period>, the same one given to `pay --two-step`"));
     let env = |k: &str| std::env::var(k).ok();
     let cfg = config::load_from_env().unwrap_or_else(|e| die(e));
     let seed = disclosure::EmployerSeed::from_env(env).unwrap_or_else(|e| die(e));

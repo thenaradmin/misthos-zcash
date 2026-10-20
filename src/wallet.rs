@@ -184,7 +184,7 @@ pub mod ledger {
     fn path(dir: &str) -> String { format!("{dir}/payroll-ledger") }
     /// Third field of every `<what> <period> ...` line, in file order.
     fn values(dir: &str, what: &str, period: &str) -> Vec<String> {
-        let text = std::fs::read_to_string(path(dir)).unwrap_or_default();
+        let text = read(dir);
         text.lines()
             .filter_map(|l| {
                 let mut it = l.split_whitespace();
@@ -212,8 +212,17 @@ pub mod ledger {
     pub fn funding_txids(dir: &str, period: &str) -> Vec<String> { txids(dir, "funded", period) }
     /// Txids of the payout tx(s) recorded for `period` (step 2).
     pub fn paid_txids(dir: &str, period: &str) -> Vec<String> { txids(dir, "paid", period) }
+    /// Ledger text; a missing file is an empty ledger. Any other read error (permissions,
+    /// I/O, bad UTF-8) panics: treating it as empty would make a paid child look Fresh.
+    fn read(dir: &str) -> String {
+        match std::fs::read_to_string(path(dir)) {
+            Ok(t) => t,
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => String::new(),
+            Err(e) => panic!("cannot read {}: {e}; refusing to guess the payout state", path(dir)),
+        }
+    }
     pub fn state(dir: &str, period: &str) -> Step {
-        let text = std::fs::read_to_string(path(dir)).unwrap_or_default();
+        let text = read(dir);
         let mut st = Step::Fresh;
         for l in text.lines() {
             let mut it = l.split_whitespace();
@@ -275,6 +284,16 @@ mod tests {
         // exit 0 but no txids => NoTxid, never a fake success
         assert!(matches!(send_payout("true", &cfg, &[l]), Err(WalletError::NoTxid(_))));
         assert!(matches!(send_payout("true", &cfg, &[]), Err(WalletError::Empty)));
+    }
+
+    #[test]
+    fn unreadable_ledger_is_not_treated_as_fresh() {
+        let d = std::env::temp_dir().join(format!("zpp-ledger-bad-{}", std::process::id()));
+        std::fs::create_dir_all(d.join("payroll-ledger")).unwrap(); // a dir: read fails, not NotFound
+        let ds = d.to_str().unwrap().to_string();
+        let r = std::panic::catch_unwind(|| ledger::state(&ds, "p1"));
+        assert!(r.is_err(), "an unreadable ledger must stop the run, not read as Fresh");
+        std::fs::remove_dir_all(&d).ok();
     }
 
     #[test]
