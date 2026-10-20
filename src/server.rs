@@ -138,7 +138,14 @@ fn payout(st: Shared) {
     let (batch, label) = {
         let mut s = st.lock().unwrap();
         s.runs_started += 1;
-        (s.roster.clone(), format!("dashboard-{}", s.runs_started))
+        // One live dashboard run per roster per UTC day: the engine's double-pay
+        // guard refuses a second click until the earlier run is marked Failed.
+        // (A per-click counter label made every click a fresh period = pay twice.)
+        let days = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| (d.as_secs() / 86_400) as i64)
+            .unwrap_or(0);
+        (s.roster.clone(), format!("dashboard@{}", crate::date::Date::from_days(days)))
     };
     push(&st, "info", format!("validating {} roster lines (testnet UAs, amounts, memos)", batch.len()));
 

@@ -34,7 +34,7 @@ The tool does not use NEAR Intents, does not use the `zakura-one-time-ivk` crate
 - **Amounts** are stored as integer zatoshis. Parsing is exact to 8 decimals. Negative values, exponents, zero and amounts above 21M ZEC are rejected.
 - **Schedules** can be weekly, biweekly (anchored to a date) or monthly. Monthly schedules on day 29–31 fall back to the last day of the month.
 - **Caps** are checked per run: a maximum total, a maximum per employee and a maximum number of recipients (default 50, a policy setting rather than a consensus rule). Caps are checked again at approval, so a cap tightened after planning still applies.
-- **Double-pay guard:** each period (`schedule@date` or `adhoc:<label>`) can have only one live run. A new run for the same period is allowed only after the earlier one is marked `Failed`.
+- **Double-pay guard:** each period (`schedule@date` or `adhoc:<label>`) can have only one live run. The dashboard uses `adhoc:dashboard@<UTC date>`, so a second **Run payroll** the same day is refused. A new run for the same period is allowed only after the earlier one is marked `Failed`.
 - **Status flow:** `Draft → Approved → Broadcast{txid} → Confirmed{height}`, with `Approved | Broadcast → Failed`. Any other transition is an error.
 - Memos are limited to 512 bytes (ZIP-321).
 
