@@ -1,11 +1,13 @@
-# Private Payroll Rail
+# Misthos (Private Payroll Rail)
 
-This is a batch payroll tool for the Zcash **testnet**. An employer uploads a CSV, and the tool pays the whole batch in one shielded transaction. Each employee gets a payslip, and an auditor gets a read-only view through a viewing key.
+**Misthos** (Greek μισθός, "wages") is the product name; the repo, crate and CLI stay `zec-private-payroll` / `payroll`.
+
+This is a batch payroll tool for the Zcash **testnet**. An employer loads a CSV roster. `payroll pay` pays the batch in one shielded `quicksend`; `payroll pay --two-step` pays through one child wallet per employee (one funding transaction, then one payout per employee), so the employer can export a signed proof of one employee's pay. An accountant gets a read-only ledger headed by the employer's viewing key.
 
 ## Status (honest)
 | Part | State |
 |---|---|
-| Core engine: employees, schedules, pay runs, per-run caps, run status machine | **Done**, unit tested (`cargo test`: 60 lib tests in total) |
+| Core engine: employees, schedules, pay runs, per-run caps, run status machine | **Done**, unit tested (`cargo test`: 61 lib tests in total) |
 | CSV import and validation (`payroll plan`) | **Done**, offline only |
 | Env config that fails loudly | **Done** |
 | Recipient address decoding (`zcash_address` 0.14.0-pre.2) | **Done**: full decode (checksum, F4Jumble, typecodes); testnet only; must have a Sapling or Orchard receiver (`utest1…` UA or `ztestsapling1…`). Mainnet and transparent-only are refused |
@@ -27,7 +29,7 @@ The tool does not use NEAR Intents, does not use the `zakura-one-time-ivk` crate
 - The address check decodes and checks network + receiver types, but does not check that the receiver bytes are valid curve points. zingo-cli does, and rejects such an address loudly at send time (`Invalid Orchard receiver in Unified Address`), before anything is broadcast.
 
 ## Do X, see Y
-1. Run `cargo test`. You should see `60 passed` (unit) and `5 passed` (`proof_real_tx`), plus 4 ignored live-testnet tests.
+1. Run `cargo test`. You should see `61 passed` (unit), `2 passed` (`cli_label`), `5 passed` (`proof_real_tx`) and `1 passed` (`sig_attacks`), plus 4 ignored live-testnet tests (counted 2026-10-21).
 2. Run `cargo run -q -- plan examples/bad.csv`. You should see one error per bad row, for example `line 2: address ... is a MAINNET address`, and the command exits with code 1. Nothing is half-imported.
 3. Write a CSV with real testnet Unified Addresses from your own testnet wallets:
    ```
@@ -62,14 +64,17 @@ The tool uses only the real Zcash testnet, with no mocks and no fake chain data.
 ## Employer dashboard
 
 Do: `set -a; . ./.env; set +a; cargo run -- serve` (default `--addr 127.0.0.1:8787`), then open http://127.0.0.1:8787.
-See, within a few seconds of opening the page:
-- a red banner listing every unset var by name (e.g. `ZCASH_LWD_URL not configured`), or none if `.env` is complete;
+
+The page opens on the **Misthos payslip**: the recorded 2026-10-20 testnet run (the txids, heights and amounts under "Live testnet run" below) drawn as a payslip register. With no key, names, memos and amounts are black redaction bars and only txids and block heights show. Alice's viewing key lifts the bars on her line once; the buttons switch between no key, Alice's key and Bob's key. This part is static, recorded data, not a live query. The live employer dashboard is the **desk** at http://127.0.0.1:8787/#desk.
+
+See on the desk, within a few seconds of opening it:
+- a red **Setup required** panel listing every unset var by name (e.g. `ZCASH_LWD_URL`), or a green "Chain config loaded" panel if `.env` is complete;
 - the roster from `PAYROLL_ROSTER_CSV` with the run total and each employee's id;
 - a **disabled** Run payroll button with the reason: a one-click payout straight from the treasury could not be proven per employee, so payouts run only from the CLI (`payroll pay <roster.csv> --two-step --label <period>`). `curl -X POST localhost:8787/api/run` returns `410 Gone` with the same pointer;
 - a **Pay & prove · CLI only** panel with the three commands (pay, export one employee's signed proof, verify). There is no proof download: `curl localhost:8787/api/proof?employee=1` returns `410 Gone` pointing to `payroll export-proof`;
-- **Open auditor view**, which shows the UFVK (view-only; spending keys are refused). The dashboard itself makes no runs; use `payroll audit-export` for a CLI run's ledger.
+- **Open the accountant's view**, which shows the UFVK (view-only; spending keys are refused). The dashboard itself makes no runs; use `payroll audit-export` for a CLI run's ledger.
 
-The UI is one dependency-free HTML file (`ui/index.html`), compiled into the binary.
+The UI is one dependency-free HTML file (`ui/index.html`), compiled into the binary. It loads Schibsted Grotesk and Sometype Mono from Google Fonts and falls back to system fonts offline.
 
 ## Per-employee proof of pay
 
