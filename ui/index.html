@@ -3,99 +3,644 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Shielded Payroll</title>
+<title>Misthos · shielded payroll</title>
+<meta name="description" content="Misthos pays a payroll from shielded Zcash testnet wallets. The public sees transactions; each employee's viewing key lifts the redaction on their own line only.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2314161a'/%3E%3Crect x='7' y='10' width='18' height='4' rx='1' fill='%23eef0f3'/%3E%3Crect x='7' y='18' width='11' height='4' rx='1' fill='%236b4dff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Sometype+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0b0d10;--panel:#12161b;--line:#1f262e;--text:#e6e9ee;--mute:#8a94a3;--gold:#f4b728;--ok:#3ecf8e;--err:#ff5d5d;--mono:ui-monospace,SFMono-Regular,Menlo,monospace}
+:root{
+  --paper:#eef0f3;--sheet:#fbfcfd;--ink:#14161a;--ink-2:#353a43;--mute:#5c6370;--rule:#d4d9e1;--rule-2:#bcc3ce;
+  --violet:#6b4dff;--violet-ink:#4b2fe6;--violet-tint:#e9e4ff;
+  --err:#b42318;--err-tint:#fdeceb;--ok:#17734a;--ok-tint:#e3f4ec;
+  --sans:"Schibsted Grotesk",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"Sometype Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --gut:clamp(16px,4vw,48px);--max:1200px;
+}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 24px;border-bottom:1px solid var(--line)}
-.brand{font-weight:650;letter-spacing:-.01em}.brand b{color:var(--gold)}
-.pill{font:12px var(--mono);padding:4px 10px;border:1px solid var(--line);border-radius:99px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:55vw}
-.banner{display:none;margin:16px 24px 0;padding:12px 16px;border:1px solid var(--err);background:#2a1214;color:#ffd0d0;border-radius:10px;font-weight:550}
-.banner code{font-family:var(--mono);color:#fff}
-main{display:grid;grid-template-columns:1.2fr 1fr;gap:16px;padding:16px 24px 32px;max-width:1280px;margin:0 auto}
-section{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0}
-h2{margin:0 0 12px;font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--mute);font-weight:600}
-.span2{grid-column:1/-1}
-table{width:100%;border-collapse:collapse;font-size:14px}
-td,th{padding:9px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-th{color:var(--mute);font-weight:500;font-size:12px}
-td.amt{text-align:right;font-family:var(--mono);white-space:nowrap}
-.addr{font-family:var(--mono);font-size:12px;color:var(--mute)}
-.total{display:flex;justify-content:space-between;align-items:baseline;margin-top:14px}
-.total strong{font:600 26px var(--mono);color:var(--gold)}
-button{appearance:none;border:0;border-radius:10px;padding:13px 20px;font:600 15px system-ui;cursor:pointer;background:var(--gold);color:#1a1300;width:100%;margin-top:14px;transition:transform .08s,opacity .2s}
-button:active{transform:scale(.98)}button:disabled{opacity:.45;cursor:not-allowed}
-button.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
-.cmd{font:12px/1.5 var(--mono);background:#0d1014;border:1px solid var(--line);border-radius:8px;padding:10px;margin:8px 0 0;white-space:pre-wrap;word-break:break-all;color:var(--text)}
-.empty{color:var(--mute);font-size:14px}
-.key{font:12px var(--mono);word-break:break-all;background:#0d1014;border:1px solid var(--line);border-radius:8px;padding:10px;color:var(--mute)}
-.note{color:var(--mute);font-size:13px;margin:8px 0 0}
-@media (max-width:820px){main{grid-template-columns:1fr;padding:16px}header{padding:14px 16px}.banner{margin:16px 16px 0}.hide-sm{display:none}}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.55 var(--sans);overflow-x:hidden}
+a{color:inherit;text-decoration-color:var(--rule-2);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--violet)}
+:focus-visible{outline:2px solid var(--violet);outline-offset:2px;border-radius:3px}
+code,.mono{font-family:var(--mono);font-size:.9em}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gut)}
+[hidden]{display:none!important}
+
+/* nav */
+.nav{border-bottom:1px solid var(--rule)}
+.nav .wrap{display:flex;align-items:center;gap:20px;height:64px}
+.mark{display:flex;align-items:center;gap:10px;font-weight:600;font-size:18px;letter-spacing:-.02em;text-decoration:none}
+.mark i{display:grid;gap:3px;width:22px}
+.mark i b{display:block;height:5px;border-radius:1px;background:var(--ink)}
+.mark i b+b{width:62%;background:var(--violet)}
+.nav ul{display:flex;gap:22px;list-style:none;margin:0 0 0 auto;padding:0;font-size:14px;color:var(--ink-2)}
+.nav ul a{text-decoration:none}.nav ul a:hover{color:var(--violet-ink)}
+.chip{display:inline-flex;align-items:center;gap:7px;font:500 12px/1 var(--mono);padding:7px 10px;border:1px solid var(--rule-2);border-radius:99px;color:var(--ink-2);white-space:nowrap;text-decoration:none;max-width:46vw;overflow:hidden;text-overflow:ellipsis}
+.chip::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--rule-2);flex:none}
+.chip.bad{border-color:#e7b4ae;color:var(--err);background:var(--err-tint)}.chip.bad::before{background:var(--err)}
+.chip.good{border-color:#a9d8c1;color:var(--ok);background:var(--ok-tint)}.chip.good::before{background:var(--ok)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:600 14px/1 var(--sans);padding:12px 16px;border-radius:8px;background:var(--ink);color:var(--paper);text-decoration:none;border:1px solid var(--ink);cursor:pointer;white-space:nowrap}
+.btn:hover{background:#000}
+.btn.line{background:transparent;color:var(--ink);border-color:var(--rule-2)}
+.btn.line:hover{border-color:var(--ink)}
+.btn[disabled]{background:transparent;color:var(--mute);border:1px dashed var(--rule-2);cursor:not-allowed}
+
+/* document rhythm: a margin column of section numbers, like a form */
+.sec{border-top:1px solid var(--rule)}
+.sec .wrap{display:grid;grid-template-columns:180px minmax(0,1fr);gap:32px;padding-top:64px;padding-bottom:72px}
+.tag{font:500 12px/1.4 var(--mono);color:var(--mute);letter-spacing:.02em;padding-top:10px}
+.tag b{display:block;color:var(--ink);font-weight:500}
+h1,h2,h3{font-weight:600;letter-spacing:-.035em;margin:0;line-height:1.02}
+h2{font-size:clamp(30px,4.2vw,48px);max-width:18ch}
+h3{font-size:19px;letter-spacing:-.015em;line-height:1.25}
+.lede{font-size:clamp(17px,1.6vw,19px);color:var(--ink-2);max-width:60ch;margin:18px 0 0}
+p{margin:0}
+.small{font-size:14px;color:var(--mute)}
+
+/* hero */
+.hero .wrap{padding-top:28px;padding-bottom:56px}
+.formline{display:flex;justify-content:space-between;gap:16px;font:500 12px/1.4 var(--mono);color:var(--mute);padding-bottom:14px;border-bottom:1px solid var(--ink)}
+.formline span:last-child{text-align:right}
+.hero-head{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:40px;align-items:end;padding:44px 0 40px}
+.hero h1{font-size:clamp(40px,6.6vw,86px);letter-spacing:-.045em;line-height:.96}
+.hero h1 .bar{display:inline-block;width:2.3em;height:.62em;background:var(--ink);border-radius:4px;vertical-align:.02em}
+.hero .lede{margin:0}
+.hero-cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+
+/* the payslip */
+.slip{background:var(--sheet);border:1px solid var(--rule-2);border-radius:6px;box-shadow:0 1px 0 var(--rule),0 30px 60px -40px rgba(20,22,26,.35)}
+.slip-top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;padding:22px 24px 18px;border-bottom:1px solid var(--rule)}
+.eyebrow{font:500 12px/1.3 var(--mono);color:var(--mute);text-transform:uppercase;letter-spacing:.08em}
+.slip-top h2{font-size:24px;letter-spacing:-.025em;margin-top:6px;max-width:none}
+.meta{display:grid;grid-template-columns:auto auto;gap:4px 18px;margin:0;font:400 12.5px/1.45 var(--mono);color:var(--ink-2)}
+.meta dt{color:var(--mute)}.meta dd{margin:0}
+.keys{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 24px;border-bottom:1px solid var(--rule);background:#f4f6f8}
+.keys > span{font:500 12px var(--mono);color:var(--mute)}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{font:500 13.5px/1 var(--sans);padding:9px 12px;border-radius:7px;border:1px solid var(--rule-2);background:var(--sheet);color:var(--ink-2);cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+.seg button:hover{border-color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.seg button.k[aria-pressed="true"]{background:var(--violet);border-color:var(--violet)}
+.seg svg{width:14px;height:14px;flex:none}
+table{width:100%;border-collapse:collapse}
+.slip table{font-size:15px;table-layout:fixed}
+.slip th{font:500 11.5px/1.3 var(--mono);color:var(--mute);text-align:left;padding:12px 12px 8px;letter-spacing:.03em;text-transform:uppercase}
+.slip th.grp{padding:12px 12px 0;text-transform:none;letter-spacing:0}
+.slip th.grp span{display:block;border-bottom:1px solid var(--rule-2);padding-bottom:6px}
+.slip th.grp.pub span{border-bottom-style:dashed}
+.slip td{padding:16px 12px;border-top:1px solid var(--rule);vertical-align:middle}
+.slip td:first-child,.slip th:first-child{padding-left:24px}.slip td:last-child,.slip th:last-child{padding-right:24px}
+.slip .no{font:500 13px var(--mono);color:var(--mute);width:56px}
+.slip tr.mine td:first-child{box-shadow:inset 3px 0 0 var(--violet)}
+.amt{font-family:var(--mono);font-weight:500;white-space:nowrap}
+.amt small{display:block;font-size:11.5px;color:var(--mute);font-weight:400}
+.tx{font:400 13px var(--mono);white-space:nowrap}
+.tx a{text-decoration:none;border-bottom:1px solid var(--rule-2)}.tx a:hover{border-color:var(--violet);color:var(--violet-ink)}
+.blk{font:400 13px var(--mono);color:var(--ink-2)}
+.slip tfoot td{background:#f4f6f8;font-size:14px}
+.slip tfoot .lbl{font-weight:600}
+.slip-foot{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:start;padding:16px 24px 20px;border-top:1px solid var(--rule)}
+.reading{font-size:14.5px;color:var(--ink-2);min-height:3em}
+.reading b{color:var(--ink)}
+.slip-foot .small{text-align:right;max-width:34ch;font-size:12.5px}
+
+/* a redaction bar: fixed width per column so the bar leaks no length */
+.x{position:relative;display:inline-block;min-width:var(--w,8ch);padding:1px 4px;margin:0 -4px;border-radius:3px;transition:background-color .4s ease var(--d,0ms)}
+.x::after{content:"";position:absolute;inset:1px 0;background:var(--ink);border-radius:2px;transform-origin:100% 50%;transition:transform .55s cubic-bezier(.22,.8,.24,1) var(--d,0ms)}
+.x.open{background:var(--violet-tint)}
+.x.open::after{transform:scaleX(0)}
+.x.emp::after{background:repeating-linear-gradient(135deg,var(--ink) 0 6px,#2a2e36 6px 12px)}
+.instant .x,.instant .x::after{transition:none}
+.lifted-note{display:none;font:500 11px/1 var(--mono);color:var(--violet-ink);margin-top:6px}
+tr.mine .lifted-note{display:block}
+
+/* who can lift which bar */
+.matrix{margin-top:36px;background:var(--sheet);border:1px solid var(--rule-2);border-radius:6px}
+.matrix th,.matrix td{padding:16px 18px;border-top:1px solid var(--rule);text-align:left;vertical-align:top}
+.matrix thead th{border-top:0;font:500 11.5px/1.3 var(--mono);color:var(--mute);text-transform:uppercase;letter-spacing:.03em}
+.matrix tbody th{font-weight:600;font-size:15px;width:38%}
+.matrix tbody th span{display:block;font-weight:400;font-size:13.5px;color:var(--mute);margin-top:3px}
+.mini{display:inline-block;width:58px;height:12px;background:var(--ink);border-radius:2px;vertical-align:middle}
+.reads{display:inline-block;font:500 12px/1 var(--mono);color:var(--violet-ink);background:var(--violet-tint);padding:5px 8px;border-radius:4px}
+.note-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;margin-top:28px}
+.note-grid p{font-size:15px;color:var(--ink-2)}
+
+/* blocks ruler */
+.ruler{margin-top:40px;padding:0 6px}
+.track{position:relative;height:64px;border-bottom:1px solid var(--ink);background:repeating-linear-gradient(90deg,var(--rule-2) 0 1px,transparent 1px calc(100%/19)) bottom/100% 14px no-repeat}
+.pin{position:absolute;bottom:-1px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center}
+.pin i{width:2px;height:44px;background:var(--ink)}
+.pin.k i{background:var(--violet)}
+.pin b{font:500 12px/1 var(--mono);background:var(--ink);color:#fff;padding:5px 7px;border-radius:4px;margin-bottom:4px}
+.pin.k b{background:var(--violet)}
+.ticks{position:relative;height:56px;font:400 12px/1.35 var(--mono);color:var(--mute)}
+.ticks span{position:absolute;top:10px;transform:translateX(-50%);text-align:center;white-space:nowrap}
+.ticks span:first-child{transform:none;text-align:left}.ticks span:last-child{transform:translateX(-100%);text-align:right}
+.ticks strong{display:block;color:var(--ink);font-weight:500}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin-top:28px;border-top:1px solid var(--rule-2)}
+.steps div{padding:20px 22px 0 0}
+.steps div+div{padding-left:22px;border-left:1px solid var(--rule)}
+.steps .eyebrow{color:var(--violet-ink)}
+.steps h3{margin:8px 0 6px}
+.steps p{font-size:15px;color:var(--ink-2)}
+.caveat{margin-top:28px;padding:14px 16px;border-left:3px solid var(--ink);background:var(--sheet);font-size:15px;color:var(--ink-2)}
+
+/* proof */
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:40px;margin-top:36px;align-items:start}
+.att{background:var(--ink);color:#e8eaee;border-radius:6px;padding:20px 22px;font:400 13px/1.7 var(--mono);overflow-wrap:anywhere}
+.att .c{color:#8d94a1}
+.att .v{color:#c9bfff}
+.att hr{border:0;border-top:1px dashed #3a3f48;margin:12px 0}
+.rej{list-style:none;padding:0;margin:16px 0 0;display:flex;flex-wrap:wrap;gap:8px}
+.rej li{font:500 12.5px/1 var(--mono);padding:8px 10px;border:1px solid var(--rule-2);border-radius:4px;background:var(--sheet)}
+.rej li::before{content:"✕ ";color:var(--err)}
+pre.cmd{margin:16px 0 0;font:400 13px/1.6 var(--mono);background:var(--sheet);border:1px solid var(--rule-2);border-radius:6px;padding:12px 14px;white-space:pre-wrap;overflow-wrap:anywhere}
+pre.cmd::before{content:"$ ";color:var(--mute)}
+.list{list-style:none;padding:0;margin:20px 0 0}
+.list li{padding:14px 0;border-top:1px solid var(--rule);font-size:15.5px;color:var(--ink-2);display:grid;grid-template-columns:28px minmax(0,1fr);gap:6px}
+.list li::before{content:"–";font-family:var(--mono);color:var(--mute)}
+.list li b{color:var(--ink);font-weight:600}
+
+/* deductions */
+.ded{margin-top:32px;background:var(--sheet);border:1px solid var(--rule-2);border-radius:6px}
+.ded li{display:grid;grid-template-columns:44px minmax(0,1fr);gap:10px;padding:16px 22px;border-top:1px solid var(--rule);font-size:15.5px;color:var(--ink-2)}
+.ded li:first-child{border-top:0}
+.ded li::before{content:"−";font:500 18px/1.3 var(--mono);color:var(--mute)}
+.ded b{color:var(--ink);font-weight:600}
+.ded ul{list-style:none;margin:0;padding:0}
+
+footer{border-top:1px solid var(--ink);padding:28px 0 40px;font-size:14px;color:var(--mute)}
+footer .wrap{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
+
+/* the desk (employer's live dashboard) */
+.desk .wrap{padding-top:32px;padding-bottom:64px}
+.desk-head{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap;padding-bottom:22px;border-bottom:1px solid var(--ink)}
+.desk-head h1{font-size:clamp(34px,5vw,56px);letter-spacing:-.04em}
+.desk-head p{margin-top:10px;color:var(--ink-2);max-width:56ch}
+.desk-head a.back{font:500 13px var(--mono);color:var(--mute);text-decoration:none;display:inline-block;margin-bottom:14px}
+.desk-head a.back:hover{color:var(--violet-ink)}
+.env{margin-top:24px;border:1px solid var(--rule-2);border-radius:6px;background:var(--sheet);padding:16px 18px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:start}
+.env.bad{border-color:#e7b4ae;background:var(--err-tint)}
+.env.good{border-color:#a9d8c1;background:var(--ok-tint)}
+.env h3{font-size:16px}
+.env.bad h3{color:var(--err)}.env.good h3{color:var(--ok)}
+.env p{font-size:14.5px;color:var(--ink-2);margin-top:4px}
+.env .vars{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.env .vars code{font:500 12px/1 var(--mono);background:#fff;border:1px solid #e7b4ae;color:var(--err);padding:6px 8px;border-radius:4px}
+.dot{width:10px;height:10px;border-radius:50%;margin-top:6px;background:var(--rule-2)}
+.env.bad .dot{background:var(--err)}.env.good .dot{background:var(--ok)}
+.desk-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:24px;margin-top:24px;align-items:start}
+.panel{background:var(--sheet);border:1px solid var(--rule-2);border-radius:6px;min-width:0}
+.panel-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:16px 20px;border-bottom:1px solid var(--rule)}
+.panel-h h2{font-size:18px;letter-spacing:-.02em;max-width:none;line-height:1.2}
+.panel-h span{font:400 12px var(--mono);color:var(--mute);overflow-wrap:anywhere;text-align:right}
+.panel-b{padding:16px 20px 20px}
+.roster th{font:500 11.5px/1.3 var(--mono);color:var(--mute);text-align:left;padding:12px 10px 8px;text-transform:uppercase;letter-spacing:.03em}
+.roster td{padding:14px 10px;border-top:1px solid var(--rule);vertical-align:top;font-size:15px}
+.roster td:first-child,.roster th:first-child{padding-left:20px}.roster td:last-child,.roster th:last-child{padding-right:20px}
+.roster .addr{font:400 12.5px var(--mono);color:var(--mute)}
+.roster .addr-c{white-space:nowrap}
+.roster .sub{display:block;font-size:13px;color:var(--mute);margin-top:2px}
+.roster .r{text-align:right}
+.roster .mini{width:44px;height:10px}
+.roster tfoot td{background:#f4f6f8;font-weight:600}
+.roster tfoot .amt{font-size:18px}
+.empty{padding:28px 20px;color:var(--mute);font-size:15px}
+.skel{display:block;height:14px;border-radius:3px;background:linear-gradient(90deg,#e6e9ee,#f3f5f8,#e6e9ee);background-size:200% 100%;animation:sk 1.4s linear infinite}
+@keyframes sk{to{background-position:-200% 0}}
+.run p{font-size:14.5px;color:var(--ink-2);margin-top:12px}
+.run .btn{width:100%}
+.cli ol{margin:0;padding:0;list-style:none;counter-reset:s}
+.cli li{counter-increment:s;padding:14px 0;border-top:1px solid var(--rule);font-size:14.5px;color:var(--ink-2)}
+.cli li:first-child{border-top:0;padding-top:0}
+.cli li::before{content:"Step " counter(s);display:block;font:500 11.5px var(--mono);color:var(--violet-ink);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.cli pre.cmd{margin-top:8px;font-size:12.5px}
+.audit{margin-top:24px}
+.ufvk{font:400 12px/1.5 var(--mono);overflow-wrap:anywhere;background:#f4f6f8;border:1px solid var(--rule);border-radius:4px;padding:10px 12px;color:var(--ink-2)}
+.audit table{margin-top:14px;font:400 12.5px var(--mono)}
+.audit th{text-align:left;color:var(--mute);font-weight:500;padding:8px 6px}
+.audit td{padding:8px 6px;border-top:1px solid var(--rule);overflow-wrap:anywhere}
+.alert{border:1px solid #e7b4ae;background:var(--err-tint);color:var(--err);border-radius:4px;padding:10px 12px;font-size:14.5px}
+.alert b{display:block}
+.alert code{color:var(--ink)}
+
+@media (max-width:980px){
+  .nav ul{display:none}
+  .nav .chip{margin-left:auto}
+  .sec .wrap{grid-template-columns:1fr;gap:12px;padding-top:44px;padding-bottom:52px}
+  .tag{padding-top:0}
+  .tag b{display:inline;margin-right:8px}
+  .hero-head{grid-template-columns:1fr;gap:20px;padding:32px 0 28px}
+  .two,.desk-grid{grid-template-columns:1fr}
+  .note-grid{grid-template-columns:1fr;gap:16px}
+}
+@media (max-width:480px){.nav .chip{display:none}.nav .btn{margin-left:auto}}
+@media (max-width:760px){
+  .nav .wrap{gap:10px}
+  .nav .btn{padding:10px 12px;font-size:13px}
+  .formline{flex-direction:column;gap:4px}.formline span:last-child{text-align:left}
+  .slip-top{grid-template-columns:1fr;padding:18px 16px 14px;gap:14px}
+  .keys{padding:12px 16px}
+  .slip thead,.slip colgroup{display:none}
+  .slip table,.slip tbody,.slip tfoot,.slip tr,.slip td{display:block}
+  .slip tr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px 14px;padding:16px;border-top:1px solid var(--rule)}
+  .slip td,.slip td:first-child,.slip td:last-child{padding:0;border:0}
+  .slip td.no{grid-column:1/-1;width:auto}
+  .slip td.wide{grid-column:1/-1}
+  .slip td[data-l]::before{content:attr(data-l);display:block;font:500 11px/1.3 var(--mono);color:var(--mute);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px}
+  .slip tr.mine{box-shadow:inset 3px 0 0 var(--violet)}
+  .slip tr.mine td:first-child{box-shadow:none}
+  .slip tfoot tr{background:#f4f6f8}
+  .slip tfoot td{background:none}
+  .slip-foot{grid-template-columns:1fr;padding:14px 16px 18px;gap:10px}
+  .slip-foot .small{text-align:left;max-width:none}
+  .matrix th,.matrix td{padding:12px 10px}
+  .matrix tbody th{width:auto;font-size:14px}
+  .mini{width:34px}
+  .steps{grid-template-columns:1fr}
+  .steps div,.steps div+div{padding:18px 0;border-left:0;border-top:1px solid var(--rule)}
+  .steps div:first-child{border-top:0}
+  .ded li{grid-template-columns:28px minmax(0,1fr);padding:14px 16px}
+  .roster thead{display:none}
+  .roster table,.roster tbody,.roster tfoot,.roster tr,.roster td{display:block}
+  .roster tr{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:6px 10px;padding:14px 16px;border-top:1px solid var(--rule)}
+  .roster td,.roster td:first-child,.roster td:last-child{padding:0;border:0;background:none}
+  .roster td.hide-sm{display:none}
+  .roster tfoot tr{background:#f4f6f8}
+  .panel-h{padding:14px 16px;flex-wrap:wrap}.panel-h span{text-align:left}
+  .panel-b{padding:14px 16px 16px}
+  .env{padding:14px}
+}
+@media (prefers-reduced-motion:reduce){
+  .x,.x::after{transition:none}
+  .skel{animation:none}
+}
 </style>
 </head>
-<body>
-<header>
-  <div class="brand"><b>ⓩ</b> Shielded Payroll</div>
-  <div class="pill" id="net">loading…</div>
-</header>
-<div class="banner" id="banner"></div>
-<main>
-  <section>
-    <h2>Roster</h2>
-    <table><thead><tr><th>Employee</th><th class="hide-sm">Address</th><th style="text-align:right">Pay</th></tr></thead>
-      <tbody id="roster"></tbody></table>
-    <div class="total"><span class="empty" id="rpath"></span><strong id="total">—</strong></div>
-    <button id="run" disabled aria-describedby="run-why">Run payroll · disabled here</button>
-    <p class="note" id="run-why">The dashboard does not pay. A one-click payout straight from the treasury could not be proven per employee, so payouts run only from the CLI with <code>pay --two-step</code>.</p>
+<body id="top">
+
+<nav class="nav" aria-label="Main">
+  <div class="wrap">
+    <a class="mark" href="#top" aria-label="Misthos, home"><i aria-hidden="true"><b></b><b></b></i>Misthos</a>
+    <ul>
+      <li><a href="#payslip">Payslip</a></li>
+      <li><a href="#keys">Keys</a></li>
+      <li><a href="#blocks">Blocks</a></li>
+      <li><a href="#proof">Proof</a></li>
+      <li><a href="#limits">Limits</a></li>
+    </ul>
+    <a class="chip" id="net" href="#desk">checking setup…</a>
+    <a class="btn" href="#desk">Open the desk</a>
+  </div>
+</nav>
+
+<!-- ============ LANDING ============ -->
+<main id="landing">
+  <header class="hero">
+    <div class="wrap">
+      <div class="formline"><span>μισθός (misthós) · Greek for wages</span><span>Zcash testnet · shielded payroll · read-only desk</span></div>
+      <div class="hero-head">
+        <h1>Everyone's pay on chain. Every line <span class="bar" role="img" aria-label="redacted"></span></h1>
+        <div>
+          <p class="lede">Misthos pays a payroll from shielded Zcash wallets. Anyone can see that transactions happened. Only an employee's viewing key lifts the bars on their own line: the amount and the memo. Nobody else's.</p>
+          <div class="hero-cta"><a class="btn" href="#payslip">Read the recorded run</a><a class="btn line" href="#desk">Open the desk</a></div>
+        </div>
+      </div>
+
+      <article class="slip" id="payslip" aria-labelledby="slip-title">
+        <div class="slip-top">
+          <div>
+            <div class="eyebrow">Payslip register · recorded testnet run</div>
+            <h2 id="slip-title">payroll-2026-10-demo</h2>
+          </div>
+          <dl class="meta">
+            <dt>Network</dt><dd>Zcash testnet</dd>
+            <dt>Pool</dt><dd>Ironwood, v6 txs (NU7)</dd>
+            <dt>Recorded</dt><dd>2026-10-20</dd>
+          </dl>
+        </div>
+        <div class="keys">
+          <span id="reading-as">Reading with</span>
+          <div class="seg" role="group" aria-labelledby="reading-as">
+            <button type="button" data-view="public" aria-pressed="true">No key · public chain</button>
+            <button type="button" class="k" data-view="alice" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="5" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 8h7M12.5 8v2.6M15 8v2" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>Alice's viewing key</button>
+            <button type="button" class="k" data-view="bob" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="5" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 8h7M12.5 8v2.6M15 8v2" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>Bob's viewing key</button>
+          </div>
+        </div>
+        <table id="sliptable">
+          <colgroup><col style="width:72px"><col style="width:17%"><col style="width:25%"><col style="width:17%"><col><col style="width:13%"></colgroup>
+          <thead>
+            <tr><th></th><th class="grp" colspan="3"><span>Encrypted on chain · needs that line's key</span></th><th class="grp pub" colspan="2"><span>Public on chain</span></th></tr>
+            <tr><th>No.</th><th>Employee</th><th>Memo</th><th>Amount</th><th>Payout tx</th><th>Block</th></tr>
+          </thead>
+          <tbody>
+            <tr data-row="alice">
+              <td class="no">01</td>
+              <td data-l="Employee"><span class="x" data-key="alice" style="--w:7ch;--d:0ms"><span class="v">Alice</span></span><span class="lifted-note">lifted by her key</span></td>
+              <td data-l="Memo"><span class="x" data-key="alice" style="--w:15ch;--d:90ms"><span class="v">Oct 2026 demo pay</span></span></td>
+              <td data-l="Amount"><span class="x" data-key="alice" style="--w:11ch;--d:180ms"><span class="v amt">0.02 ZEC<small>2,000,000 zat</small></span></span></td>
+              <td data-l="Payout tx" class="tx"><a href="https://testnet.zecblock.com/tx/f0e6ce4569f9a310b3ab936672331f947c5cadb102c3d5b50bcf2181910a46dc" title="f0e6ce4569f9a310b3ab936672331f947c5cadb102c3d5b50bcf2181910a46dc" aria-label="Alice payout transaction on the testnet explorer">f0e6ce45…0a46dc ↗</a></td>
+              <td data-l="Block" class="blk">4521181</td>
+            </tr>
+            <tr data-row="bob">
+              <td class="no">02</td>
+              <td data-l="Employee"><span class="x" data-key="bob" style="--w:7ch;--d:0ms"><span class="v">Bob</span></span><span class="lifted-note">lifted by his key</span></td>
+              <td data-l="Memo"><span class="x" data-key="bob" style="--w:15ch;--d:90ms"><span class="v">Oct 2026 demo pay</span></span></td>
+              <td data-l="Amount"><span class="x" data-key="bob" style="--w:11ch;--d:180ms"><span class="v amt">0.02 ZEC<small>2,000,000 zat</small></span></span></td>
+              <td data-l="Payout tx" class="tx"><a href="https://testnet.zecblock.com/tx/287318aa4e0f0c55ca8b6814cb56b51264ce9dbfd549fcc8ef3db57ea06fa65a" title="287318aa4e0f0c55ca8b6814cb56b51264ce9dbfd549fcc8ef3db57ea06fa65a" aria-label="Bob payout transaction on the testnet explorer">287318aa…6fa65a ↗</a></td>
+              <td data-l="Block" class="blk">4521189</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr data-row="funding">
+              <td class="no">F</td>
+              <td class="lbl">Funding hop</td>
+              <td data-l="Your funding note"><span class="x" data-key="funding" style="--w:17ch;--d:270ms"><span class="v" data-alice="0.0201 ZEC, her note" data-bob="0.0201 ZEC, his note">0.0201 ZEC, a note</span></span></td>
+              <td data-l="Run total"><span class="x emp" data-key="employer" style="--w:11ch"><span class="v amt">0.04 ZEC</span></span></td>
+              <td data-l="Funding tx" class="tx"><a href="https://testnet.zecblock.com/tx/e0a93ebccc788ba5d6570478b927ebf1758318c0012f2d95ddda6624ef2cca87" title="e0a93ebccc788ba5d6570478b927ebf1758318c0012f2d95ddda6624ef2cca87" aria-label="Funding transaction on the testnet explorer">e0a93ebc…2cca87 ↗</a></td>
+              <td data-l="Block" class="blk">4521170</td>
+            </tr>
+          </tfoot>
+        </table>
+        <div class="slip-foot">
+          <p class="reading" id="reading" aria-live="polite"><b>No key.</b> Three shielded transactions. Their txids and block heights are public; who was paid, how much and why are not.</p>
+          <p class="small">Names come from the employer's roster, not from the chain. The hatched bar is the run total: no employee key can read it.</p>
+        </div>
+      </article>
+    </div>
+  </header>
+
+  <section class="sec" id="keys" aria-labelledby="keys-h">
+    <div class="wrap">
+      <div class="tag"><b>§ 01</b>Keys</div>
+      <div>
+        <h2 id="keys-h">Each key lifts one line.</h2>
+        <p class="lede">Every employee is paid from their own child wallet. The employer's <code>export-proof</code> gives an employee that wallet's full viewing key, so the key reads that employee's line and nothing else in the run.</p>
+        <table class="matrix">
+          <thead><tr><th>Who is reading</th><th>Alice's line</th><th>Bob's line</th><th>Run total</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Anyone on the chain<span>txids and heights only</span></th><td><span class="mini" role="img" aria-label="redacted"></span></td><td><span class="mini" role="img" aria-label="redacted"></span></td><td><span class="mini" role="img" aria-label="redacted"></span></td></tr>
+            <tr><th scope="row">Alice's viewing key<span>her child wallet's UFVK</span></th><td><span class="reads">reads</span></td><td><span class="mini" role="img" aria-label="redacted"></span></td><td><span class="mini" role="img" aria-label="redacted"></span></td></tr>
+            <tr><th scope="row">Bob's viewing key<span>his child wallet's UFVK</span></th><td><span class="mini" role="img" aria-label="redacted"></span></td><td><span class="reads">reads</span></td><td><span class="mini" role="img" aria-label="redacted"></span></td></tr>
+            <tr><th scope="row">The employer<span>its seed rebuilds every child wallet</span></th><td><span class="reads">reads</span></td><td><span class="reads">reads</span></td><td><span class="reads">reads</span></td></tr>
+          </tbody>
+        </table>
+        <div class="note-grid">
+          <p><b>Checked on testnet.</b> Alice's key sees her funding note and her payout, and nothing in Bob's payout. The tests also check, with real keys and real note encryption, that a key sees only its own output in a shared funding transaction.</p>
+          <p><b>A key is forever.</b> An employee's key shows all of their payouts from this employer, past and future. There is no revocation. The treasury's own viewing key is never exported.</p>
+        </div>
+      </div>
+    </div>
   </section>
-  <section>
-    <h2>Pay &amp; prove · CLI only</h2>
-    <p class="note">1. Pay through per-employee child wallets, with random block delays between funding and payouts:</p>
-    <pre class="cmd">payroll pay <span class="rp">roster.csv</span> --two-step --label oct-2026</pre>
-    <p class="note">2. Export ONE employee's employer-signed proof (no download here: it had no login):</p>
-    <pre class="cmd">payroll export-proof <span class="rp">roster.csv</span> --employee &lt;id&gt; --label oct-2026</pre>
-    <p class="note">3. The employee's lender checks the signature and the chain:</p>
-    <pre class="cmd">payroll verify-proof proof.txt &lt;txid&gt; --lwd https://&lt;testnet lightwalletd&gt;:443</pre>
+
+  <section class="sec" id="blocks" aria-labelledby="blocks-h">
+    <div class="wrap">
+      <div class="tag"><b>§ 02</b>Blocks</div>
+      <div>
+        <h2 id="blocks-h">Two steps, 11 and 19 blocks apart.</h2>
+        <p class="lede">A child wallet per employee is what makes a one-line proof possible. It adds a hop, so payouts wait a random number of blocks after funding instead of landing right behind it.</p>
+        <div class="ruler" role="img" aria-label="Block ruler: funding at height 4521170, Alice's payout at 4521181 (11 blocks later), Bob's payout at 4521189 (19 blocks later).">
+          <div class="track">
+            <div class="pin" style="left:0"><b>F</b><i></i></div>
+            <div class="pin k" style="left:calc(100% * 11 / 19)"><b>01</b><i></i></div>
+            <div class="pin k" style="left:100%"><b>02</b><i></i></div>
+          </div>
+          <div class="ticks">
+            <span style="left:0"><strong>4521170</strong>funding</span>
+            <span style="left:calc(100% * 11 / 19)"><strong>4521181</strong>Alice, +11</span>
+            <span style="left:100%"><strong>4521189</strong>Bob, +19</span>
+          </div>
+        </div>
+        <div class="steps">
+          <div><span class="eyebrow">Step 1 · funding</span><h3>One transaction from the treasury</h3><p>It sends each employee's pay plus 0.0001 ZEC to that employee's child wallet. The extra covers the payout fee.</p></div>
+          <div><span class="eyebrow">Delay</span><h3>Random block waits</h3><p>Drawn from the OS RNG (default 2 to 6 blocks per step) and written to each child's ledger before any waiting, so a restart never redraws them.</p></div>
+          <div><span class="eyebrow">Step 2 · payout</span><h3>Each child wallet pays its employee</h3><p>One note in, one output, no change. A rerun with the same label skips anyone already funded or paid.</p></div>
+        </div>
+        <p class="caveat"><b>Honest limit:</b> on a quiet testnet, a funding transaction followed by N shielded payouts within a few blocks can still be linked by timing alone. The delays shrink that signal; they don't remove it.</p>
+      </div>
+    </div>
   </section>
-  <section class="span2">
-    <h2>Auditor · viewing key</h2>
-    <div id="audit"><p class="empty">Read-only ledger built from ZCASH_AUDITOR_UFVK. It can see payroll; it cannot spend.</p></div>
-    <button class="ghost" id="loadAudit">Open auditor view</button>
+
+  <section class="sec" id="proof" aria-labelledby="proof-h">
+    <div class="wrap">
+      <div class="tag"><b>§ 03</b>Proof</div>
+      <div>
+        <h2 id="proof-h">Show one line to a lender.</h2>
+        <p class="lede">The employer signs every payout with ed25519. The employer exports one employee's signed proof from the CLI and hands it over; the employee's lender checks it against the chain, not against a screenshot.</p>
+        <div class="two">
+          <div>
+            <ul class="list">
+              <li><span><b>The employer signs</b> the network, the payout txid, the child wallet, the amount in zatoshis and the pay period.</span></li>
+              <li><span><b>The employer exports</b> one proof for one employee: those fields, the signature and that employee's child wallet viewing key. Nobody else's.</span></li>
+              <li><span><b>The lender runs</b> <code>verify-proof --lwd</code>. It checks the signer against the published employer key, fetches the mined transaction from lightwalletd, decrypts it with the key and checks the signed amount.</span></li>
+            </ul>
+          </div>
+          <div>
+            <div class="att" aria-label="Signed message format, filled with Alice's recorded values">
+              <div class="c"># what the employer signs (Alice's run values)</div>
+              zec-payroll-employer-attestation v1<br>
+              network=<span class="v">testnet</span><br>
+              txid=<span class="v">f0e6ce4569f9a310b3ab936672331f947c5cadb102c3d5b50bcf2181910a46dc</span><br>
+              child_address=<span class="v">&lt;Alice's child wallet UA&gt;</span><br>
+              amount_zat=<span class="v">2000000</span><br>
+              pay_period=<span class="v">adhoc:payroll-2026-10-demo</span>
+              <hr>
+              <div class="c"># employer key, docs/employer-pubkey.txt (demo, testnet)</div>
+              97609f1a6af56e99319c9b1ee0f17fd005eec2e9f23d12bef62cd3fdee576266
+            </div>
+            <p class="small" style="margin-top:18px">On the recorded run, <code>verify-proof --lwd</code> accepted each employee's proof and rejected:</p>
+            <ul class="rej">
+              <li>the other employee's txid</li><li>the funding txid</li><li>a changed amount</li><li>a changed period</li><li>a changed signature</li><li>a different employer key</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="limits" aria-labelledby="limits-h">
+    <div class="wrap">
+      <div class="tag"><b>§ 04</b>Deductions</div>
+      <div>
+        <h2 id="limits-h">What the bars don't cover.</h2>
+        <div class="ded"><ul>
+          <li><span><b>Testnet only.</b> Mainnet addresses and a mainnet network setting are refused in code.</span></li>
+          <li><span><b>Timing.</b> Funding and payouts can still be linked by when they land, as above. Payouts also go in roster order.</span></li>
+          <li><span><b>Keys can't be revoked.</b> A shared employee key keeps reading that employee's payouts from this employer.</span></li>
+          <li><span><b>One extra transaction per employee per run</b>, for the funding hop that makes per-employee proofs possible.</span></li>
+          <li><span><b>Lightwalletd learns a little.</b> <code>pay --two-step</code> asks it directly for the funding txid, which tells its operator which IP cares about that txid.</span></li>
+          <li><span><b>Not built:</b> NEAR Intents, the <code>zakura-one-time-ivk</code> crate, ZIP 311 payment disclosures (still a draft). Transactions are built by zingo-cli.</span></li>
+          <li><span><b>The desk can't pay.</b> Payouts and proofs run only from the CLI; the dashboard's pay and proof endpoints answer <code>410 Gone</code>.</span></li>
+        </ul></div>
+      </div>
+    </div>
   </section>
 </main>
+
+<!-- ============ DESK (live employer dashboard) ============ -->
+<main id="desk" class="desk" hidden>
+  <div class="wrap">
+    <div class="desk-head">
+      <div>
+        <a class="back" href="#top">← The payslip</a>
+        <h1 id="desk-h" tabindex="-1">The desk</h1>
+        <p>The employer's copy of the roster, with nothing redacted. It stays on this machine and is read-only: it cannot pay and cannot hand out keys.</p>
+      </div>
+    </div>
+
+    <div class="env" id="env" role="status"><span class="dot"></span><div><h3>Checking setup…</h3><p>Reading <code>/api/state</code>.</p></div></div>
+
+    <div class="desk-grid">
+      <section class="panel roster" aria-labelledby="roster-h">
+        <div class="panel-h"><h2 id="roster-h">Roster</h2><span id="rpath"></span></div>
+        <div id="rosterbox"><div class="empty"><span class="skel" style="width:70%"></span><span class="skel" style="width:50%;margin-top:12px"></span><span class="skel" style="width:60%;margin-top:12px"></span></div></div>
+      </section>
+
+      <div style="display:grid;gap:24px;min-width:0">
+        <section class="panel run" aria-labelledby="run-h">
+          <div class="panel-h"><h2 id="run-h">Pay run</h2><span>CLI only</span></div>
+          <div class="panel-b">
+            <button class="btn" id="run" disabled aria-describedby="run-why">Run payroll · disabled here</button>
+            <p id="run-why">The desk does not pay. A one-click payout straight from the treasury could not be proven per employee, so payouts run only from the CLI with <code>pay --two-step</code>.</p>
+          </div>
+        </section>
+        <section class="panel cli" aria-labelledby="cli-h">
+          <div class="panel-h"><h2 id="cli-h">Pay and prove</h2><span>from a terminal</span></div>
+          <div class="panel-b"><ol>
+            <li>Pay through per-employee child wallets, with random block delays between funding and payouts.<pre class="cmd">payroll pay <span class="rp">roster.csv</span> --two-step --label oct-2026</pre></li>
+            <li>Export one employee's employer-signed proof. There is no download here: it had no login.<pre class="cmd">payroll export-proof <span class="rp">roster.csv</span> --employee &lt;id&gt; --label oct-2026</pre></li>
+            <li>The employee's lender checks the signature and the chain.<pre class="cmd">payroll verify-proof proof.txt &lt;txid&gt; --lwd https://&lt;testnet lightwalletd&gt;:443</pre></li>
+          </ol></div>
+        </section>
+      </div>
+    </div>
+
+    <section class="panel audit" aria-labelledby="audit-h">
+      <div class="panel-h"><h2 id="audit-h">Accountant's view</h2><span>employer viewing key · cannot spend</span></div>
+      <div class="panel-b">
+        <div id="audit"><p class="small">A read-only ledger headed by <code>ZCASH_AUDITOR_UFVK</code>, the employer's viewing key. It is for the company's accountant, never for employees.</p></div>
+        <button class="btn line" id="loadAudit" style="margin-top:14px">Open the accountant's view</button>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span><b style="color:var(--ink)">Misthos</b> · μισθός, wages · repo <code>zec-private-payroll</code></span>
+    <span>Zcash testnet only · MIT, © 2026 Nivesh Gajengi</span>
+  </div>
+</footer>
+
 <script>
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+/* ---- payslip: which key is reading ---- */
+const slip=document.querySelector('.slip');
+const READING={
+  public:'<b>No key.</b> Three shielded transactions. Their txids and block heights are public; who was paid, how much and why are not.',
+  alice:'<b>Alice\'s key.</b> It decrypts her payout and her own funding note. Bob\'s line and the run total stay redacted: her key cannot read them.',
+  bob:'<b>Bob\'s key.</b> It decrypts his payout and his own funding note. Alice\'s line and the run total stay redacted: his key cannot read them.'
+};
+const fundV=document.querySelector('[data-key="funding"] .v');
+function setView(view,animate){
+  slip.classList.toggle('instant',!animate);
+  document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===view)));
+  if(view!=='public') fundV.textContent=fundV.dataset[view];
+  slip.querySelectorAll('.x').forEach(x=>{
+    const k=x.dataset.key, open=k===view||(k==='funding'&&view!=='public');
+    x.classList.toggle('open',open);
+    x.querySelector('.v').setAttribute('aria-hidden',String(!open));
+    let sr=x.querySelector('.sr'); if(!sr){sr=document.createElement('span');sr.className='sr';sr.textContent='redacted';x.appendChild(sr);}
+    sr.hidden=open;
+  });
+  slip.querySelectorAll('tbody tr').forEach(tr=>tr.classList.toggle('mine',tr.dataset.row===view));
+  $('reading').innerHTML=READING[view];
+}
+setView('public',false);
+let lifted=false;
+function liftOnce(){ if(lifted) return; lifted=true; setView('alice',!reduce); }
+document.querySelectorAll('.seg button').forEach(b=>b.addEventListener('click',()=>{ lifted=true; setView(b.dataset.view,false); }));
+/* the page's one animation: Alice's key lifts the bars on her line, once */
+if(reduce) liftOnce();
+else if('IntersectionObserver' in window){
+  const io=new IntersectionObserver(es=>{ if(es.some(e=>e.isIntersecting)){ io.disconnect(); setTimeout(liftOnce,900); } },{threshold:.6});
+  io.observe($('sliptable'));
+} else liftOnce();
+
+/* ---- routing between the payslip and the desk ---- */
+function route(){
+  const desk=location.hash==='#desk';
+  $('landing').hidden=desk; $('desk').hidden=!desk;
+  if(desk){ window.scrollTo(0,0); $('desk-h').focus({preventScroll:true}); return; }
+  const t=location.hash.length>1&&document.getElementById(location.hash.slice(1));
+  if(t) t.scrollIntoView();
+}
+addEventListener('hashchange',route); route();
+
+/* ---- live state from the local server ---- */
+const base=p=>String(p||'').split('/').pop();
+function setChip(el,s){
+  if(!s){ el.className='chip bad'; el.textContent='desk API unreachable'; return; }
+  const bad=s.missing.length||s.config_error;
+  el.className='chip '+(bad?'bad':'good');
+  let host=''; try{ host=new URL(s.lwd).host; }catch(e){ host=s.lwd; }
+  el.textContent=bad?'Setup required':(s.network+' · '+host);
+}
 async function state(){
-  const s=await (await fetch('/api/state')).json();
-  $('net').textContent=(s.network||'network unset')+' · '+(s.lwd||'no lightwalletd');
-  const b=$('banner');
+  let s=null;
+  try{ const r=await fetch('/api/state'); if(!r.ok) throw new Error('HTTP '+r.status); s=await r.json(); }
+  catch(e){
+    setChip($('net'),null);
+    $('env').className='env bad';
+    $('env').innerHTML='<span class="dot"></span><div><h3>Can\'t reach the desk API</h3><p>'+esc(e.message)+'. Is <code>payroll serve</code> still running? Start it with <code>cargo run -- serve</code> and reload.</p></div>';
+    $('rosterbox').innerHTML='<p class="empty">No roster: the server did not answer.</p>';
+    return;
+  }
+  setChip($('net'),s);
+  const env=$('env');
   if(s.missing.length||s.config_error){
-    b.style.display='block';
-    b.innerHTML=(s.config_error?'<code>'+esc(s.config_error)+'</code>':'')+
-      (s.missing.length?(s.config_error?' · ':'')+'Not configured: '+s.missing.map(v=>'<code>'+esc(v)+'</code>').join(', '):'');
-  } else b.style.display='none';
-  $('roster').innerHTML=s.roster.map(e=>`<tr><td>${esc(e.name)}<div class="addr">${esc(e.memo)}</div></td><td class="addr hide-sm">${esc(e.address.slice(0,14))}…${esc(e.address.slice(-6))}</td><td class="amt">${esc(e.amount)}<div class="addr">id ${esc(e.id)}</div></td></tr>`).join('');
-  $('total').textContent=s.roster_total;
-  $('rpath').textContent=s.roster.length+' employees · '+s.roster_path;
+    env.className='env bad';
+    env.innerHTML='<span class="dot"></span><div><h3>Setup required</h3><p>'+(s.config_error?esc(s.config_error)+'. ':'')+'The CLI needs these before it can pay or export a ledger; the desk shows the roster either way.</p>'+
+      (s.missing.length?'<div class="vars">'+s.missing.map(v=>'<code>'+esc(v)+'</code>').join('')+'</div>':'')+'</div>';
+  } else {
+    env.className='env good';
+    env.innerHTML='<span class="dot"></span><div><h3>Chain config loaded</h3><p>Network <code>'+esc(s.network)+'</code> · lightwalletd <code>'+esc(s.lwd)+'</code></p></div>';
+  }
+  $('rpath').textContent=s.roster.length+(s.roster.length===1?' employee':' employees')+' · '+base(s.roster_path);
+  $('rpath').title=s.roster_path;
   document.querySelectorAll('.rp').forEach(x=>x.textContent=s.roster_path||'roster.csv');
-  return s;
+  if(!s.roster.length){
+    $('rosterbox').innerHTML='<p class="empty">The roster is empty. Add rows (<code>name,ua,amountZEC,memo</code>) to the CSV at <code>PAYROLL_ROSTER_CSV</code> and restart the desk.</p>';
+    return;
+  }
+  $('rosterbox').innerHTML='<table><thead><tr><th>No.</th><th>Employee</th><th class="hide-sm">Payout address</th><th class="r">Amount</th><th class="r hide-sm">On chain</th></tr></thead><tbody>'+
+    s.roster.map((e,i)=>`<tr><td class="addr">${String(i+1).padStart(2,'0')}<span class="sub">${esc(e.id)}</span></td><td>${esc(e.name)}${e.active?'':' <span class="sub">inactive</span>'}<span class="sub">${esc(e.memo)}</span></td><td class="addr addr-c hide-sm" title="${esc(e.address)}">${esc(e.address.slice(0,14))}…${esc(e.address.slice(-6))}</td><td class="r amt">${esc(e.amount)}</td><td class="r hide-sm"><span class="mini" role="img" aria-label="redacted"></span></td></tr>`).join('')+
+    '</tbody><tfoot><tr><td></td><td>Run total, active employees</td><td class="hide-sm"></td><td class="r amt">'+esc(s.roster_total)+'</td><td class="r hide-sm"><span class="mini" role="img" aria-label="redacted"></span></td></tr></tfoot></table>';
 }
 
 $('loadAudit').onclick=async()=>{
-  const r=await fetch('/api/audit'), box=$('audit');
-  if(!r.ok){ const j=await r.json(); box.innerHTML='<p class="banner" style="display:block;margin:0">'+esc(j.error)+'</p>'; return; }
-  const lines=(await r.text()).trim().split('\n');
-  const ufvk=(lines.find(l=>l.startsWith('# ufvk='))||'').slice(7);
-  const rows=lines.filter(l=>!l.startsWith('#')).map(l=>l.split(','));
-  const head=rows.shift()||[], want=['run_id','status','txid','name','amount_zec','memo'], ix=want.map(w=>head.indexOf(w));
-  box.innerHTML='<div class="key">UFVK (view-only) '+esc(ufvk)+'</div>'+
-    (rows.length?'<table style="margin-top:12px"><thead><tr>'+want.map(w=>'<th>'+w+'</th>').join('')+'</tr></thead><tbody>'+
-      rows.map(r=>'<tr>'+ix.map(i=>'<td class="addr">'+esc((r[i]||'').slice(0,24))+'</td>').join('')+'</tr>').join('')+'</tbody></table>'
-     :'<p class="note">No pay runs in this session (the dashboard does not pay). For a ledger of a CLI run: <code>payroll audit-export &lt;roster.csv&gt; &lt;txid&gt;</code>.</p>')+
-    '<p class="note">Import this UFVK into a view-only testnet wallet to check every output on-chain yourself.</p>';
+  const box=$('audit'), btn=$('loadAudit');
+  btn.disabled=true; btn.textContent='Opening…';
+  try{
+    const r=await fetch('/api/audit');
+    if(!r.ok){ let msg='HTTP '+r.status; try{ msg=(await r.json()).error||msg; }catch(e){} box.innerHTML='<div class="alert"><b>Setup required</b>'+esc(msg)+'</div>'; return; }
+    const lines=(await r.text()).trim().split('\n');
+    const ufvk=(lines.find(l=>l.startsWith('# ufvk='))||'').slice(7);
+    const rows=lines.filter(l=>!l.startsWith('#')).map(l=>l.split(','));
+    const head=rows.shift()||[], want=['run_id','status','txid','name','amount_zec','memo'], ix=want.map(w=>head.indexOf(w));
+    box.innerHTML='<p class="small" style="margin-bottom:8px">UFVK (view-only)</p><div class="ufvk">'+esc(ufvk)+'</div>'+
+      (rows.length?'<table><thead><tr>'+want.map(w=>'<th>'+w+'</th>').join('')+'</tr></thead><tbody>'+
+        rows.map(r=>'<tr>'+ix.map(i=>'<td>'+esc((r[i]||'').slice(0,24))+'</td>').join('')+'</tr>').join('')+'</tbody></table>'
+       :'<p class="small" style="margin-top:12px">No pay runs in this session (the desk does not pay). For a CLI run\'s ledger: <code>payroll audit-export &lt;roster.csv&gt; &lt;txid&gt;</code>.</p>')+
+      '<p class="small" style="margin-top:12px">Import this UFVK into a view-only testnet wallet to check every output on chain yourself.</p>';
+  }catch(e){ box.innerHTML='<div class="alert"><b>Can\'t reach the desk API</b>'+esc(e.message)+'</div>'; }
+  finally{ btn.disabled=false; btn.textContent='Open the accountant\'s view'; }
 };
 
 state();
