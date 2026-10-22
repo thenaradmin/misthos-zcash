@@ -360,7 +360,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
               <td class="no">F</td>
               <td class="lbl">Funding hop</td>
               <td data-l="Your funding note"><span class="x" data-key="funding" style="--w:17ch;--d:270ms"><span class="v" data-alice="0.0201 ZEC, her note" data-bob="0.0201 ZEC, his note">0.0201 ZEC, a note</span></span></td>
-              <td data-l="Run total"><span class="x emp" data-key="employer" style="--w:11ch"><span class="v amt">0.04 ZEC</span></span></td>
+              <td data-l="Run total (pay)"><span class="x emp" data-key="employer" style="--w:11ch"><span class="v amt">0.04 ZEC<small>pay · 0.0402 ZEC funded</small></span></span></td>
               <td data-l="Funding tx" class="tx"><a href="https://testnet.zecblock.com/tx/e0a93ebccc788ba5d6570478b927ebf1758318c0012f2d95ddda6624ef2cca87" title="e0a93ebccc788ba5d6570478b927ebf1758318c0012f2d95ddda6624ef2cca87" aria-label="Funding transaction on the testnet explorer">e0a93ebc…2cca87 ↗</a></td>
               <td data-l="Block" class="blk">4521170</td>
             </tr>
@@ -401,9 +401,9 @@ footer .wrap{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
     <div class="wrap">
       <div class="tag"><b>§ 02</b>Blocks</div>
       <div>
-        <h2 id="blocks-h">Two steps, 11 and 19 blocks apart.</h2>
+        <h2 id="blocks-h">Two steps, 11 and 19 blocks after funding.</h2>
         <p class="lede">A child wallet per employee is what makes a one-line proof possible. It adds a hop, so payouts wait a random number of blocks after funding instead of landing right behind it.</p>
-        <div class="ruler" role="img" aria-label="Block ruler: funding at height 4521170, Alice's payout at 4521181 (11 blocks later), Bob's payout at 4521189 (19 blocks later).">
+        <div class="ruler" role="img" aria-label="Block ruler: funding at height 4521170, Alice's payout at 4521181 (11 blocks later), Bob's payout at 4521189 (19 blocks later, 8 after Alice).">
           <div class="track">
             <div class="pin" style="left:0"><b>F</b><i></i></div>
             <div class="pin k" style="left:calc(100% * 11 / 19)"><b>01</b><i></i></div>
@@ -469,7 +469,9 @@ footer .wrap{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
         <h2 id="limits-h">What the bars don't cover.</h2>
         <div class="ded"><ul>
           <li><span><b>Testnet only.</b> Mainnet addresses and a mainnet network setting are refused in code.</span></li>
-          <li><span><b>Timing.</b> Funding and payouts can still be linked by when they land, as above. Payouts also go in roster order.</span></li>
+          <li><span><b>Timing.</b> Funding and payouts can still be linked by when they land, as above.</span></li>
+          <li><span><b>Headcount shows.</b> The funding transaction's public action count (3 for 2 employees) roughly reveals how many people were paid.</span></li>
+          <li><span><b>Every payout has the same shape.</b> 1 note in, 1 output, 2 actions and a 10,000 zat fee, sent in roster order. That fixed shape helps link payouts to their funding transaction.</span></li>
           <li><span><b>Keys can't be revoked.</b> A shared employee key keeps reading that employee's payouts from this employer.</span></li>
           <li><span><b>One extra transaction per employee per run</b>, for the funding hop that makes per-employee proofs possible.</span></li>
           <li><span><b>Lightwalletd learns a little.</b> <code>pay --two-step</code> asks it directly for the funding txid, which tells its operator which IP cares about that txid.</span></li>

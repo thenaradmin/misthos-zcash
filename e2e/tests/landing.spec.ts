@@ -93,6 +93,9 @@ test.describe('landing (the redacted payslip)', () => {
       await expect(total).not.toHaveClass(/open/);
     }
     await expect(page.locator('.slip-foot .small')).toContainText('The hatched bar is the run total');
+    // The funding tx moved 2 x 2,010,000 zat: the cell is the pay total and says what was funded.
+    await expect(total.locator('xpath=..')).toHaveAttribute('data-l', 'Run total (pay)');
+    expect(await total.locator('.v').textContent()).toBe('0.04 ZECpay · 0.0402 ZEC funded');
   });
 
   test('reduced motion: Alice\'s line is lifted at once, with no transition', async ({ page }, ti) => {
@@ -136,7 +139,7 @@ test.describe('landing (the redacted payslip)', () => {
   test('block ruler: pins sit at +11 and +19 blocks, labels do not overlap', async ({ page }, ti) => {
     await page.goto(BASE + '/#blocks');
     await expectInViewport(page, '#blocks-h');
-    await expect(page.locator('#blocks-h')).toHaveText(`Two steps, ${HEIGHT.alice - HEIGHT.funding} and ${HEIGHT.bob - HEIGHT.funding} blocks apart.`);
+    await expect(page.locator('#blocks-h')).toHaveText(`Two steps, ${HEIGHT.alice - HEIGHT.funding} and ${HEIGHT.bob - HEIGHT.funding} blocks after funding.`);
     const g = await page.evaluate(() => {
       const track = document.querySelector('.track')!.getBoundingClientRect();
       const pins = Array.from(document.querySelectorAll('.pin')).map((p) => {
@@ -154,7 +157,7 @@ test.describe('landing (the redacted payslip)', () => {
     expect(g.overlap, 'tick labels overlap').toBe(false);
     expect(g.inside, 'tick labels stay on the ruler').toBe(true);
     await expect(page.locator('.ticks strong')).toHaveText([String(HEIGHT.funding), String(HEIGHT.alice), String(HEIGHT.bob)]);
-    await expect(page.locator('.ruler')).toHaveAttribute('aria-label', /4521170.*4521181 \(11 blocks later\).*4521189 \(19 blocks later\)/);
+    await expect(page.locator('.ruler')).toHaveAttribute('aria-label', new RegExp(`4521170.*4521181 \\(11 blocks later\\).*4521189 \\(19 blocks later, ${HEIGHT.bob - HEIGHT.alice} after Alice\\)`));
     await page.locator('.ruler').screenshot({ path: ti.outputPath(`ruler-${ti.project.name}.png`) });
   });
 
@@ -175,8 +178,12 @@ test.describe('landing (the redacted payslip)', () => {
   test('deductions list the limits, including the 410 on the desk', async ({ page }) => {
     await page.goto(BASE + '/#limits');
     await expectInViewport(page, '#limits-h');
-    await expect(page.locator('.ded li')).toHaveCount(7);
+    await expect(page.locator('.ded li')).toHaveCount(9);
     await expect(page.locator('.ded li').last()).toContainText('410 Gone');
+    // Fingerprints next to the timing limit: headcount from the funding tx, and the fixed payout shape.
+    await expect(page.locator('.ded li').nth(1)).toContainText('Timing.');
+    await expect(page.locator('.ded li').nth(2)).toHaveText("Headcount shows. The funding transaction's public action count (3 for 2 employees) roughly reveals how many people were paid.");
+    await expect(page.locator('.ded li').nth(3)).toHaveText('Every payout has the same shape. 1 note in, 1 output, 2 actions and a 10,000 zat fee, sent in roster order. That fixed shape helps link payouts to their funding transaction.');
     await expect(page.locator('.ded')).toContainText('Testnet only.');
   });
 
