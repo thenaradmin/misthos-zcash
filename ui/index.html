@@ -179,6 +179,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
 .desk .wrap{padding-top:32px;padding-bottom:64px}
 .desk-head{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap;padding-bottom:22px;border-bottom:1px solid var(--ink)}
 .desk-head h1{font-size:clamp(34px,5vw,56px);letter-spacing:-.04em}
+#desk-h:focus{outline:none} /* focused by the router so screen readers start here; not a control */
 .desk-head p{margin-top:10px;color:var(--ink-2);max-width:56ch}
 .desk-head a.back{font:500 13px var(--mono);color:var(--mute);text-decoration:none;display:inline-block;margin-bottom:14px}
 .desk-head a.back:hover{color:var(--violet-ink)}
@@ -481,7 +482,9 @@ footer .wrap{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
 </main>
 
 <!-- ============ DESK (live employer dashboard) ============ -->
-<main id="desk" class="desk" hidden>
+<!-- No element has id="desk": the #desk route is handled in route(), so the browser never
+     scrolls to a #desk fragment on load (that hid the nav and dropped the heading's focus). -->
+<main id="desk-view" class="desk" hidden>
   <div class="wrap">
     <div class="desk-head">
       <div>
@@ -576,7 +579,7 @@ else if('IntersectionObserver' in window){
 /* ---- routing between the payslip and the desk ---- */
 function route(){
   const desk=location.hash==='#desk';
-  $('landing').hidden=desk; $('desk').hidden=!desk;
+  $('landing').hidden=desk; $('desk-view').hidden=!desk;
   if(desk){ window.scrollTo(0,0); $('desk-h').focus({preventScroll:true}); return; }
   const t=location.hash.length>1&&document.getElementById(location.hash.slice(1));
   if(t) t.scrollIntoView();
