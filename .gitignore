@@ -7,3 +7,13 @@ dist/
 .loom/
 .data/
 *.key
+
+# Pre-push audit: local secrets and state, videos, Playwright output
+.env.*
+!.env.example
+.demo/
+*.mp4
+*.mov
+*.webm
+test-results/
+playwright-report/
