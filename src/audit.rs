@@ -35,11 +35,15 @@ pub fn check_viewing_key(key: &str) -> Result<(), AuditError> {
     Ok(())
 }
 
+/// RFC 4180 field. A field a spreadsheet would run as a formula (leading `=`, `+`, `-`, `@`,
+/// tab or CR) gets a leading `'` and is quoted, so it opens as text.
 fn csv_field(s: &str) -> String {
-    if s.contains([',', '"', '\n']) {
+    let formula = s.starts_with(['=', '+', '-', '@', '\t', '\r']);
+    let s = if formula { format!("'{s}") } else { s.to_string() };
+    if formula || s.contains([',', '"', '\n', '\r']) {
         format!("\"{}\"", s.replace('"', "\"\""))
     } else {
-        s.to_string()
+        s
     }
 }
 
@@ -95,5 +99,17 @@ mod tests {
     fn quotes_fields_with_commas() {
         assert_eq!(csv_field("a,b"), "\"a,b\"");
         assert_eq!(csv_field("say \"hi\""), "\"say \"\"hi\"\"\"");
+    }
+
+    #[test]
+    fn neutralises_spreadsheet_formulas_and_quotes_cr() {
+        assert_eq!(csv_field("=1+1"), "\"'=1+1\"");
+        assert_eq!(csv_field("=HYPERLINK(\"http://x\",\"pay\")"), "\"'=HYPERLINK(\"\"http://x\"\",\"\"pay\"\")\"");
+        for f in ["+1", "-1", "@SUM(A1)", "\tx", "\rx"] {
+            let out = csv_field(f);
+            assert!(out.starts_with("\"'"), "{f:?} -> {out:?}");
+        }
+        assert_eq!(csv_field("a\rb"), "\"a\rb\"");
+        assert_eq!(csv_field("Alice"), "Alice");
     }
 }

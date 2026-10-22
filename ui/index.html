@@ -629,15 +629,35 @@ async function state(){
     '</tbody><tfoot><tr><td></td><td>Run total, active employees</td><td class="hide-sm"></td><td class="r amt">'+esc(s.roster_total)+'</td><td class="r hide-sm"><span class="mini" role="img" aria-label="redacted"></span></td></tr></tfoot></table>';
 }
 
+/* RFC 4180 rows: quoted fields may hold commas, "" escapes and line breaks (audit.rs quotes them). */
+function parseCsv(text){
+  const rows=[]; let row=[], f='', q=false, i=0;
+  while(i<text.length){
+    const c=text[i];
+    if(q){
+      if(c==='"'&&text[i+1]==='"'){ f+='"'; i+=2; continue; }
+      if(c==='"'){ q=false; i++; continue; }
+      f+=c; i++; continue;
+    }
+    if(c==='"'&&f===''){ q=true; i++; continue; }
+    if(c===','){ row.push(f); f=''; i++; continue; }
+    if(c==='\r'&&text[i+1]==='\n'){ i++; continue; }
+    if(c==='\n'){ row.push(f); rows.push(row); row=[]; f=''; i++; continue; }
+    f+=c; i++;
+  }
+  if(f!==''||row.length){ row.push(f); rows.push(row); }
+  return rows;
+}
+
 $('loadAudit').onclick=async()=>{
   const box=$('audit'), btn=$('loadAudit');
   btn.disabled=true; btn.textContent='Opening…';
   try{
     const r=await fetch('/api/audit');
     if(!r.ok){ let msg='HTTP '+r.status; try{ msg=(await r.json()).error||msg; }catch(e){} box.innerHTML='<div class="alert"><b>Setup required</b>'+esc(msg)+'</div>'; return; }
-    const lines=(await r.text()).trim().split('\n');
-    const ufvk=(lines.find(l=>l.startsWith('# ufvk='))||'').slice(7);
-    const rows=lines.filter(l=>!l.startsWith('#')).map(l=>l.split(','));
+    const all=parseCsv((await r.text()).trim());
+    const ufvk=((all.find(r=>r.length===1&&r[0].startsWith('# ufvk='))||[''])[0]).slice(7);
+    const rows=all.filter(r=>!(r.length===1&&r[0].startsWith('#')));
     const head=rows.shift()||[], want=['run_id','status','txid','name','amount_zec','memo'], ix=want.map(w=>head.indexOf(w));
     box.innerHTML='<p class="small" style="margin-bottom:8px">UFVK (view-only)</p><div class="ufvk">'+esc(ufvk)+'</div>'+
       (rows.length?'<table><thead><tr>'+want.map(w=>'<th>'+w+'</th>').join('')+'</tr></thead><tbody>'+

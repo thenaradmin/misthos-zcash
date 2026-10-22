@@ -65,6 +65,27 @@ test.describe('desk (read-only employer dashboard at /#desk)', () => {
     expect(await ok.text()).toContain(`# ufvk=${FIXTURE_UFVK}`);
   });
 
+  test('accountant view parses the audit CSV per RFC 4180 (quoted commas, "" escapes, line breaks)', async ({ page }) => {
+    await page.goto(URLS.configured + '/#desk');
+    const rows = await page.evaluate(() =>
+      // Exactly what audit.rs emits for a quoted name, a quoted memo with a line break and a neutralised formula.
+      (window as unknown as { parseCsv: (t: string) => string[][] }).parseCsv(
+        '# network=testnet\n# ufvk=uviewtest1x\nrun_id,name,memo\n1,"Doe, Jane","Oct ""bonus""\nline 2"\r\n2,"\'=HYPERLINK(""http://x"",""pay"")",\n',
+      ),
+    );
+    expect(rows).toEqual([
+      ['# network=testnet'],
+      ['# ufvk=uviewtest1x'],
+      ['run_id', 'name', 'memo'],
+      ['1', 'Doe, Jane', 'Oct "bonus"\nline 2'],
+      ['2', `'=HYPERLINK("http://x","pay")`, ''],
+    ]);
+    // The real server's CSV (no runs) still renders the UFVK and the empty state.
+    await page.getByRole('button', { name: "Open the accountant's view" }).click();
+    await expect(page.locator('#audit .ufvk')).toHaveText(FIXTURE_UFVK);
+    await expect(page.locator('#audit')).toContainText('No pay runs in this session (the desk does not pay)');
+  });
+
   test('Run payroll is disabled with its reason; the server answers POST /api/run with 410', async ({ page, request }) => {
     await page.goto(URLS.setup + '/#desk');
     const run = page.locator('#run');
