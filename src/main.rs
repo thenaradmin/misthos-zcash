@@ -443,7 +443,8 @@ fn export_proof(args: &[String]) {
     let signer = attest::EmployerKey::load(env).unwrap_or_else(|e| die(e));
     let text = std::fs::read_to_string(path).unwrap_or_else(|e| die(format!("{path}: {e}")));
     let roster = csv::parse_payroll_csv(&text).unwrap_or_else(|errs| die(errs.join("; ")));
-    let e = roster.iter().find(|e| e.id == emp || e.name == emp).unwrap_or_else(|| die(format!("no employee `{emp}` in {path}")));
+    let e = csv::select_employee(&roster, &emp).unwrap_or_else(|err| die(format!("{path}: {err}")));
+    eprintln!("exporting proof for {} {}…", e.name, &e.address[..16.min(e.address.len())]);
     // The signed txid comes from this child's durable ledger, never from the command line.
     let period = format!("adhoc:{label}");
     let dir = wallet::child_data_dir(&cfg, &e.address);

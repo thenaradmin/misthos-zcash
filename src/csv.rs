@@ -80,6 +80,10 @@ pub fn parse_payroll_csv(text: &str) -> Result<Vec<Employee>, Vec<String>> {
             errs.push(format!("line {ln}: {err}"));
             continue;
         }
+        if is_row_id(&e.name) {
+            errs.push(format!("line {ln}: name `{}` looks like a row id (`row<N>`); ids and names must not collide", e.name));
+            continue;
+        }
         if out.iter().any(|o| o.name.eq_ignore_ascii_case(&e.name)) {
             errs.push(format!("line {ln}: duplicate name `{}`", e.name));
             continue;
@@ -93,6 +97,26 @@ pub fn parse_payroll_csv(text: &str) -> Result<Vec<Employee>, Vec<String>> {
         Ok(out)
     } else {
         Err(errs)
+    }
+}
+
+/// `row<digits>`, the shape of a roster id (case-insensitive).
+fn is_row_id(s: &str) -> bool {
+    let s = s.trim().to_ascii_lowercase();
+    s.strip_prefix("row").is_some_and(|d| !d.is_empty() && d.bytes().all(|b| b.is_ascii_digit()))
+}
+
+/// The ONE employee `sel` names, by id (`row<N>`) or by name. More than one match is an
+/// error, never "the first one": a wrong match would hand out another employee's key.
+pub fn select_employee<'a>(roster: &'a [Employee], sel: &str) -> Result<&'a Employee, String> {
+    let hits: Vec<&Employee> = roster.iter().filter(|e| e.id == sel || e.name == sel).collect();
+    match hits.as_slice() {
+        [e] => Ok(e),
+        [] => Err(format!("no employee `{sel}` in the roster (use its id `row<N>` or its exact name)")),
+        many => Err(format!(
+            "`{sel}` matches more than one employee: {}; use the other form",
+            many.iter().map(|e| if e.id == sel { format!("{} (id)", e.name) } else { format!("{} (name)", e.name) }).collect::<Vec<_>>().join(" and ")
+        )),
     }
 }
 
@@ -137,5 +161,27 @@ mod tests {
         assert!(parse_payroll_csv("").is_err());
         assert!(parse_payroll_csv("name,address,amount\n").unwrap_err()[0].contains("header"));
         assert!(parse_payroll_csv("name,ua,amountZEC\n").unwrap_err()[0].contains("no rows"));
+    }
+
+    #[test]
+    fn names_shaped_like_row_ids_are_refused() {
+        let csv = format!("name,ua,amountZEC\nrow3,{},0.01\nBob,{},0.01\nROW12,{},0.01\n", ua('p'), ua('z'), ua('q'));
+        let errs = parse_payroll_csv(&csv).unwrap_err();
+        assert_eq!(errs.len(), 2, "{errs:?}");
+        assert!(errs[0].starts_with("line 2:") && errs[0].contains("looks like a row id"), "{errs:?}");
+        assert!(errs[1].starts_with("line 4:"), "{errs:?}");
+        assert!(!is_row_id("rowan") && !is_row_id("row") && is_row_id(" Row7 "));
+    }
+
+    #[test]
+    fn select_employee_refuses_an_id_name_collision() {
+        let mk = |id: &str, name: &str, c: char| Employee { id: id.into(), name: name.into(), address: ua(c), pay: Zat(1_000_000), memo: String::new(), active: true };
+        // Built by hand: the parser now refuses the name `row3`, but older rosters had it.
+        let roster = vec![mk("row2", "row3", 'p'), mk("row3", "Bob", 'z')];
+        let e = select_employee(&roster, "row3").unwrap_err();
+        assert!(e.contains("row3 (name)") && e.contains("Bob (id)") && e.contains("use the other form"), "{e}");
+        assert_eq!(select_employee(&roster, "Bob").unwrap().id, "row3");
+        assert_eq!(select_employee(&roster, "row2").unwrap().name, "row3");
+        assert!(select_employee(&roster, "Carol").unwrap_err().contains("no employee `Carol`"));
     }
 }
