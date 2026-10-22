@@ -176,6 +176,8 @@ fn pay_two_step(args: &[String]) {
     let wait_secs = secs("PAYROLL_STEP2_TIMEOUT_SECS", 1800);
     let confirm_secs = secs("PAYROLL_FUNDING_CONFIRM_TIMEOUT_SECS", 3600);
     let cfg = config::load_from_env().unwrap_or_else(|e| die(e));
+    // One run per wallet DB, held until exit, before any ledger is read or zingo-cli is called.
+    let _lock = wallet::ledger::lock_wallet_db(&cfg.wallet_db).unwrap_or_else(|e| die(e));
     let bin = wallet::wallet_cli(env).unwrap_or_else(|e| die(e));
     let seed = disclosure::EmployerSeed::from_env(env).unwrap_or_else(|e| die(e));
     let birthday: u32 = env("PAYROLL_CHILD_BIRTHDAY")

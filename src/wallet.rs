@@ -182,6 +182,23 @@ pub mod ledger {
     #[derive(Debug, PartialEq, Eq, Clone, Copy)]
     pub enum Step { Fresh, FundPending, Funded, PayPending, Paid }
     fn path(dir: &str) -> String { format!("{dir}/payroll-ledger") }
+
+    pub const LOCK_FILE: &str = "payroll.lock";
+
+    /// Exclusive lock on `<wallet_db>/payroll.lock` for one `pay --two-step` run. Hold the
+    /// returned file until the process exits: two runs reading the ledgers at once would both
+    /// see `Fresh` and both fund, and clearing `fund-pending` (read, filter, rename) could drop
+    /// the other run's appended lines.
+    pub fn lock_wallet_db(wallet_db: &str) -> Result<std::fs::File, String> {
+        std::fs::create_dir_all(wallet_db).map_err(|e| format!("ZCASH_WALLET_DB {wallet_db}: {e}; nothing sent"))?;
+        let p = format!("{wallet_db}/{LOCK_FILE}");
+        let f = std::fs::OpenOptions::new().create(true).truncate(false).write(true).open(&p).map_err(|e| format!("{p}: {e}; nothing sent"))?;
+        match f.try_lock() {
+            Ok(()) => Ok(f),
+            Err(std::fs::TryLockError::WouldBlock) => Err(format!("another pay --two-step is running for this wallet DB ({p} is locked); nothing sent")),
+            Err(std::fs::TryLockError::Error(e)) => Err(format!("{p}: cannot lock: {e}; nothing sent")),
+        }
+    }
     /// Third field of every `<what> <period> ...` line, in file order.
     fn values(dir: &str, what: &str, period: &str) -> Vec<String> {
         let text = read(dir);
@@ -284,6 +301,20 @@ mod tests {
         // exit 0 but no txids => NoTxid, never a fake success
         assert!(matches!(send_payout("true", &cfg, &[l]), Err(WalletError::NoTxid(_))));
         assert!(matches!(send_payout("true", &cfg, &[]), Err(WalletError::Empty)));
+    }
+
+    #[test]
+    fn second_two_step_run_cannot_take_the_wallet_db_lock() {
+        let d = std::env::temp_dir().join(format!("zpp-lock-{}", std::process::id()));
+        let ds = d.to_str().unwrap().to_string();
+        let held = ledger::lock_wallet_db(&ds).unwrap();
+        // Without the lock both runs would read Fresh for the same child and both fund it.
+        assert_eq!(ledger::state(&ds, "p1"), ledger::Step::Fresh);
+        let e = ledger::lock_wallet_db(&ds).unwrap_err();
+        assert!(e.contains("another pay --two-step is running") && e.contains("nothing sent"), "{e}");
+        drop(held);
+        assert!(ledger::lock_wallet_db(&ds).is_ok(), "lock is released when the first run exits");
+        std::fs::remove_dir_all(&d).ok();
     }
 
     #[test]
