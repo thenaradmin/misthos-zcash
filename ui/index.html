@@ -588,6 +588,8 @@ addEventListener('hashchange',route); route();
 
 /* ---- live state from the local server ---- */
 const base=p=>String(p||'').split('/').pop();
+/* POSIX shell quoting, so a roster path with spaces still pastes into a terminal as one argument */
+const shq=p=>/^[\w@%+=:,.\/-]+$/.test(p)?p:"'"+p.replace(/'/g,"'\\''")+"'";
 function setChip(el,s){
   if(!s){ el.className='chip bad'; el.textContent='desk API unreachable'; return; }
   const bad=s.missing.length||s.config_error;
@@ -617,7 +619,7 @@ async function state(){
   }
   $('rpath').textContent=s.roster.length+(s.roster.length===1?' employee':' employees')+' · '+base(s.roster_path);
   $('rpath').title=s.roster_path;
-  document.querySelectorAll('.rp').forEach(x=>x.textContent=s.roster_path||'roster.csv');
+  document.querySelectorAll('.rp').forEach(x=>x.textContent=shq(s.roster_path||'roster.csv'));
   if(!s.roster.length){
     $('rosterbox').innerHTML='<p class="empty">The roster is empty. Add rows (<code>name,ua,amountZEC,memo</code>) to the CSV at <code>PAYROLL_ROSTER_CSV</code> and restart the desk.</p>';
     return;
