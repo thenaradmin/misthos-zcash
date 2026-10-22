@@ -296,3 +296,81 @@ fn verify_proof_attacks() {
     // Child seed depends on the employer seed: another employer, same address -> different key.
     assert_ne!(d::encode_ufvk(&ka).unwrap(), d::encode_ufvk(&d::employee_ufvk(&EmployerSeed::from_bytes(&[0x5b; 32]), "emp-a").unwrap()).unwrap());
 }
+
+fn tmp_dir(tag: &str) -> std::path::PathBuf {
+    let d = std::env::temp_dir().join(format!("zpp-{tag}-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&d);
+    std::fs::create_dir_all(&d).unwrap();
+    d
+}
+
+/// Runs `payroll verify-proof` in OFFLINE mode (no network) from `cwd` with a clean env.
+fn verify_cli(cwd: &std::path::Path, proof: &str, raw: &[u8], txid: &str, extra: &[&str]) -> std::process::Output {
+    std::fs::write(cwd.join("proof.txt"), proof).unwrap();
+    std::fs::write(cwd.join("tx.hex"), hex::encode(raw)).unwrap();
+    let h = height().to_string();
+    let mut args = vec!["verify-proof", "proof.txt", "tx.hex", txid, h.as_str()];
+    args.extend_from_slice(extra);
+    std::process::Command::new(env!("CARGO_BIN_EXE_payroll"))
+        .args(&args)
+        .current_dir(cwd)
+        .env_clear()
+        .env("PATH", std::env::var("PATH").unwrap())
+        .output()
+        .unwrap()
+}
+
+/// employee_id is not signed: editing it keeps the proof valid, so verify-proof must not
+/// print it on its verified line, only labelled as unsigned.
+#[test]
+fn edited_employee_id_still_verifies_and_is_labelled_unsigned() {
+    let s = employer();
+    let ka = d::employee_ufvk(&s, "emp-a").unwrap();
+    let tx = build_tx(vec![Out::Sapling(Some(ka.clone()), *personal_ua(0xA1).sapling().unwrap(), PAY_A, "payroll emp-a")]);
+    let txid = d::verify_tx(&ka, &tx, None, height()).unwrap().txid;
+    let good = d::export(&s, &signer(), "emp-a", "emp-a", "Ada", &payout(&txid, PAY_A)).unwrap();
+    let edited = good.replace("employee_id=emp-a", "employee_id=CEO");
+    assert_ne!(good, edited);
+
+    // Library level: the signature still verifies with the edited id.
+    let p = d::parse_export(&edited).unwrap();
+    d::verify_signature(&p, &employer_pubkey()).unwrap();
+    assert_eq!(p.employee_id, "CEO");
+    assert_eq!(p.unsigned_employee_line(), "employee_id (NOT signed; as written in the file): CEO");
+
+    // CLI level: exit 0, and the id appears only on the unsigned line.
+    let dir = tmp_dir("unsigned-id");
+    let o = verify_cli(&dir, &edited, &tx, &txid, &["--employer-pubkey", &signer().public_hex()]);
+    let out = String::from_utf8_lossy(&o.stdout);
+    assert!(o.status.success(), "{out}\n{}", String::from_utf8_lossy(&o.stderr));
+    assert!(out.contains("employee_id (NOT signed; as written in the file): CEO"), "{out}");
+    for l in out.lines().filter(|l| l.starts_with("VERIFIED") || l.starts_with("DECRYPTED") || l.starts_with("EMPLOYER SIGNATURE OK")) {
+        assert!(!l.contains("CEO") && !l.contains("employee="), "unsigned id on a verified line: {l}");
+    }
+    assert!(out.contains("bearer document"), "{out}");
+    std::fs::remove_dir_all(&dir).ok();
+}
+
+/// Without --employer-pubkey, verify-proof trusts docs/employer-pubkey.txt in the CURRENT
+/// directory. Whoever controls that folder controls the root of trust, so it must say so.
+#[test]
+fn pubkey_file_from_current_dir_is_warned_with_its_absolute_path() {
+    let forger_seed = EmployerSeed::from_bytes(&[0xEE; 32]);
+    let forger_key = EmployerKey::from_bytes(&[0xEE; 32]);
+    let fk = d::employee_ufvk(&forger_seed, "emp-a").unwrap();
+    let tx = build_tx(vec![Out::Sapling(Some(fk.clone()), *personal_ua(0xA1).sapling().unwrap(), 99_000_000, "payroll emp-a")]);
+    let txid = d::verify_tx(&fk, &tx, None, height()).unwrap().txid;
+    let forged = d::export(&forger_seed, &forger_key, "emp-a", "emp-a", "Ada", &payout(&txid, 99_000_000)).unwrap();
+
+    let dir = tmp_dir("cwd-pubkey");
+    std::fs::create_dir_all(dir.join("docs")).unwrap();
+    std::fs::write(dir.join("docs/employer-pubkey.txt"), format!("# planted\n{}\n", forger_key.public_hex())).unwrap();
+    let o = verify_cli(&dir, &forged, &tx, &txid, &[]);
+    let (out, err) = (String::from_utf8_lossy(&o.stdout), String::from_utf8_lossy(&o.stderr));
+    // The forgery passes against the planted key: the only defence is the warning.
+    assert!(o.status.success(), "{out}\n{err}");
+    let abs = std::fs::canonicalize(dir.join("docs/employer-pubkey.txt")).unwrap().display().to_string();
+    assert!(err.contains(&format!("WARNING: employer key taken from {abs} in the current directory")), "{err}");
+    assert!(out.contains(&format!("expected key from {abs}")), "{out}");
+    std::fs::remove_dir_all(&dir).ok();
+}

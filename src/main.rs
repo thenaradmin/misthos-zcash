@@ -479,6 +479,9 @@ fn verify_proof(args: &[String]) {
     let text = std::fs::read_to_string(proof_path).unwrap_or_else(|e| die(format!("{proof_path}: {e}")));
     let signed = disclosure::parse_export(&text).unwrap_or_else(|e| die(e));
     let (expected, source) = attest::expected_pubkey(pubkey_flag.as_deref(), |k| std::env::var(k).ok()).unwrap_or_else(|e| die(e));
+    if let Some(w) = source.warning() {
+        eprintln!("{w}");
+    }
     disclosure::verify_signature(&signed, &expected).unwrap_or_else(|e| die(e));
     let att = &signed.attestation;
     if txid.trim().to_ascii_lowercase() != att.txid {
@@ -500,7 +503,6 @@ fn verify_proof(args: &[String]) {
             (bytes, h, None)
         }
     };
-    let emp = &signed.employee_id;
     let p = disclosure::verify_tx(&signed.ufvk, &bytes, Some(txid), height).unwrap_or_else(|e| die(e));
     disclosure::check_payout(att, &p).unwrap_or_else(|e| die(e));
     println!(
@@ -511,16 +513,18 @@ fn verify_proof(args: &[String]) {
         att.child_address
     );
     match &onchain {
-        Some(url) => println!("VERIFIED ON CHAIN via {url}: employee={emp} txid={} mined at height {}", p.txid, p.height),
+        Some(url) => println!("VERIFIED ON CHAIN via {url}: txid={} mined at height {}", p.txid, p.height),
         None => println!(
-            "DECRYPTED OFFLINE (NOT checked on chain: the tx bytes and height {} are whatever the supplier gave you; use --lwd): employee={emp} txid={}",
+            "DECRYPTED OFFLINE (NOT checked on chain: the tx bytes and height {} are whatever the supplier gave you; use --lwd): txid={}",
             p.height, p.txid
         ),
     }
+    println!("{}", signed.unsigned_employee_line());
     for o in &p.outputs {
         println!("  {:?} {:?} {} recipient={} memo={:?}", o.direction, o.pool, money::Zat(o.amount_zat), o.recipient_hex, o.memo);
     }
     println!("PAID OUT {}", money::Zat(p.paid_out_zat()));
     println!("NOTE: the signature binds this payout to whoever holds the employer key above; it is only as good as your source for that key.");
+    println!("NOTE: the proof is a bearer document: it shows this employer's child wallet paid the recipient above, not who is holding the file. Match the PayoutOut recipient bytes against the borrower's own address.");
 }
 

@@ -160,18 +160,53 @@ pub fn parse_pubkey(s: &str) -> Result<VerifyingKey, AttestError> {
     VerifyingKey::from_bytes(&b).map_err(|e| AttestError::BadPubkey(e.to_string()))
 }
 
+/// Where the verifier's expected employer key came from.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum KeySource {
+    Flag,
+    Env,
+    /// [`PUBKEY_FILE`] resolved against the current directory (absolute path).
+    CwdFile(std::path::PathBuf),
+}
+
+impl std::fmt::Display for KeySource {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            KeySource::Flag => f.write_str("--employer-pubkey"),
+            KeySource::Env => f.write_str("PAYROLL_EMPLOYER_PUBKEY"),
+            KeySource::CwdFile(p) => write!(f, "{} (file in the current directory)", p.display()),
+        }
+    }
+}
+
+impl KeySource {
+    /// A file found in whatever directory the verifier runs from is only as trustworthy as
+    /// that directory: anyone who hands you a folder can put their own key in it.
+    pub fn warning(&self) -> Option<String> {
+        match self {
+            KeySource::CwdFile(p) => Some(format!(
+                "WARNING: employer key taken from {} in the current directory; pass --employer-pubkey from a source you trust",
+                p.display()
+            )),
+            _ => None,
+        }
+    }
+}
+
 /// The key a verifier trusts: `--employer-pubkey`, else `PAYROLL_EMPLOYER_PUBKEY`, else the
-/// first non-comment line of [`PUBKEY_FILE`]. Returns the key and where it came from.
-pub fn expected_pubkey(flag: Option<&str>, get: impl Fn(&str) -> Option<String>) -> Result<(VerifyingKey, String), AttestError> {
+/// first non-comment line of [`PUBKEY_FILE`] in the current directory. Returns the key and
+/// where it came from.
+pub fn expected_pubkey(flag: Option<&str>, get: impl Fn(&str) -> Option<String>) -> Result<(VerifyingKey, KeySource), AttestError> {
     if let Some(v) = flag {
-        return Ok((parse_pubkey(v)?, "--employer-pubkey".into()));
+        return Ok((parse_pubkey(v)?, KeySource::Flag));
     }
     if let Some(v) = get("PAYROLL_EMPLOYER_PUBKEY").filter(|v| !v.trim().is_empty()) {
-        return Ok((parse_pubkey(&v)?, "PAYROLL_EMPLOYER_PUBKEY".into()));
+        return Ok((parse_pubkey(&v)?, KeySource::Env));
     }
     let text = std::fs::read_to_string(PUBKEY_FILE).map_err(|_| AttestError::NoExpectedPubkey)?;
     let line = text.lines().map(str::trim).find(|l| !l.is_empty() && !l.starts_with('#')).ok_or(AttestError::NoExpectedPubkey)?;
-    Ok((parse_pubkey(line)?, PUBKEY_FILE.into()))
+    let abs = std::fs::canonicalize(PUBKEY_FILE).unwrap_or_else(|_| std::path::PathBuf::from(PUBKEY_FILE));
+    Ok((parse_pubkey(line)?, KeySource::CwdFile(abs)))
 }
 
 /// Accept only if the proof names the expected signer AND the signature is valid over `a`.
@@ -289,9 +324,23 @@ mod tests {
         let k = employer().public_hex();
         let other = EmployerKey::from_bytes(&[9u8; 32]).public_hex();
         let (pk, src) = expected_pubkey(Some(&k), |_| Some(other.clone())).unwrap();
-        assert_eq!((hex::encode(pk.as_bytes()), src.as_str()), (k.clone(), "--employer-pubkey"));
+        assert_eq!((hex::encode(pk.as_bytes()), src.to_string().as_str()), (k.clone(), "--employer-pubkey"));
+        assert_eq!(src.warning(), None);
         let (pk, src) = expected_pubkey(None, |_| Some(other.clone())).unwrap();
-        assert_eq!((hex::encode(pk.as_bytes()), src.as_str()), (other, "PAYROLL_EMPLOYER_PUBKEY"));
+        assert_eq!((hex::encode(pk.as_bytes()), src.to_string().as_str()), (other, "PAYROLL_EMPLOYER_PUBKEY"));
+        assert_eq!(src.warning(), None);
         assert!(matches!(expected_pubkey(Some("nothex"), |_| None), Err(AttestError::BadPubkey(_))));
+    }
+
+    /// Tests run from the crate root, which has docs/employer-pubkey.txt: the fallback names
+    /// the file's absolute path and warns that it came from the current directory.
+    #[test]
+    fn cwd_pubkey_file_fallback_warns_with_absolute_path() {
+        let (_, src) = expected_pubkey(None, |_| None).unwrap();
+        let abs = std::fs::canonicalize(PUBKEY_FILE).unwrap();
+        assert_eq!(src, KeySource::CwdFile(abs.clone()));
+        let w = src.warning().expect("file fallback must warn");
+        assert!(w.contains(&abs.display().to_string()) && w.contains("current directory") && w.contains("--employer-pubkey"), "{w}");
+        assert!(abs.is_absolute());
     }
 }

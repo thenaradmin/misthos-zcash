@@ -284,6 +284,14 @@ pub fn parse_export(text: &str) -> Result<SignedProof, DisclosureError> {
     })
 }
 
+impl SignedProof {
+    /// `employee_id` is NOT covered by the employer signature (neither is `name`): anyone
+    /// holding the file can edit it and the proof still verifies. Print it only labelled so.
+    pub fn unsigned_employee_line(&self) -> String {
+        format!("employee_id (NOT signed; as written in the file): {}", self.employee_id)
+    }
+}
+
 /// Employer-binding check, before touching any tx: the network is testnet, the proof is
 /// signed by `expected` (the employer key the verifier already trusts), the signature covers
 /// these exact fields, and the UFVK in the file is the signed child wallet's key.
