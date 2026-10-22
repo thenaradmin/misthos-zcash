@@ -47,6 +47,24 @@ test.describe('desk (read-only employer dashboard at /#desk)', () => {
     await page.screenshot({ path: ti.outputPath(`desk-setup-required-${ti.project.name}.png`), fullPage: true });
   });
 
+  test('the desk says it exposes the employer key; a foreign Host (DNS rebinding) gets 403, loopback gets 200', async ({ page, request }) => {
+    await page.goto(URLS.configured + '/#desk');
+    await expect(page.locator('#desk-lede')).toHaveText(
+      "The employer's copy of the roster, with nothing redacted. It cannot pay. It shows the employer's viewing key to anyone who can reach this port, so keep it on 127.0.0.1.",
+    );
+    const port = new URL(URLS.configured).port;
+    for (const path of ['/api/audit', '/api/state', '/']) {
+      const r = await request.get(URLS.configured + path, { headers: { Host: `attacker.example:${port}` } });
+      expect(r.status(), path).toBe(403);
+      const body = await r.text();
+      expect(body).not.toContain(FIXTURE_UFVK);
+      expect(body).not.toContain('Alice');
+    }
+    const ok = await request.get(URLS.configured + '/api/audit');
+    expect(ok.status()).toBe(200);
+    expect(await ok.text()).toContain(`# ufvk=${FIXTURE_UFVK}`);
+  });
+
   test('Run payroll is disabled with its reason; the server answers POST /api/run with 410', async ({ page, request }) => {
     await page.goto(URLS.setup + '/#desk');
     const run = page.locator('#run');

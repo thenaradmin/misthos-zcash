@@ -19,8 +19,9 @@
 //!       paid txid from the ledger. Needs PAYROLL_EMPLOYER_SIGNING_KEY(_FILE).
 //!   payroll verify-proof <proof-file> <txid> --lwd <url> [--employer-pubkey HEX]
 //!       Third-party check: employer signature, then what this employee's key sees in that tx.
-//!   payroll serve [--addr 127.0.0.1:8787]
-//!       Employer dashboard for the roster in PAYROLL_ROSTER_CSV.
+//!   payroll serve [--addr 127.0.0.1:8787] [--allow-remote]
+//!       Employer dashboard for the roster in PAYROLL_ROSTER_CSV. Unauthenticated, so a
+//!       non-loopback --addr is refused unless --allow-remote is given.
 
 use std::process::exit;
 use zec_payroll::{attest, audit, chain, config, csv, delay, disclosure, money, money::Zat, wallet, zip321, CapPolicy, Engine};
@@ -44,7 +45,7 @@ fn main() {
         Some("verify-proof") => verify_proof(&args[1..]),
         Some("keygen-signing") => keygen_signing(&args[1..]),
         Some("serve") => serve(&args[1..]),
-        _ => die("usage: payroll plan|pay <file.csv> [--two-step] [--label L] [--max-total ZEC] [--max-per ZEC] [--max-recipients N] | payroll audit-export <file.csv> [txid] | payroll keygen-signing <key-file> | payroll export-proof <file.csv> --employee <employee_id|name> [--label L] | payroll verify-proof <proof> <txid> --lwd <url> [--employer-pubkey HEX] | payroll serve [--addr HOST:PORT] | payroll check-env"),
+        _ => die("usage: payroll plan|pay <file.csv> [--two-step] [--label L] [--max-total ZEC] [--max-per ZEC] [--max-recipients N] | payroll audit-export <file.csv> [txid] | payroll keygen-signing <key-file> | payroll export-proof <file.csv> --employee <employee_id|name> [--label L] | payroll verify-proof <proof> <txid> --lwd <url> [--employer-pubkey HEX] | payroll serve [--addr HOST:PORT] [--allow-remote] | payroll check-env"),
     }
 }
 
@@ -88,11 +89,24 @@ fn audit_export(args: &[String]) {
 }
 
 fn serve(args: &[String]) {
-    let addr = match args {
-        [] => "127.0.0.1:8787".to_string(),
-        [f, v] if f == "--addr" => v.clone(),
-        _ => die("usage: payroll serve [--addr HOST:PORT]"),
-    };
+    let usage = "usage: payroll serve [--addr HOST:PORT] [--allow-remote]";
+    let (mut addr, mut allow_remote) = ("127.0.0.1:8787".to_string(), false);
+    let mut it = args.iter();
+    while let Some(a) = it.next() {
+        match a.as_str() {
+            "--addr" => addr = it.next().unwrap_or_else(|| die(usage)).clone(),
+            "--allow-remote" => allow_remote = true,
+            _ => die(usage),
+        }
+    }
+    // The desk has no login: the roster and the employer's viewing key go to whoever reaches the port.
+    let loopback = zec_payroll::server::is_loopback_addr(&addr).unwrap_or_else(|e| die(e));
+    if !loopback && !allow_remote {
+        die(format!("refusing to serve on non-loopback {addr}: the desk is unauthenticated and shows the full roster and the employer's viewing key (ZCASH_AUDITOR_UFVK) to anyone who can reach it. Keep it on 127.0.0.1, or pass --allow-remote if you really mean it."));
+    }
+    if !loopback {
+        eprintln!("WARNING: serving on non-loopback {addr} (--allow-remote). The roster and the employer viewing key are UNAUTHENTICATED: anyone who can reach this port and sends Host: {} can read them.", addr.rsplit_once(':').map_or(addr.as_str(), |(h, _)| h));
+    }
     let path = std::env::var("PAYROLL_ROSTER_CSV").ok().filter(|v| !v.trim().is_empty());
     let path = path.unwrap_or_else(|| die("PAYROLL_ROSTER_CSV not configured"));
     let text = std::fs::read_to_string(&path).unwrap_or_else(|e| die(format!("PAYROLL_ROSTER_CSV {path}: {e}")));
