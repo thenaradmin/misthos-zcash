@@ -1,0 +1,15 @@
+{
+  "name": "misthos-e2e",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "fixtures": "python3 -I make-fixtures.py",
+    "stack": "./stack.sh",
+    "stack:stop": "./stack.sh stop",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
+  }
+}

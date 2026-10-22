@@ -76,6 +76,16 @@ See on the desk, within a few seconds of opening it:
 
 The UI is one dependency-free HTML file (`ui/index.html`), compiled into the binary. It loads Schibsted Grotesk and Sometype Mono from Google Fonts and falls back to system fonts offline.
 
+### Browser E2E (`e2e/`)
+Playwright in the installed Google Chrome, desktop 1280×800 and mobile 375×812, with video and traces. It runs against the real `payroll serve` binary (no mocks), started with a clean environment so no `.env`, seed or signing key is loaded:
+```
+CARGO_BUILD_JOBS=2 cargo build && cd e2e && npm install
+npm run stack          # 3 desk servers on 127.0.0.1:8791-8793; PIDs in e2e/.run/pids
+npm run test:e2e       # 22 tests x 2 viewports
+npm run stack:stop     # kills those PIDs
+```
+8791 has no chain vars (Setup required), 8792 has all five (the auditor UFVK is a synthetic, correctly encoded fixture key from `e2e/make-fixtures.py`, owned by no wallet), and 8793 sets `ZCASH_NETWORK=mainnet` (refused). The roster is two synthetic testnet UAs built the same way as the unit tests' `ua('p')`; nothing is ever sent on chain. Counted 2026-10-22: 44 passed (22 desktop, 22 mobile).
+
 ## Per-employee proof of pay
 
 An employee can prove their own pay (amount, recipient, memo, txid, block) to a lender or tax office without exposing the rest of payroll.
