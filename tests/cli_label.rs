@@ -51,3 +51,12 @@ fn concurrent_two_step_run_stops_on_the_wallet_db_lock() {
     assert!(!marker.exists(), "ZCASH_WALLET_CLI ran while another run held the lock");
     std::fs::remove_dir_all(&d).ok();
 }
+
+/// The signed amount comes from today's roster, not the ledger: the usage text must say so.
+#[test]
+fn export_proof_usage_says_the_amount_comes_from_the_roster() {
+    let o = payroll(&["export-proof", "examples/bad.csv", "--employee"]);
+    assert!(!o.status.success());
+    let e = String::from_utf8_lossy(&o.stderr);
+    assert!(e.contains("the roster must hold the amount paid in <label>") && e.contains("After a raise, use the roster of that period"), "{e}");
+}

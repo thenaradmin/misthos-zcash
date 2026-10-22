@@ -14,9 +14,10 @@
 //!       employee, staggered). Needs PAYROLL_EMPLOYER_SEED, PAYROLL_CHILD_BIRTHDAY.
 //!   payroll keygen-signing <key-file>
 //!       New ed25519 employer signing key (file 0600); prints only the public key.
-//!   payroll export-proof <file.csv> --employee <employee_id|name> [--label L]
+//!   payroll export-proof <file.csv> --employee <employee_id|name> --label L
 //!       That ONE employee's signed proof: child-wallet UFVK + employer signature over the
-//!       paid txid from the ledger. Needs PAYROLL_EMPLOYER_SIGNING_KEY(_FILE).
+//!       paid txid from the ledger. Needs PAYROLL_EMPLOYER_SIGNING_KEY(_FILE). The signed
+//!       amount comes from <file.csv>, so use the roster of that pay period.
 //!   payroll verify-proof <proof-file> <txid> --lwd <url> [--employer-pubkey HEX]
 //!       Third-party check: employer signature, then what this employee's key sees in that tx.
 //!   payroll serve [--addr 127.0.0.1:8787] [--allow-remote]
@@ -423,7 +424,7 @@ fn clear_fund_pending(lines: &[zec_payroll::PayLine], dir_of: &dyn Fn(&zec_payro
 }
 
 fn export_proof(args: &[String]) {
-    let usage = "usage: payroll export-proof <file.csv> --employee <employee_id|name> --label L   (same --label as `pay --two-step`)";
+    let usage = "usage: payroll export-proof <file.csv> --employee <employee_id|name> --label L   (same --label as `pay --two-step`)\n  The signed amount is taken from <file.csv>, not from the ledger: the roster must hold the amount paid in <label>. After a raise, use the roster of that period.";
     let Some((path, flags)) = args.split_first() else { die(usage) };
     let (mut emp, mut label) = (None, None::<String>);
     let mut it = flags.iter();
@@ -453,6 +454,7 @@ fn export_proof(args: &[String]) {
         [] => die(format!("{}: no `paid` payout for {period} in {dir}/payroll-ledger; run `pay --two-step --label {label}` first", e.id)),
         many => die(format!("{}: payout for {period} has {} txids {many:?}; refusing to sign an ambiguous payout", e.id, many.len())),
     };
+    eprintln!("signing amount {} from {path} (the roster must hold what was paid in {period}; a mismatch makes verify-proof reject a genuine payout)", e.pay);
     let payout = disclosure::Payout { txid: &txid, amount_zat: e.pay.0, pay_period: &period };
     print!("{}", disclosure::export(&seed, &signer, &e.address, &e.id, &e.name, &payout).unwrap_or_else(|e| die(e)));
 }
