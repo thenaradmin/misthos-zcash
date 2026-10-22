@@ -56,7 +56,8 @@ fn sends_one_shielded_tx_to_all_csv_recipients() {
 }
 
 /// `PAYROLL_PAYOUT_A` / `PAYROLL_PAYOUT_B` = `<txid>:<height>:<raw-tx-hex-file>` of real step-2
-/// payouts from employee A's and B's child wallets (keyed by PAYROLL_EMPLOYEE_A_UA / _B_UA). None exist yet (no funded wallet), so this panics naming the first missing variable.
+/// payouts from employee A's and B's child wallets (keyed by PAYROLL_EMPLOYEE_A_UA / _B_UA), e.g. the
+/// 2026-10-20 run in the README. Without them this panics naming the first missing variable.
 #[test]
 #[ignore = "needs two real funded testnet payouts; run with --ignored"]
 fn testnet_employee_a_key_cannot_see_employee_b_payout() {

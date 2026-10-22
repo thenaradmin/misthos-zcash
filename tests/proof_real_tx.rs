@@ -2,10 +2,12 @@
 //! real keys from a fixed employer seed (treasury = account 0; each employee's
 //! child wallet seed derived from it), real note encryption with each child
 //! wallet's OVK, real trial decryption by the lender-side verifier.
-//! Each tx is funded by a transparent input spending a made-up outpoint (so the
-//! chain would reject it) and Sapling uses sapling-crypto's mock zk-proof bytes;
-//! Ironwood bundles carry real Halo2 proofs. Every byte the verifier reads is genuine.
-//! No funded testnet payout exists yet: see tests/testnet.rs and scripts/testnet-two-employees.sh.
+//! Synthetic parts: each tx is funded by a transparent input spending a made-up outpoint
+//! (so the chain would reject it), and Sapling uses sapling-crypto's mock zk-proof bytes.
+//! Ironwood bundles carry real Halo2 proofs. The verifier does not check zk-proofs (it
+//! trial-decrypts and checks the employer signature), so it reads what it would read in a
+//! mined tx. The on-chain check is the 2026-10-20 live run (README "Proven on testnet");
+//! see tests/testnet.rs and scripts/testnet-two-employees.sh.
 
 use std::str::FromStr;
 
