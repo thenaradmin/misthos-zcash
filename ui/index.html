@@ -613,6 +613,7 @@ async function state(){
   }
   setChip($('net'),s);
   noAuditor=s.missing.includes('ZCASH_AUDITOR_UFVK');
+  if(noAuditor) $('desk-lede').textContent="The employer's copy of the roster, with nothing redacted. It cannot pay. No employer viewing key is set here, so it shows none; a desk that has one shows it to anyone who can reach its port, so keep that one on 127.0.0.1.";
   const env=$('env');
   if(s.missing.length||s.config_error){
     env.className='env bad';

@@ -22,6 +22,10 @@ test.describe('desk (read-only employer dashboard at /#desk)', () => {
     await expect(env.locator('.vars code')).toHaveText(VARS);
     await expect(page.locator('#net')).toHaveClass(/bad/);
     await expect(page.locator('#net')).toHaveText('Setup required');
+    // Without an auditor key this desk has no viewing key to show (a public demo desk says so).
+    await expect(page.locator('#desk-lede')).toHaveText(
+      "The employer's copy of the roster, with nothing redacted. It cannot pay. No employer viewing key is set here, so it shows none; a desk that has one shows it to anyone who can reach its port, so keep that one on 127.0.0.1.",
+    );
 
     const rows = rosterRows();
     await expect(page.locator('#rpath')).toHaveText(`${rows.length} employees · roster.csv`);
