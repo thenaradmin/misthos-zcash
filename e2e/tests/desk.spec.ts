@@ -106,18 +106,24 @@ test.describe('desk (read-only employer dashboard at /#desk)', () => {
     expect(await p.text()).not.toContain('uviewtest');
   });
 
-  test('Accountant\'s view without ZCASH_AUDITOR_UFVK shows Setup required; the button recovers', async ({ page, watch }, ti) => {
-    watch.allow(/\/api\/audit$/, 400); // the server's honest answer: ZCASH_AUDITOR_UFVK not configured
+  test('Accountant\'s view without ZCASH_AUDITOR_UFVK shows Setup required from /api/state, with no failing request', async ({ page, request }, ti) => {
+    // /api/state already lists ZCASH_AUDITOR_UFVK as missing, so the page does not ask /api/audit for an
+    // answer it knows is a 400 (Chrome logs every failed fetch as a console error). The server still says so.
+    const direct = await request.get(URLS.setup + '/api/audit');
+    expect(direct.status()).toBe(400);
+    expect((await direct.json()).error).toBe('ZCASH_AUDITOR_UFVK not configured');
     await page.goto(URLS.setup + '/#desk');
+    await expect(page.locator('#env h3')).toHaveText('Setup required');
     const btn = page.getByRole('button', { name: "Open the accountant's view" });
-    const resp = page.waitForResponse('**/api/audit');
+    let asked = false;
+    page.on('request', (r) => r.url().endsWith('/api/audit') && (asked = true));
     await btn.click();
-    expect((await resp).status()).toBe(400);
     const alert = page.locator('#audit .alert');
     await expect(alert).toContainText('Setup required');
     await expect(alert).toContainText('ZCASH_AUDITOR_UFVK not configured');
     await expect(btn).toBeEnabled();
     await expect(btn).toHaveText("Open the accountant's view");
+    expect(asked, 'GET /api/audit was sent although /api/state says the key is missing').toBe(false);
     await page.locator('.audit').screenshot({ path: ti.outputPath(`desk-audit-setup-${ti.project.name}.png`) });
   });
 

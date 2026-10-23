@@ -599,6 +599,8 @@ function setChip(el,s){
   let host=''; try{ host=new URL(s.lwd).host; }catch(e){ host=s.lwd; }
   el.textContent=bad?'Setup required':(s.network+' · '+host);
 }
+/* true once /api/state lists ZCASH_AUDITOR_UFVK as missing: /api/audit would only answer 400 */
+let noAuditor=false;
 async function state(){
   let s=null;
   try{ const r=await fetch('/api/state'); if(!r.ok) throw new Error('HTTP '+r.status); s=await r.json(); }
@@ -610,6 +612,7 @@ async function state(){
     return;
   }
   setChip($('net'),s);
+  noAuditor=s.missing.includes('ZCASH_AUDITOR_UFVK');
   const env=$('env');
   if(s.missing.length||s.config_error){
     env.className='env bad';
@@ -653,6 +656,7 @@ function parseCsv(text){
 
 $('loadAudit').onclick=async()=>{
   const box=$('audit'), btn=$('loadAudit');
+  if(noAuditor){ box.innerHTML='<div class="alert"><b>Setup required</b>ZCASH_AUDITOR_UFVK not configured</div>'; return; }
   btn.disabled=true; btn.textContent='Opening…';
   try{
     const r=await fetch('/api/audit');
