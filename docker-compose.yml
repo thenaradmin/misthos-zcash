@@ -10,6 +10,8 @@ services:
     image: hk-misthos:latest
     restart: unless-stopped
     mem_limit: 64m
+    memswap_limit: 128m
+    cpus: 0.25
     command: ["payroll", "serve", "--addr", "misthos-api.201-18-198-162.sslip.io:8787", "--allow-remote"]
     extra_hosts:
       - "misthos-api.201-18-198-162.sslip.io:0.0.0.0"
