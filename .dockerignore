@@ -1,0 +1,16 @@
+# Keep secrets, local state and build output out of the image build context.
+.env
+.env.*
+*.key
+.data/
+.demo/
+.loom/
+.git/
+.cargo-home/
+target/
+node_modules/
+e2e/
+!e2e/fixtures/roster.csv
+*.mp4
+*.mov
+*.webm

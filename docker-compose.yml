@@ -1,0 +1,39 @@
+# Lightweight hackathon-demo deployment on the VPS behind Coolify's Traefik (network "coolify").
+# Redeploy: cd /opt/hk/misthos && docker compose up -d --build
+# Read-only desk: the synthetic roster, no chain variables, so the desk shows "Setup required"
+# (ZCASH_NETWORK, ZCASH_LWD_URL, ZCASH_WALLET_DB, ZCASH_WALLET_CLI, ZCASH_AUDITOR_UFVK). It cannot pay.
+# `serve` answers only to loopback names or its bound host, so it binds the public hostname, which
+# extra_hosts maps to 0.0.0.0 inside the container; Traefik's Host header then passes the check.
+services:
+  desk:
+    build: .
+    image: hk-misthos:latest
+    restart: unless-stopped
+    mem_limit: 64m
+    command: ["payroll", "serve", "--addr", "misthos-api.201-18-198-162.sslip.io:8787", "--allow-remote"]
+    extra_hosts:
+      - "misthos-api.201-18-198-162.sslip.io:0.0.0.0"
+    networks: [coolify]
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8787/api/state"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.hk-misthos-api.rule=Host(`misthos-api.201-18-198-162.sslip.io`)
+      - traefik.http.routers.hk-misthos-api.entrypoints=https
+      - traefik.http.routers.hk-misthos-api.tls=true
+      - traefik.http.routers.hk-misthos-api.tls.certresolver=letsencrypt
+      - traefik.http.routers.hk-misthos-api.middlewares=hk-misthos-cors
+      - traefik.http.services.hk-misthos-api.loadbalancer.server.port=8787
+      # CORS for the future Vercel frontend (the desk has no CORS setting of its own).
+      - traefik.http.middlewares.hk-misthos-cors.headers.accesscontrolalloworiginlistregex=^https://[a-z0-9-]+\.vercel\.app$$
+      - traefik.http.middlewares.hk-misthos-cors.headers.accesscontrolallowmethods=GET,OPTIONS
+      - traefik.http.middlewares.hk-misthos-cors.headers.accesscontrolallowheaders=Content-Type
+      - traefik.http.middlewares.hk-misthos-cors.headers.accesscontrolmaxage=600
+      - traefik.http.middlewares.hk-misthos-cors.headers.addvaryheader=true
+networks:
+  coolify:
+    external: true
