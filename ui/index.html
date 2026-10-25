@@ -171,6 +171,10 @@ pre.cmd::before{content:"$ ";color:var(--mute)}
 .ded li::before{content:"−";font:500 18px/1.3 var(--mono);color:var(--mute)}
 .ded b{color:var(--ink);font-weight:600}
 .ded ul{list-style:none;margin:0;padding:0}
+.ded-more{border-top:1px solid var(--rule)}
+.ded-more summary{cursor:pointer;padding:14px 22px;font:500 13px var(--mono);color:var(--violet-ink);letter-spacing:.02em}
+.ded-more summary:hover{color:var(--ink)}
+.ded-more ul li:first-child{border-top:1px solid var(--rule)}
 
 footer{border-top:1px solid var(--ink);padding:28px 0 40px;font-size:14px;color:var(--mute)}
 footer .wrap{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
@@ -306,7 +310,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
       <div class="hero-head">
         <h1>Everyone's pay on chain. Every line <span class="bar" role="img" aria-label="redacted"></span></h1>
         <div>
-          <p class="lede">Misthos pays a payroll from shielded Zcash wallets. Anyone can see that transactions happened. Only an employee's viewing key lifts the bars on their own line: the amount and the memo. Nobody else's.</p>
+          <p class="lede">Pay a whole payroll in shielded Zcash. Each employee's viewing key lifts only their own line.</p>
           <div class="hero-cta"><a class="btn" href="#payslip">Read the recorded run</a><a class="btn line" href="#desk">Open the desk</a></div>
         </div>
       </div>
@@ -379,7 +383,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
       <div class="tag"><b>§ 01</b>Keys</div>
       <div>
         <h2 id="keys-h">Each key lifts one line.</h2>
-        <p class="lede">Every employee is paid from their own child wallet. The employer's <code>export-proof</code> gives an employee that wallet's full viewing key, so the key reads that employee's line and nothing else in the run.</p>
+        <p class="lede">Each employee is paid from their own child wallet, so its viewing key reads that line and nothing else.</p>
         <table class="matrix">
           <thead><tr><th>Who is reading</th><th>Alice's line</th><th>Bob's line</th><th>Run total</th></tr></thead>
           <tbody>
@@ -390,8 +394,8 @@ footer .wrap{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
           </tbody>
         </table>
         <div class="note-grid">
-          <p><b>Checked on testnet.</b> Alice's key sees her funding note and her payout, and nothing in Bob's payout. The tests also check, with real keys and real note encryption, that a key sees only its own output in a shared funding transaction.</p>
-          <p><b>A key is forever.</b> An employee's key shows all of their payouts from this employer, past and future. There is no revocation. The treasury's own viewing key is never exported.</p>
+          <p><b>Checked on testnet.</b> Alice's key sees her funding note and her payout, and nothing of Bob's.</p>
+          <p><b>A key is forever.</b> It shows all of that employee's payouts, past and future; there is no revocation.</p>
         </div>
       </div>
     </div>
@@ -402,7 +406,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
       <div class="tag"><b>§ 02</b>Blocks</div>
       <div>
         <h2 id="blocks-h">Two steps, 11 and 19 blocks after funding.</h2>
-        <p class="lede">A child wallet per employee is what makes a one-line proof possible. It adds a hop, so payouts wait a random number of blocks after funding instead of landing right behind it.</p>
+        <p class="lede">The child wallet adds a hop, so each payout waits a random number of blocks after funding.</p>
         <div class="ruler" role="img" aria-label="Block ruler: funding at height 4521170, Alice's payout at 4521181 (11 blocks later), Bob's payout at 4521189 (19 blocks later, 8 after Alice).">
           <div class="track">
             <div class="pin" style="left:0"><b>F</b><i></i></div>
@@ -416,11 +420,11 @@ footer .wrap{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
           </div>
         </div>
         <div class="steps">
-          <div><span class="eyebrow">Step 1 · funding</span><h3>One transaction from the treasury</h3><p>It sends each employee's pay plus 0.0001 ZEC to that employee's child wallet. The extra covers the payout fee.</p></div>
-          <div><span class="eyebrow">Delay</span><h3>Random block waits</h3><p>Drawn from the OS RNG (default 2 to 6 blocks per step) and written to each child's ledger before any waiting, so a restart never redraws them.</p></div>
-          <div><span class="eyebrow">Step 2 · payout</span><h3>Each child wallet pays its employee</h3><p>One note in, one output, no change. A rerun with the same label skips anyone already funded or paid.</p></div>
+          <div><span class="eyebrow">Step 1 · funding</span><h3>One transaction from the treasury</h3><p>Each employee's pay, plus 0.0001 ZEC for the payout fee, to their child wallet.</p></div>
+          <div><span class="eyebrow">Delay</span><h3>Random block waits</h3><p>2 to 6 blocks per step by default, recorded before waiting so a restart never redraws them.</p></div>
+          <div><span class="eyebrow">Step 2 · payout</span><h3>Each child wallet pays its employee</h3><p>One note in, one output, no change. A rerun skips anyone already paid.</p></div>
         </div>
-        <p class="caveat"><b>Honest limit:</b> on a quiet testnet, a funding transaction followed by N shielded payouts within a few blocks can still be linked by timing alone. The delays shrink that signal; they don't remove it.</p>
+        <p class="caveat"><b>Honest limit:</b> on a quiet testnet, timing alone can still link funding to payouts. The delays shrink that signal; they don't remove it.</p>
       </div>
     </div>
   </section>
@@ -430,13 +434,13 @@ footer .wrap{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
       <div class="tag"><b>§ 03</b>Proof</div>
       <div>
         <h2 id="proof-h">Show one line to a lender.</h2>
-        <p class="lede">The employer signs every payout with ed25519. The employer exports one employee's signed proof from the CLI and hands it over; the employee's lender checks it against the chain, not against a screenshot.</p>
+        <p class="lede">The employer signs every payout. A lender checks one employee's proof against the chain, not a screenshot.</p>
         <div class="two">
           <div>
             <ul class="list">
               <li><span><b>The employer signs</b> the network, the payout txid, the child wallet, the amount in zatoshis and the pay period.</span></li>
-              <li><span><b>The employer exports</b> one proof for one employee: those fields, the signature and that employee's child wallet viewing key. Nobody else's.</span></li>
-              <li><span><b>The lender runs</b> <code>verify-proof --lwd</code>. It checks the signer against the published employer key, fetches the mined transaction from lightwalletd, decrypts it with the key and checks the signed amount.</span></li>
+              <li><span><b>The employer exports</b> one proof for one employee: those fields, the signature and that child wallet's viewing key.</span></li>
+              <li><span><b>The lender runs</b> <code>verify-proof --lwd</code>: signer, mined transaction and signed amount, checked against the chain.</span></li>
             </ul>
           </div>
           <div>
@@ -470,14 +474,16 @@ footer .wrap{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
         <div class="ded"><ul>
           <li><span><b>Testnet only.</b> Mainnet addresses and a mainnet network setting are refused in code.</span></li>
           <li><span><b>Timing.</b> Funding and payouts can still be linked by when they land, as above.</span></li>
+          <li><span><b>The desk can't pay.</b> Payouts and proofs run only from the CLI; the dashboard's pay and proof endpoints answer <code>410 Gone</code>.</span></li>
+        </ul>
+        <details class="ded-more"><summary>Six more deductions</summary><ul>
           <li><span><b>Headcount shows.</b> The funding transaction's public action count (3 for 2 employees) roughly reveals how many people were paid.</span></li>
           <li><span><b>Every payout has the same shape.</b> 1 note in, 1 output, 2 actions and a 10,000 zat fee, sent in roster order. That fixed shape helps link payouts to their funding transaction.</span></li>
           <li><span><b>Keys can't be revoked.</b> A shared employee key keeps reading that employee's payouts from this employer.</span></li>
           <li><span><b>One extra transaction per employee per run</b>, for the funding hop that makes per-employee proofs possible.</span></li>
           <li><span><b>Lightwalletd learns a little.</b> <code>pay --two-step</code> asks it directly for the funding txid, which tells its operator which IP cares about that txid.</span></li>
           <li><span><b>Not built:</b> NEAR Intents, the <code>zakura-one-time-ivk</code> crate, ZIP 311 payment disclosures (still a draft). Transactions are built by zingo-cli.</span></li>
-          <li><span><b>The desk can't pay.</b> Payouts and proofs run only from the CLI; the dashboard's pay and proof endpoints answer <code>410 Gone</code>.</span></li>
-        </ul></div>
+        </ul></details></div>
       </div>
     </div>
   </section>

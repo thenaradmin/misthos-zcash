@@ -179,12 +179,20 @@ test.describe('landing (the redacted payslip)', () => {
     await page.goto(BASE + '/#limits');
     await expectInViewport(page, '#limits-h');
     await expect(page.locator('.ded li')).toHaveCount(9);
-    await expect(page.locator('.ded li').last()).toContainText('410 Gone');
+    // Oct 25 copy cut: three limits show; the other six sit behind "Six more deductions".
+    await expect(page.locator('.ded > ul > li')).toHaveCount(3);
+    await expect(page.locator('.ded > ul > li').nth(0)).toContainText('Testnet only.');
+    await expect(page.locator('.ded > ul > li').nth(1)).toContainText('Timing.');
+    await expect(page.locator('.ded > ul > li').nth(2)).toContainText('410 Gone');
+    const more = page.locator('.ded details');
+    await expect(more.locator('li').first()).toBeHidden();
+    await more.locator('summary').click();
+    await expect(more.locator('summary')).toHaveText('Six more deductions');
+    await expect(more.locator('li')).toHaveCount(6);
     // Fingerprints next to the timing limit: headcount from the funding tx, and the fixed payout shape.
-    await expect(page.locator('.ded li').nth(1)).toContainText('Timing.');
-    await expect(page.locator('.ded li').nth(2)).toHaveText("Headcount shows. The funding transaction's public action count (3 for 2 employees) roughly reveals how many people were paid.");
-    await expect(page.locator('.ded li').nth(3)).toHaveText('Every payout has the same shape. 1 note in, 1 output, 2 actions and a 10,000 zat fee, sent in roster order. That fixed shape helps link payouts to their funding transaction.');
-    await expect(page.locator('.ded')).toContainText('Testnet only.');
+    await expect(more.locator('li').nth(0)).toHaveText("Headcount shows. The funding transaction's public action count (3 for 2 employees) roughly reveals how many people were paid.");
+    await expect(more.locator('li').nth(1)).toHaveText('Every payout has the same shape. 1 note in, 1 output, 2 actions and a 10,000 zat fee, sent in roster order. That fixed shape helps link payouts to their funding transaction.');
+    await expect(more.locator('li').nth(1)).toBeVisible();
   });
 
   test('nav links, hero buttons and the brand land on their targets', async ({ page }, ti) => {
