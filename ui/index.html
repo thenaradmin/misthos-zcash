@@ -503,7 +503,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
       <div>
         <a class="back" href="#top">← The payslip</a>
         <h1 id="desk-h" tabindex="-1">The desk</h1>
-        <p id="desk-lede">The employer's copy of the roster, with nothing redacted. It cannot pay. It shows the employer's viewing key to anyone who can reach this port, so keep it on 127.0.0.1.</p>
+        <p id="desk-lede">The employer's copy of the roster, with nothing redacted. It cannot pay. It has no login. It shows the employer's viewing key to anyone who can reach this port, so keep it on 127.0.0.1.</p>
       </div>
     </div>
 
@@ -624,7 +624,7 @@ async function state(){
   }
   setChip($('net'),s);
   noAuditor=s.missing.includes('ZCASH_AUDITOR_UFVK');
-  if(noAuditor) $('desk-lede').textContent="The employer's copy of the roster, with nothing redacted. It cannot pay. No employer viewing key is set here, so it shows none; a desk that has one shows it to anyone who can reach its port, so keep that one on 127.0.0.1.";
+  if(noAuditor) $('desk-lede').textContent="The employer's copy of the roster, with nothing redacted. It cannot pay. It has no login. No employer viewing key is set here, so it shows none; a desk that has one shows it to anyone who can reach its port, so keep that one on 127.0.0.1.";
   const env=$('env');
   if(s.missing.length||s.config_error){
     env.className='env bad';

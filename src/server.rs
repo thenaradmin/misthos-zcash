@@ -77,8 +77,16 @@ pub fn missing_vars(get: impl Fn(&str) -> Option<String>) -> Vec<&'static str> {
 
 fn state_json(s: &State) -> String {
     let env = |k: &str| std::env::var(k).ok();
-    let missing: Vec<String> = missing_vars(env).iter().map(|v| json_str(v)).collect();
-    let cfg_err = config::load_from_env().err().map(|e| e.to_string());
+    let missing_names = missing_vars(env);
+    let missing: Vec<String> = missing_names.iter().map(|v| json_str(v)).collect();
+    let mut cfg_errors: Vec<String> = config::load_from_env().err().map(|e| e.to_string()).into_iter().collect();
+    for name in missing_names {
+        let error = format!("{name} not configured");
+        if !cfg_errors.contains(&error) {
+            cfg_errors.push(error);
+        }
+    }
+    let cfg_err = (!cfg_errors.is_empty()).then(|| cfg_errors.join("; "));
     let roster: Vec<String> = s
         .roster
         .iter()
