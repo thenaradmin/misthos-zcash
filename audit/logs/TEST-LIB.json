@@ -2,7 +2,7 @@
   "id": "TEST-LIB",
   "status": "PASS",
   "expected": "Exact unchanged expectation in AUDIT.md",
-  "actual": "cargo test --offline --lib: 72 passed, 0 failed, 0 ignored. TESTING.md remains unchanged per the task restriction.",
+  "actual": "cargo test --offline --lib: 72 passed, 0 failed, 0 ignored. TESTING.md updated to this measured count on 2026-10-26.",
   "console": [],
   "network": [],
   "diagnostics_scope": "Non-browser assertion; browser diagnostics are captured separately per UI row.",

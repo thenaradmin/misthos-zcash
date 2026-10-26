@@ -10,7 +10,7 @@
       "status": "PASS",
       "expected": "Exact row text in AUDIT.md and literal assertions in audit/run/ui.mjs",
       "actual": {
-        "server_pid": 66781,
+        "server_pid": 48501,
         "name": "<img src=x onerror=\"window.__injected=1\"> & Alice",
         "memo": "<svg onload=\"window.__injected=2\"> & memo",
         "config_error_value": "invalid<svg/onload=window.__injected=3>",
@@ -109,7 +109,7 @@
       "status": "PASS",
       "expected": "Exact row text in AUDIT.md and literal assertions in audit/run/ui.mjs",
       "actual": {
-        "server_pid": 67009,
+        "server_pid": 48552,
         "name": "<img src=x onerror=\"window.__injected=1\"> & Alice",
         "memo": "<svg onload=\"window.__injected=2\"> & memo",
         "config_error_value": "invalid<svg/onload=window.__injected=3>",

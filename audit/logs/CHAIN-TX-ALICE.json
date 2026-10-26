@@ -2,7 +2,7 @@
   "id": "CHAIN-TX-ALICE",
   "status": "UNTESTED",
   "expected": "See unchanged exact expected result in AUDIT.md",
-  "actual": "public explorer rate-limited (HTTP 429); no wallet and no testnet send",
+  "actual": "Expected public transaction and height; explorer fetch failed. HTTP Error 429: Too Many Requests",
   "console": [],
   "network": {
     "url": "https://testnet.zecblock.com/tx/f0e6ce4569f9a310b3ab936672331f947c5cadb102c3d5b50bcf2181910a46dc",
@@ -11,7 +11,5 @@
   "evidence": {
     "url": "https://testnet.zecblock.com/tx/f0e6ce4569f9a310b3ab936672331f947c5cadb102c3d5b50bcf2181910a46dc",
     "error": "HTTP Error 429: Too Many Requests"
-  },
-  "request_start_unix": 1793016558.235945,
-  "minimum_spacing_seconds": 31
+  }
 }

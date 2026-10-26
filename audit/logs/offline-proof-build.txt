@@ -1,5 +1,5 @@
-   Compiling zec-payroll v0.1.0 (/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute)
-   Compiling misthos-audit-proof-output v0.1.0 (/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/audit/run/proof-tool)
+   Compiling zec-payroll v0.1.0 (/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t4-reverify)
+   Compiling misthos-audit-proof-output v0.1.0 (/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t4-reverify/audit/run/proof-tool)
 warning: unused import: `ShieldedPool`
   --> main.rs:24:5
    |
@@ -38,5 +38,4 @@ warning: constant `PAY_B` is never used
     |       ^^^^^
 
 warning: `misthos-audit-proof-output` (bin "audit-proof-output") generated 5 warnings (run `cargo fix --bin "audit-proof-output"` to apply 2 suggestions)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 12.09s
-     Running `target/debug/audit-proof-output`
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 5.97s

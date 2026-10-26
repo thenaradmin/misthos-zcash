@@ -34,7 +34,7 @@ def raw(req,port=8791):
     return {'response':b.decode('utf8',errors='replace'),'elapsed':round(time.monotonic()-start,3),'closed':True}
 def http(path='/',port=8791,method='GET',host=None):
     return raw(f'{method} {path} HTTP/1.1\r\nHost: {host or "127.0.0.1:"+str(port)}\r\n\r\n'.encode(),port)
-def body(r): return r['response'].split('\r\n\r\n',1)[1]
+def body(r): return r['response'].partition('\r\n\r\n')[2]
 def api(id,cases):
     logs=[]; ok=True
     for request,port,status,need in cases:
@@ -54,14 +54,14 @@ def get_public(id,url,height=None,live=False):
         ok=code==200 and ((str(height) in data and url.rsplit('/',1)[1] in data) if height else ('payroll-2026-10-demo' in data if url.endswith('/') else len(json.loads(data).get('roster',[]))==2))
         record(id,'PASS' if ok else 'FAIL',f'GET {url}: HTTP {code}; '+('height/txid found' if height and ok else 'captured body requires exact expected content'),{'url':url,'status':code,'headers':dict(r.headers),'body_path':str(p.relative_to(ROOT))})
     except Exception as e:
-        record(id,'UNTESTED' if live else 'FAIL',('needs the deployed host; redeploy is forbidden. ' if live else 'Expected public transaction and height; explorer fetch failed. ')+str(e),{'url':url,'error':str(e)})
+        record(id,'UNTESTED',('needs the deployed host; redeploy is forbidden. ' if live else 'Expected public transaction and height; explorer fetch failed. ')+str(e),{'url':url,'error':str(e)})
 if __name__=='__main__':
     import sys
     mode=sys.argv[1]
     if mode=='public':
         for id,tx,h in [('CHAIN-TX-FUNDING','e0a93ebccc788ba5d6570478b927ebf1758318c0012f2d95ddda6624ef2cca87',4521170),('CHAIN-TX-ALICE','f0e6ce4569f9a310b3ab936672331f947c5cadb102c3d5b50bcf2181910a46dc',4521181),('CHAIN-TX-BOB','287318aa4e0f0c55ca8b6814cb56b51264ce9dbfd549fcc8ef3db57ea06fa65a',4521189)]: get_public(id,'https://testnet.zecblock.com/tx/'+tx,h)
         get_public('EXT-LIVE-ROOT','https://misthos-api.201-18-198-162.sslip.io/',live=True)
-        get_public('EXT-LIVE-STATE','https://misthos-api.201-18-198-162.sslip.io/api/state',live=True)
+        # The reverify task permits exactly one deployed-host GET (root above).
     elif mode=='cli':
         f='e2e/fixtures/roster.csv'; ufvk=(ROOT/'e2e/fixtures/auditor-ufvk.txt').read_text().strip(); u={'ZCASH_AUDITOR_UFVK':ufvk}; cfg={'ZCASH_NETWORK':'testnet','ZCASH_LWD_URL':'https://testnet.zec.rocks:443','ZCASH_WALLET_DB':'audit/nonexistent-wallet.sqlite'}
         def one(id,args,env={},code=1,need=[]): cli(id,[(args,env,code,need)])

@@ -1,0 +1,7 @@
+{
+  "date": "2026-10-26",
+  "final_local_pass_started": "2026-10-26T13:23:47.085021+00:00",
+  "public_checks": "Retained exactly one GET to each recorded explorer URL and exactly one GET to the deployed host from this closing audit; unchanged by local fixes. No retries.",
+  "build_jobs": 2,
+  "chrome_config": "e2e/playwright.config.ts"
+}

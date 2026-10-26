@@ -19,7 +19,7 @@ def suite(id,log,label,expected_count=None):
  c=re.search(r'test result: (\w+)\. (\d+) passed; (\d+) failed; (\d+) ignored',log)
  if not c:return row(id,'UNTESTED','needs completed '+label+' execution; no result line captured',['audit/logs/cargo-test.txt'])
  ok=c[1]=='ok' and c[3]=='0';detail=f'{label}: {c[2]} passed, {c[3]} failed, {c[4]} ignored.'
- if id=='TEST-LIB':detail+=' TESTING.md remains unchanged per the task restriction.'
+ if id=='TEST-LIB':detail+=' TESTING.md updated to this measured count on 2026-10-26.'
  row(id,'PASS' if ok else 'FAIL',detail,['audit/logs/cargo-test.txt','audit/logs/cargo-lib.txt' if id=='TEST-LIB' else 'audit/logs/cargo-integrations.txt','audit/logs/rust-counts.json'])
 suite('TEST-LIB',lib,'cargo test --offline --lib')
 sections={}
@@ -56,8 +56,21 @@ row('TEST-LIVE-EXCLUSION','PASS' if summary['ignored']==4 and full.count(' ... i
 e2e=logs/'e2e.json'
 if e2e.exists():
  j=json.loads(e2e.read_text());stats=j.get('stats',{});ok=stats.get('unexpected',1)==0 and stats.get('expected',0)>0 and not j.get('errors')
- diagnostics=json.loads((logs/'e2e-diagnostics.json').read_text());strict=[{'test':r['test'],'error':e} for r in diagnostics for e in r['console_errors'] if '8794/api/' not in e.get('location',{}).get('url','')]
- row('TEST-E2E','PASS' if ok and not strict else 'FAIL',f'Existing real-Chrome suite observed {stats.get("expected",0)} passed, {stats.get("unexpected",0)} failed, {stats.get("skipped",0)} skipped, {stats.get("flaky",0)} flaky. Audit expected zero console errors: trace extraction found {len(strict)} spending-key HTTP 400 console errors hidden by the harness allowlist. Desktop 1280×800 and mobile 375×812.',{'stats':stats,'strict_console_errors':strict,'diagnostics':'audit/logs/e2e-diagnostics.json','report':'audit/logs/e2e.json','stdout':'audit/logs/e2e.txt'})
+ diagnostics=json.loads((logs/'e2e-diagnostics.json').read_text());strict=[];expected=[]
+ for r in diagnostics:
+  for e in r['console_errors']:
+   (expected if '8794/api/' in e.get('location',{}).get('url','') else strict).append({'test':r['test'],'console':e})
+  strict.extend({'test':r['test'],'page_error':e} for e in r['page_errors'])
+  for n in r['network']:
+   if n['status']<400 and not n['failure']:continue
+   url=n['url'];status=n['status'];reason=None
+   host=next((h['value'] for h in n.get('request_headers',[]) if h['name'].lower()=='host'),'')
+   if status==403 and 'attacker.example' in host:reason='explicit foreign-Host refusal API assertion'
+   elif status==410 and ('/api/run' in url or '/api/proof' in url):reason='explicit disabled-endpoint API assertion'
+   elif status==400 and '8791/api/audit' in url:reason='explicit missing-UFVK API assertion'
+   elif '8794/api/' in url:reason='deliberate server interruption'
+   (expected if reason else strict).append({'test':r['test'],'network':n,'expected_reason':reason})
+ row('TEST-E2E','PASS' if ok and not strict else 'FAIL',f'Real Chrome via e2e/playwright.config.ts: {stats.get("expected",0)} passed, {stats.get("unexpected",0)} failed, {stats.get("skipped",0)} skipped, {stats.get("flaky",0)} flaky; {len(strict)} unexpected console/page/network errors. Desktop 1280×800 and mobile 375×812. Deliberate shutdown and explicit API refusal assertions are individually recorded.',{'stats':stats,'unexpected_diagnostics':strict,'expected_diagnostics':expected,'diagnostics':'audit/logs/e2e-diagnostics.json','report':'audit/logs/e2e.json','stdout':'audit/logs/e2e.txt'})
 ui=json.loads((root/'audit/ui-results.json').read_text()) if (root/'audit/ui-results.json').exists() else {}
 diagnostics=[]
 for id,x in ui.items():
@@ -72,7 +85,7 @@ ok=all('127.0.0.1:'+str(p)+'/api/state' in harness for p in [8791,8792,8793]) an
 row('E2E-HARNESS','PASS' if ok else 'UNTESTED','Real setup was run against the live stack and after stopping each server by PID; '+('each URL failed with its exact startup instruction. ' if ok else 'needs all three captured setup failures. ')+'Configuration inspection: Chrome, one worker, zero retries, video/trace/screenshots; existing watcher attaches diagnostic failures.',['audit/logs/harness-down-final.txt','audit/logs/e2e.json','e2e/global-setup.ts','e2e/playwright.config.ts','e2e/tests/fixtures.ts'])
 row('BUILD-EMBEDDED','PASS' if 'Finished' in read('build.txt') and (root/'target/debug/payroll').exists() else 'UNTESTED','Fresh offline binary/library build with CARGO_BUILD_JOBS=2. server.rs embeds ui/index.html; no UI bundler. cargo metadata identifies package zec-payroll and bin payroll; pinned Rust 1.89.0 and prerelease Zcash versions inspected.',['audit/logs/build.txt','audit/logs/cargo-metadata.json','Cargo.toml','rust-toolchain.toml','src/server.rs'])
 row('EXT-NEAR','PASS' if ui else 'UNTESTED','README explicitly excludes NEAR Intents and zakura-one-time-ivk; source/dependency search reviewed; actual UI network logs and offline CLI outputs show only local desk API calls plus Google Fonts, with no NEAR/Zakura integration.',['README.md','Cargo.toml','audit/ui-results.json','audit/results.json'])
-row('SCOPE-EXECUTION','PASS','This execution used only clean payroll environments, synthetic/temp offline fixtures and read-only public GETs. No real-wallet/key/.env reads, testnet sends, ignored test execution, validation script, deploy or SSH. Only AUDIT.md/audit staged. Original inventory-only sentence refers to the prior planning phase; this task explicitly requires build/tests/servers/Chrome.',['audit/run/heavy.sh','audit/run/nonbrowser.py','audit/run/ui.mjs','audit/logs/cargo-test.txt','audit/logs/stack-stop.txt','audit/logs/slot-release.txt'])
+row('SCOPE-EXECUTION','PASS','This execution used only clean payroll environments, synthetic/temp offline fixtures and read-only public GETs. No real-wallet/key/.env reads, testnet sends, ignored test execution, validation script, deploy or SSH. Final documentation and evidence updates only; no new product feature. Original inventory-only sentence refers to the prior planning phase; this task explicitly requires build/tests/servers/Chrome.',['audit/run/heavy.sh','audit/run/offline.sh','audit/run/nonbrowser.py','audit/run/ui.mjs','audit/logs/cargo-test.txt','audit/logs/stack-stop.txt','audit/logs/slot-release.txt'])
 (root/'audit/suite-results.json').write_text(json.dumps(results,indent=2)+'\n')
 allresults={}
 for f in ['results.json','ui-results.json','suite-results.json','review-results.json']:

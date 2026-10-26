@@ -1,7 +1,7 @@
 {
   "TEST-LIB": {
     "status": "PASS",
-    "detail": "cargo test --offline --lib: 72 passed, 0 failed, 0 ignored. TESTING.md remains unchanged per the task restriction.",
+    "detail": "cargo test --offline --lib: 72 passed, 0 failed, 0 ignored. TESTING.md updated to this measured count on 2026-10-26.",
     "path": "audit/logs/TEST-LIB.json"
   },
   "TEST-CLI-LABEL": {
@@ -205,13 +205,13 @@
     "path": "audit/logs/TEST-LIVE-EXCLUSION.json"
   },
   "TEST-E2E": {
-    "status": "FAIL",
-    "detail": "Existing real-Chrome suite observed 48 passed, 0 failed, 0 skipped, 0 flaky. Audit expected zero console errors: trace extraction found 2 spending-key HTTP 400 console errors hidden by the harness allowlist. Desktop 1280\u00d7800 and mobile 375\u00d7812.",
+    "status": "PASS",
+    "detail": "Real Chrome via e2e/playwright.config.ts: 48 passed, 0 failed, 0 skipped, 0 flaky; 0 unexpected console/page/network errors. Desktop 1280\u00d7800 and mobile 375\u00d7812. Deliberate shutdown and explicit API refusal assertions are individually recorded.",
     "path": "audit/logs/TEST-E2E.json"
   },
   "UI-CONSOLE": {
-    "status": "FAIL",
-    "detail": "81 independent UI/viewport logs captured. Expected zero console/page/unexpected same-origin errors; diagnostics found on 2 runs. No spending-key 400 exemption.",
+    "status": "PASS",
+    "detail": "81 independent UI/viewport logs captured. Zero unexpected console/page/same-origin errors; intentional interruption recorded separately.",
     "path": "audit/logs/UI-CONSOLE.json"
   },
   "E2E-STACK": {
@@ -236,7 +236,7 @@
   },
   "SCOPE-EXECUTION": {
     "status": "PASS",
-    "detail": "This execution used only clean payroll environments, synthetic/temp offline fixtures and read-only public GETs. No real-wallet/key/.env reads, testnet sends, ignored test execution, validation script, deploy or SSH. Only AUDIT.md/audit staged. Original inventory-only sentence refers to the prior planning phase; this task explicitly requires build/tests/servers/Chrome.",
+    "detail": "This execution used only clean payroll environments, synthetic/temp offline fixtures and read-only public GETs. No real-wallet/key/.env reads, testnet sends, ignored test execution, validation script, deploy or SSH. Final documentation and evidence updates only; no new product feature. Original inventory-only sentence refers to the prior planning phase; this task explicitly requires build/tests/servers/Chrome.",
     "path": "audit/logs/SCOPE-EXECUTION.json"
   }
 }

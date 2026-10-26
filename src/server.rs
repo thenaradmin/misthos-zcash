@@ -86,6 +86,13 @@ fn state_json(s: &State) -> String {
             cfg_errors.push(error);
         }
     }
+    let auditor_error = env("ZCASH_AUDITOR_UFVK")
+        .filter(|key| !key.trim().is_empty())
+        .and_then(|key| audit::check_viewing_key(&key).err())
+        .map(|error| error.to_string());
+    if let Some(error) = &auditor_error {
+        cfg_errors.push(error.clone());
+    }
     let cfg_err = (!cfg_errors.is_empty()).then(|| cfg_errors.join("; "));
     let roster: Vec<String> = s
         .roster
@@ -127,10 +134,11 @@ fn state_json(s: &State) -> String {
         .collect();
     let total = s.roster.iter().filter(|e| e.active).map(|e| e.pay.0).sum::<u64>();
     format!(
-        "{{\"network\":{},\"lwd\":{},\"config_error\":{},\"missing\":[{}],\"roster_path\":{},\"roster\":[{}],\"roster_total\":{},\"runs\":[{}]}}",
+        "{{\"network\":{},\"lwd\":{},\"config_error\":{},\"auditor_error\":{},\"missing\":[{}],\"roster_path\":{},\"roster\":[{}],\"roster_total\":{},\"runs\":[{}]}}",
         json_str(&env("ZCASH_NETWORK").unwrap_or_default()),
         json_str(&env("ZCASH_LWD_URL").unwrap_or_default()),
         cfg_err.map_or("null".into(), |e| json_str(&e)),
+        auditor_error.map_or("null".into(), |e| json_str(&e)),
         missing.join(","),
         json_str(&s.roster_path),
         roster.join(","),
@@ -140,11 +148,14 @@ fn state_json(s: &State) -> String {
 }
 
 fn respond(mut s: TcpStream, code: &str, ctype: &str, body: &str) {
-    let _ = write!(
-        s,
+    // A rejected request can leave unread bytes in the socket. Build the entire
+    // response first so closing that connection cannot cut a series of small
+    // formatting writes off after only the HTTP prefix.
+    let response = format!(
         "HTTP/1.1 {code}\r\nContent-Type: {ctype}\r\nContent-Length: {}\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{body}",
         body.len()
     );
+    let _ = s.write_all(response.as_bytes());
 }
 
 /// Host part of `host[:port]`, `[v6]:port` or a bare name, lowercased.
@@ -422,6 +433,13 @@ mod tests {
         let mut big = b"GET /".to_vec();
         big.resize(MAX_HEAD_BYTES as usize, b'A');
         assert!(request_bytes(&big).starts_with("HTTP/1.1 431"));
+        // Unread trailing bytes must not truncate the rejection response.
+        for prefix in ["GET /", "GET / HTTP/1.1\r\nHost: localhost\r\nX: "] {
+            let oversized = format!("{prefix}{}\r\n\r\n", "x".repeat(MAX_HEAD_BYTES as usize));
+            let response = request(&oversized);
+            assert!(response.starts_with("HTTP/1.1 431 Request Header Fields Too Large\r\n"), "{response}");
+            assert!(response.ends_with("\r\n\r\n{\"error\":\"request line or headers too large\"}"), "{response}");
+        }
         // 64 MiB with no newline: the handler stops reading at 16 KiB and returns, instead of
         // buffering it all (the client then sees a reset, which is fine).
         let listener = TcpListener::bind("127.0.0.1:0").unwrap();

@@ -1,2 +1,1 @@
-   Compiling zec-payroll v0.1.0 (/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 11.59s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.37s
