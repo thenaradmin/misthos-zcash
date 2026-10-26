@@ -75,8 +75,8 @@
     "path": "audit/logs/EXT-MCP.json"
   },
   "DOCS-CLAIMS": {
-    "status": "FAIL",
-    "detail": "Expected current crate/bin identifiers; README identifies repo/crate together as zec-private-payroll / payroll, but executed cargo metadata reports package/crate zec-payroll and bin payroll. Historical test counts remain dated; TESTING.md edits prohibited. No forbidden feature authority inferred.",
+    "status": "PASS",
+    "detail": "Fresh offline cargo metadata agrees with README: repo zec-private-payroll, package zec-payroll, library zec_payroll, CLI payroll. Historical counts and recorded chain wording unchanged.",
     "path": "audit/logs/DOCS-CLAIMS.json"
   }
 }

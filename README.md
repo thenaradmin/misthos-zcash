@@ -4,7 +4,7 @@
 
 ![The Misthos payslip: the recorded testnet run, with Alice's viewing key lifting the redaction on her line only](docs/payslip.png)
 
-**Misthos** (Greek μισθός, "wages") is the product name; the repo, crate and CLI stay `zec-private-payroll` / `payroll`. It is a portfolio project, not a Zecathon entry.
+**Misthos** (Greek μισθός, "wages") is the product name; the repo is `zec-private-payroll`, the Cargo package is `zec-payroll` (library crate `zec_payroll`), and the CLI is `payroll`. It is a portfolio project, not a Zecathon entry.
 
 This is a batch payroll tool for the Zcash **testnet**. An employer loads a CSV roster. `payroll pay` pays the batch in one shielded `quicksend`; `payroll pay --two-step` pays through one child wallet per employee (one funding transaction, then one payout per employee), so the employer can export a signed proof of one employee's pay. An accountant gets a read-only ledger headed by the employer's viewing key.
 
