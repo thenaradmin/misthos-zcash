@@ -140,11 +140,14 @@ fn state_json(s: &State) -> String {
 }
 
 fn respond(mut s: TcpStream, code: &str, ctype: &str, body: &str) {
-    let _ = write!(
-        s,
+    // A rejected request can leave unread bytes in the socket. Build the entire
+    // response first so closing that connection cannot cut a series of small
+    // formatting writes off after only the HTTP prefix.
+    let response = format!(
         "HTTP/1.1 {code}\r\nContent-Type: {ctype}\r\nContent-Length: {}\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{body}",
         body.len()
     );
+    let _ = s.write_all(response.as_bytes());
 }
 
 /// Host part of `host[:port]`, `[v6]:port` or a bare name, lowercased.
@@ -422,6 +425,13 @@ mod tests {
         let mut big = b"GET /".to_vec();
         big.resize(MAX_HEAD_BYTES as usize, b'A');
         assert!(request_bytes(&big).starts_with("HTTP/1.1 431"));
+        // Unread trailing bytes must not truncate the rejection response.
+        for prefix in ["GET /", "GET / HTTP/1.1\r\nHost: localhost\r\nX: "] {
+            let oversized = format!("{prefix}{}\r\n\r\n", "x".repeat(MAX_HEAD_BYTES as usize));
+            let response = request(&oversized);
+            assert!(response.starts_with("HTTP/1.1 431 Request Header Fields Too Large\r\n"), "{response}");
+            assert!(response.ends_with("\r\n\r\n{\"error\":\"request line or headers too large\"}"), "{response}");
+        }
         // 64 MiB with no newline: the handler stops reading at 16 KiB and returns, instead of
         // buffering it all (the client then sees a reset, which is fine).
         let listener = TcpListener::bind("127.0.0.1:0").unwrap();
