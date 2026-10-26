@@ -86,6 +86,13 @@ fn state_json(s: &State) -> String {
             cfg_errors.push(error);
         }
     }
+    let auditor_error = env("ZCASH_AUDITOR_UFVK")
+        .filter(|key| !key.trim().is_empty())
+        .and_then(|key| audit::check_viewing_key(&key).err())
+        .map(|error| error.to_string());
+    if let Some(error) = &auditor_error {
+        cfg_errors.push(error.clone());
+    }
     let cfg_err = (!cfg_errors.is_empty()).then(|| cfg_errors.join("; "));
     let roster: Vec<String> = s
         .roster
@@ -127,10 +134,11 @@ fn state_json(s: &State) -> String {
         .collect();
     let total = s.roster.iter().filter(|e| e.active).map(|e| e.pay.0).sum::<u64>();
     format!(
-        "{{\"network\":{},\"lwd\":{},\"config_error\":{},\"missing\":[{}],\"roster_path\":{},\"roster\":[{}],\"roster_total\":{},\"runs\":[{}]}}",
+        "{{\"network\":{},\"lwd\":{},\"config_error\":{},\"auditor_error\":{},\"missing\":[{}],\"roster_path\":{},\"roster\":[{}],\"roster_total\":{},\"runs\":[{}]}}",
         json_str(&env("ZCASH_NETWORK").unwrap_or_default()),
         json_str(&env("ZCASH_LWD_URL").unwrap_or_default()),
         cfg_err.map_or("null".into(), |e| json_str(&e)),
+        auditor_error.map_or("null".into(), |e| json_str(&e)),
         missing.join(","),
         json_str(&s.roster_path),
         roster.join(","),
