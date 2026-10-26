@@ -1,0 +1,464 @@
+[
+  {
+    "test": "landing-landing-the-redact-2b40e-d-log-exists-on-the-payslip-mobile",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "desk-desk-read-only-employ-51667--gets-403-loopback-gets-200-desktop",
+    "console_errors": [],
+    "events": [],
+    "network_errors": [
+      {
+        "url": "http://127.0.0.1:8792/api/audit",
+        "method": "GET",
+        "status": 403,
+        "failure": null
+      },
+      {
+        "url": "http://127.0.0.1:8792/api/state",
+        "method": "GET",
+        "status": 403,
+        "failure": null
+      },
+      {
+        "url": "http://127.0.0.1:8792/",
+        "method": "GET",
+        "status": 403,
+        "failure": null
+      }
+    ]
+  },
+  {
+    "test": "desk-desk-read-only-employ-ee7b1-her-than-show-an-empty-desk-mobile",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "desk-desk-read-only-employ-2acc3-nchors-browser-back-forward-desktop",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "landing-landing-the-redact-b85a4-alues-and-the-published-key-desktop",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "landing-landing-the-redact-324ff-line-the-employer-reads-all-mobile",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "desk-desk-read-only-employ-d533e-swers-POST-api-run-with-410-desktop",
+    "console_errors": [],
+    "events": [],
+    "network_errors": [
+      {
+        "url": "http://127.0.0.1:8791/api/run",
+        "method": "POST",
+        "status": 410,
+        "failure": null
+      },
+      {
+        "url": "http://127.0.0.1:8791/api/proof?employee=row2",
+        "method": "GET",
+        "status": 410,
+        "failure": null
+      }
+    ]
+  },
+  {
+    "test": "desk-desk-read-only-employ-5fb73--is-refused-and-never-shown-mobile",
+    "console_errors": [
+      {
+        "type": "console",
+        "messageType": "error",
+        "text": "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "args": [],
+        "location": {
+          "url": "http://127.0.0.1:8793/api/audit",
+          "lineNumber": 0,
+          "columnNumber": 0
+        },
+        "time": 29906.42,
+        "pageId": "page@fc97b923cbdcca917909f9d5f1829bef"
+      }
+    ],
+    "events": [],
+    "network_errors": [
+      {
+        "url": "http://127.0.0.1:8793/api/audit",
+        "method": "GET",
+        "status": 400,
+        "failure": null
+      }
+    ]
+  },
+  {
+    "test": "desk-desk-read-only-employ-661bb-y-desk-button-was-exercised-mobile",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "desk-desk-read-only-employ-de8a8-g-skeleton-does-not-shimmer-mobile",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "desk-desk-read-only-employ-ee7b1-her-than-show-an-empty-desk-desktop",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "desk-desk-read-only-employ-d030a-up\u2026-until-api-state-answers-mobile",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "landing-landing-the-redact-b85a4-alues-and-the-published-key-mobile",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "landing-landing-the-redact-b80ff-cluding-the-410-on-the-desk-mobile",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "landing-landing-the-redact-8f004-nd-no-employee-key-lifts-it-desktop",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "desk-desk-read-only-employ-44d54-UFVK-and-the-empty-run-list-desktop",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "desk-desk-read-only-employ-5fb73--is-refused-and-never-shown-desktop",
+    "console_errors": [
+      {
+        "type": "console",
+        "messageType": "error",
+        "text": "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+        "args": [],
+        "location": {
+          "url": "http://127.0.0.1:8793/api/audit",
+          "lineNumber": 0,
+          "columnNumber": 0
+        },
+        "time": 6813.789,
+        "pageId": "page@752b3b1a87475b2031bf392317c3def4"
+      }
+    ],
+    "events": [],
+    "network_errors": [
+      {
+        "url": "http://127.0.0.1:8793/api/audit",
+        "method": "GET",
+        "status": 400,
+        "failure": null
+      }
+    ]
+  },
+  {
+    "test": "desk-desk-read-only-employ-abf6f-ate-with-no-failing-request-desktop",
+    "console_errors": [],
+    "events": [],
+    "network_errors": [
+      {
+        "url": "http://127.0.0.1:8791/api/audit",
+        "method": "GET",
+        "status": 400,
+        "failure": null
+      }
+    ]
+  },
+  {
+    "test": "landing-landing-the-redact-af829-k-chip-reads-Setup-required-mobile",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "landing-landing-the-redact-af829-k-chip-reads-Setup-required-desktop",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "landing-landing-the-redact-72b6a-r-links-name-each-full-txid-desktop",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "desk-desk-read-only-employ-18caa-he-CSV-focus-on-the-heading-desktop",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "landing-landing-the-redact-324ff-line-the-employer-reads-all-desktop",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "desk-desk-read-only-employ-44d54-UFVK-and-the-empty-run-list-mobile",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "landing-landing-the-redact-53b7c-ce-Bob-s-key-back-to-no-key-desktop",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "landing-landing-the-redact-105ed-locks-labels-do-not-overlap-desktop",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "landing-landing-the-redact-72b6a-r-links-name-each-full-txid-mobile",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "landing-landing-the-redact-105ed-locks-labels-do-not-overlap-mobile",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "landing-landing-the-redact-302a3-brand-land-on-their-targets-desktop",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "landing-landing-the-redact-b80ff-cluding-the-410-on-the-desk-desktop",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "desk-desk-read-only-employ-d533e-swers-POST-api-run-with-410-mobile",
+    "console_errors": [],
+    "events": [],
+    "network_errors": [
+      {
+        "url": "http://127.0.0.1:8791/api/run",
+        "method": "POST",
+        "status": 410,
+        "failure": null
+      },
+      {
+        "url": "http://127.0.0.1:8791/api/proof?employee=row2",
+        "method": "GET",
+        "status": 410,
+        "failure": null
+      }
+    ]
+  },
+  {
+    "test": "desk-desk-read-only-employ-51667--gets-403-loopback-gets-200-mobile",
+    "console_errors": [],
+    "events": [],
+    "network_errors": [
+      {
+        "url": "http://127.0.0.1:8792/api/audit",
+        "method": "GET",
+        "status": 403,
+        "failure": null
+      },
+      {
+        "url": "http://127.0.0.1:8792/api/state",
+        "method": "GET",
+        "status": 403,
+        "failure": null
+      },
+      {
+        "url": "http://127.0.0.1:8792/",
+        "method": "GET",
+        "status": 403,
+        "failure": null
+      }
+    ]
+  },
+  {
+    "test": "desk-desk-read-only-employ-18caa-he-CSV-focus-on-the-heading-mobile",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "desk-desk-read-only-employ-2b7c9-commas-escapes-line-breaks--desktop",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "landing-landing-the-redact-8c095--at-once-with-no-transition-mobile",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "landing-landing-the-redact-8f004-nd-no-employee-key-lifts-it-mobile",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "desk-desk-read-only-employ-2acc3-nchors-browser-back-forward-mobile",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "desk-desk-read-only-employ-a4d75-d-the-accountant-button-too-mobile",
+    "console_errors": [
+      {
+        "type": "console",
+        "messageType": "error",
+        "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+        "args": [],
+        "location": {
+          "url": "http://127.0.0.1:8794/api/state",
+          "lineNumber": 0,
+          "columnNumber": 0
+        },
+        "time": 31954.408,
+        "pageId": "page@49570502c26361e442e4a011a527c821"
+      },
+      {
+        "type": "console",
+        "messageType": "error",
+        "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+        "args": [],
+        "location": {
+          "url": "http://127.0.0.1:8794/api/audit",
+          "lineNumber": 0,
+          "columnNumber": 0
+        },
+        "time": 32145.235,
+        "pageId": "page@49570502c26361e442e4a011a527c821"
+      }
+    ],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "landing-landing-the-redact-302a3-brand-land-on-their-targets-mobile",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "landing-landing-the-redact-8c095--at-once-with-no-transition-desktop",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "desk-desk-read-only-employ-de8a8-g-skeleton-does-not-shimmer-desktop",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "landing-landing-the-redact-2b40e-d-log-exists-on-the-payslip-desktop",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "desk-desk-read-only-employ-2b7c9-commas-escapes-line-breaks--mobile",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "desk-desk-read-only-employ-abf6f-ate-with-no-failing-request-mobile",
+    "console_errors": [],
+    "events": [],
+    "network_errors": [
+      {
+        "url": "http://127.0.0.1:8791/api/audit",
+        "method": "GET",
+        "status": 400,
+        "failure": null
+      }
+    ]
+  },
+  {
+    "test": "landing-landing-the-redact-53b7c-ce-Bob-s-key-back-to-no-key-mobile",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "desk-desk-read-only-employ-a4d75-d-the-accountant-button-too-desktop",
+    "console_errors": [
+      {
+        "type": "console",
+        "messageType": "error",
+        "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+        "args": [],
+        "location": {
+          "url": "http://127.0.0.1:8794/api/state",
+          "lineNumber": 0,
+          "columnNumber": 0
+        },
+        "time": 8907.526,
+        "pageId": "page@fdb97084aba927fbeee59be88c44fc8c"
+      },
+      {
+        "type": "console",
+        "messageType": "error",
+        "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+        "args": [],
+        "location": {
+          "url": "http://127.0.0.1:8794/api/audit",
+          "lineNumber": 0,
+          "columnNumber": 0
+        },
+        "time": 9093.423,
+        "pageId": "page@fdb97084aba927fbeee59be88c44fc8c"
+      }
+    ],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "desk-desk-read-only-employ-d030a-up\u2026-until-api-state-answers-desktop",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  },
+  {
+    "test": "desk-desk-read-only-employ-661bb-y-desk-button-was-exercised-desktop",
+    "console_errors": [],
+    "events": [],
+    "network_errors": []
+  }
+]

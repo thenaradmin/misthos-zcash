@@ -1,0 +1,15 @@
+{
+  "id": "TEST-CLI-LABEL",
+  "status": "PASS",
+  "expected": "Exact unchanged expectation in AUDIT.md",
+  "actual": "cargo test --offline --test cli_label: 4 passed, 0 failed, 0 ignored.",
+  "console": [],
+  "network": [],
+  "diagnostics_scope": "Non-browser assertion; browser diagnostics are captured separately per UI row.",
+  "live_http": null,
+  "evidence": [
+    "audit/logs/cargo-test.txt",
+    "audit/logs/cargo-integrations.txt",
+    "audit/logs/rust-counts.json"
+  ]
+}

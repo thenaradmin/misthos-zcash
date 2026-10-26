@@ -1,0 +1,23 @@
+{
+  "id": "API-404",
+  "status": "PASS",
+  "expected": "See unchanged exact expected result in AUDIT.md",
+  "actual": "Exact HTTP status/body assertions matched.",
+  "console": [],
+  "network": [
+    {
+      "response": "HTTP/1.1 404 Not Found\r\nContent-Type: application/json\r\nContent-Length: 21\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"not found\"}",
+      "elapsed": 0.0,
+      "closed": true,
+      "request": "GET /api/missing HTTP/1.1\r\nHost: 127.0.0.1:8791\r\n\r\n"
+    }
+  ],
+  "evidence": [
+    {
+      "response": "HTTP/1.1 404 Not Found\r\nContent-Type: application/json\r\nContent-Length: 21\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"not found\"}",
+      "elapsed": 0.0,
+      "closed": true,
+      "request": "GET /api/missing HTTP/1.1\r\nHost: 127.0.0.1:8791\r\n\r\n"
+    }
+  ]
+}

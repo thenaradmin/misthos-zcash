@@ -1,0 +1,59 @@
+{
+  "id": "API-431",
+  "status": "PASS",
+  "expected": "See unchanged exact expected result in AUDIT.md",
+  "actual": "Exact HTTP status/body assertions matched.",
+  "console": [],
+  "network": [
+    {
+      "response": "HTTP/1.1 431 Request Header Fields Too Large\r\nContent-Type: application/json\r\nContent-Length: 45\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"request line or headers too large\"}",
+      "elapsed": 0.0,
+      "closed": true,
+      "request": "GET /xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    },
+    {
+      "response": "HTTP/1.1 431 Request Header Fields Too Large\r\nContent-Type: application/json\r\nContent-Length: 45\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"request line or headers too large\"}",
+      "elapsed": 0.0,
+      "closed": true,
+      "request": "GET / HTTP/1.1\r\nHost: localhost\r\nX: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    },
+    {
+      "response": "HTTP/1.1 431 Request Header Fields Too Large\r\nContent-Type: application/json\r\nContent-Length: 45\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"request line or headers too large\"}",
+      "elapsed": 0.0,
+      "closed": true,
+      "request": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    },
+    {
+      "response": "HTTP/1.1 431 Request Header Fields Too Large\r\nContent-Type: application/json\r\nContent-Length: 45\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"request line or headers too large\"}",
+      "elapsed": 0.0,
+      "closed": true,
+      "request": "GET / HTTP/1.1\r\nHost: localhost\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: "
+    }
+  ],
+  "evidence": [
+    {
+      "response": "HTTP/1.1 431 Request Header Fields Too Large\r\nContent-Type: application/json\r\nContent-Length: 45\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"request line or headers too large\"}",
+      "elapsed": 0.0,
+      "closed": true,
+      "request": "GET /xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    },
+    {
+      "response": "HTTP/1.1 431 Request Header Fields Too Large\r\nContent-Type: application/json\r\nContent-Length: 45\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"request line or headers too large\"}",
+      "elapsed": 0.0,
+      "closed": true,
+      "request": "GET / HTTP/1.1\r\nHost: localhost\r\nX: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    },
+    {
+      "response": "HTTP/1.1 431 Request Header Fields Too Large\r\nContent-Type: application/json\r\nContent-Length: 45\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"request line or headers too large\"}",
+      "elapsed": 0.0,
+      "closed": true,
+      "request": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    },
+    {
+      "response": "HTTP/1.1 431 Request Header Fields Too Large\r\nContent-Type: application/json\r\nContent-Length: 45\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"request line or headers too large\"}",
+      "elapsed": 0.0,
+      "closed": true,
+      "request": "GET / HTTP/1.1\r\nHost: localhost\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: a\r\nX: "
+    }
+  ]
+}

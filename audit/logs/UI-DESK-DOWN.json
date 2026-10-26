@@ -1,0 +1,200 @@
+{
+  "id": "UI-DESK-DOWN",
+  "status": "PASS",
+  "runs": [
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "status": "PASS",
+      "expected": "Exact row text in AUDIT.md and literal assertions in audit/run/ui.mjs",
+      "error": null,
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+          "location": {
+            "url": "http://127.0.0.1:8794/api/state",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+          "location": {
+            "url": "http://127.0.0.1:8794/api/audit",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "pageErrors": [],
+      "network": [
+        {
+          "event": "request",
+          "url": "http://127.0.0.1:8794/",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:8794/",
+          "status": 200
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Sometype+Mono:wght@400;500&display=swap",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Sometype+Mono:wght@400;500&display=swap",
+          "status": 200
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.gstatic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9GayojdSFO.woff2",
+          "method": "GET"
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.gstatic.com/s/sometypemono/v4/70lVu745KGk_R3uxyq0WrROhKpShQWVB_m4.woff2",
+          "method": "GET"
+        },
+        {
+          "event": "request",
+          "url": "http://127.0.0.1:8794/api/state",
+          "method": "GET"
+        },
+        {
+          "event": "failed",
+          "url": "http://127.0.0.1:8794/api/state",
+          "error": "net::ERR_CONNECTION_REFUSED"
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.gstatic.com/s/sometypemono/v4/70lVu745KGk_R3uxyq0WrROhKpShQWVB_m4.woff2",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.gstatic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9GayojdSFO.woff2",
+          "status": 200
+        },
+        {
+          "event": "request",
+          "url": "http://127.0.0.1:8794/api/audit",
+          "method": "GET"
+        },
+        {
+          "event": "failed",
+          "url": "http://127.0.0.1:8794/api/audit",
+          "error": "net::ERR_CONNECTION_REFUSED"
+        }
+      ],
+      "screenshot": "audit/logs/UI-DESK-DOWN-1280.jpg"
+    },
+    {
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "status": "PASS",
+      "expected": "Exact row text in AUDIT.md and literal assertions in audit/run/ui.mjs",
+      "error": null,
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+          "location": {
+            "url": "http://127.0.0.1:8794/api/state",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+          "location": {
+            "url": "http://127.0.0.1:8794/api/audit",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "pageErrors": [],
+      "network": [
+        {
+          "event": "request",
+          "url": "http://127.0.0.1:8794/",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:8794/",
+          "status": 200
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Sometype+Mono:wght@400;500&display=swap",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Sometype+Mono:wght@400;500&display=swap",
+          "status": 200
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.gstatic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9GayojdSFO.woff2",
+          "method": "GET"
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.gstatic.com/s/sometypemono/v4/70lVu745KGk_R3uxyq0WrROhKpShQWVB_m4.woff2",
+          "method": "GET"
+        },
+        {
+          "event": "request",
+          "url": "http://127.0.0.1:8794/api/state",
+          "method": "GET"
+        },
+        {
+          "event": "failed",
+          "url": "http://127.0.0.1:8794/api/state",
+          "error": "net::ERR_CONNECTION_REFUSED"
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.gstatic.com/s/sometypemono/v4/70lVu745KGk_R3uxyq0WrROhKpShQWVB_m4.woff2",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.gstatic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9GayojdSFO.woff2",
+          "status": 200
+        },
+        {
+          "event": "request",
+          "url": "http://127.0.0.1:8794/api/audit",
+          "method": "GET"
+        },
+        {
+          "event": "failed",
+          "url": "http://127.0.0.1:8794/api/audit",
+          "error": "net::ERR_CONNECTION_REFUSED"
+        }
+      ],
+      "screenshot": "audit/logs/UI-DESK-DOWN-375.jpg"
+    }
+  ]
+}

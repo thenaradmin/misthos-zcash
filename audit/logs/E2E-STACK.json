@@ -1,0 +1,15 @@
+{
+  "id": "E2E-STACK",
+  "status": "PASS",
+  "expected": "Exact unchanged expectation in AUDIT.md",
+  "actual": "Executed clean stack with all three recorded PIDs and real state readiness checks. Synthetic UFVK and no-wallet path only; explicit final shutdown by those PIDs.",
+  "console": [],
+  "network": [],
+  "diagnostics_scope": "Non-browser assertion; browser diagnostics are captured separately per UI row.",
+  "live_http": null,
+  "evidence": [
+    "audit/logs/stack-start.txt",
+    "audit/logs/stack-stop.txt",
+    "e2e/stack.sh"
+  ]
+}

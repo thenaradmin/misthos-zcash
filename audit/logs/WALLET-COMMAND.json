@@ -1,0 +1,15 @@
+{
+  "id": "WALLET-COMMAND",
+  "status": "UNTESTED",
+  "expected": "Unchanged exact expectation in AUDIT.md",
+  "actual": "Reviewed run_in session args and single quicksend receiver JSON. Needs an authorized executable wallet-command observation; no successful send permitted. Existing failure and receiver-JSON unit checks do not observe every argv field.",
+  "console": [],
+  "network": [],
+  "reviewed_files": [
+    {
+      "path": "src/wallet.rs",
+      "sha256": "e83675f8eb5c02f1b41c31e638c02fb82b1e418bda8271789f574ab84a70e8ee"
+    }
+  ],
+  "additional_evidence": null
+}

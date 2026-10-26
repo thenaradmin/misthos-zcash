@@ -1,0 +1,15 @@
+{
+  "id": "PROOF-VERIFY-OFFLINE",
+  "status": "PASS",
+  "expected": "Exact unchanged expectation in AUDIT.md",
+  "actual": "Captured real CLI exit 0 using existing fixed synthetic fixture helpers: EMPLOYER SIGNATURE OK, DECRYPTED OFFLINE (NOT checked on chain), PayoutOut/Sapling/recipient/memo, PAID OUT 0.0125 ZEC; VERIFIED ON CHAIN absent. No chain-validity claim or wallet proof used.",
+  "console": [],
+  "network": [],
+  "diagnostics_scope": "Non-browser assertion; browser diagnostics are captured separately per UI row.",
+  "live_http": null,
+  "evidence": [
+    "audit/run/proof-tool/main.rs",
+    "audit/logs/offline-proof-output.txt",
+    "audit/logs/offline-proof-build.txt"
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "id": "CLI-KEYGEN-REFUSE",
+  "status": "PASS",
+  "expected": "Exact unchanged expectation in AUDIT.md",
+  "actual": "1/1 named assertions completed successfully; isolated library/temp-directory checks; no real wallet or funded send.",
+  "console": [],
+  "network": [],
+  "diagnostics_scope": "Non-browser assertion; browser diagnostics are captured separately per UI row.",
+  "live_http": null,
+  "evidence": {
+    "tests": [
+      {
+        "name": "attest::tests::key_file_must_be_0600_and_is_never_overwritten",
+        "passed": true
+      }
+    ],
+    "logs": [
+      "audit/logs/cargo-lib.txt",
+      "audit/logs/cargo-integrations.txt"
+    ],
+    "suite_counts": {
+      "observed_sections": [
+        {
+          "result": "ok",
+          "passed": 72,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "result": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "result": "ok",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "result": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "result": "ok",
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "result": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "result": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 4,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "result": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        }
+      ],
+      "passed": 85,
+      "failed": 0,
+      "ignored": 4
+    }
+  }
+}

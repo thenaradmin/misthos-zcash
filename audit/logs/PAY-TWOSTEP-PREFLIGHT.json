@@ -1,0 +1,15 @@
+{
+  "id": "PAY-TWOSTEP-PREFLIGHT",
+  "status": "UNTESTED",
+  "expected": "Unchanged exact expectation in AUDIT.md",
+  "actual": "Reviewed label/duplicate/pending gates, child sync loop and tip before funding. Needs controlled pre-broadcast execution with wallet/chain dependencies; forbidden funded path not executed; code review alone is not PASS.",
+  "console": [],
+  "network": [],
+  "reviewed_files": [
+    {
+      "path": "src/main.rs",
+      "sha256": "2919b8dc7c07ad915614db2158083a6ebf38793ef176b2fd070dbd4c36026f6f"
+    }
+  ],
+  "additional_evidence": null
+}

@@ -1,0 +1,41 @@
+{
+  "id": "API-HOST-403",
+  "status": "PASS",
+  "expected": "See unchanged exact expected result in AUDIT.md",
+  "actual": "All three foreign-host requests refused with no roster/key/HTML: True",
+  "console": [],
+  "network": [
+    {
+      "response": "HTTP/1.1 403 Forbidden\r\nContent-Type: application/json\r\nContent-Length: 121\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"Host not allowed: the desk answers only on 127.0.0.1, localhost or [::1] (or the --addr host it was bound to)\"}",
+      "elapsed": 0.0,
+      "closed": true
+    },
+    {
+      "response": "HTTP/1.1 403 Forbidden\r\nContent-Type: application/json\r\nContent-Length: 121\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"Host not allowed: the desk answers only on 127.0.0.1, localhost or [::1] (or the --addr host it was bound to)\"}",
+      "elapsed": 0.0,
+      "closed": true
+    },
+    {
+      "response": "HTTP/1.1 403 Forbidden\r\nContent-Type: application/json\r\nContent-Length: 121\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"Host not allowed: the desk answers only on 127.0.0.1, localhost or [::1] (or the --addr host it was bound to)\"}",
+      "elapsed": 0.0,
+      "closed": true
+    }
+  ],
+  "evidence": [
+    {
+      "response": "HTTP/1.1 403 Forbidden\r\nContent-Type: application/json\r\nContent-Length: 121\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"Host not allowed: the desk answers only on 127.0.0.1, localhost or [::1] (or the --addr host it was bound to)\"}",
+      "elapsed": 0.0,
+      "closed": true
+    },
+    {
+      "response": "HTTP/1.1 403 Forbidden\r\nContent-Type: application/json\r\nContent-Length: 121\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"Host not allowed: the desk answers only on 127.0.0.1, localhost or [::1] (or the --addr host it was bound to)\"}",
+      "elapsed": 0.0,
+      "closed": true
+    },
+    {
+      "response": "HTTP/1.1 403 Forbidden\r\nContent-Type: application/json\r\nContent-Length: 121\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"Host not allowed: the desk answers only on 127.0.0.1, localhost or [::1] (or the --addr host it was bound to)\"}",
+      "elapsed": 0.0,
+      "closed": true
+    }
+  ]
+}

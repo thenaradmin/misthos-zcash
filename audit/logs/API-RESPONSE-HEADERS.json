@@ -1,0 +1,41 @@
+{
+  "id": "API-RESPONSE-HEADERS",
+  "status": "PASS",
+  "expected": "See unchanged exact expected result in AUDIT.md",
+  "actual": "Accurate UTF-8 byte framing, no-store and closed connection on HTML/JSON/CSV: True",
+  "console": [],
+  "network": [
+    {
+      "response": "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: 99747\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>Misthos \u00b7 shielded payroll</title>\n<meta name=\"description\" content=\"Misthos pays a payroll from shielded Zcash testnet wallets. The public sees transactions; each employee's viewing key lifts the redaction on their own line only.\">\n<link rel=\"icon\" href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32",
+      "elapsed": 0.0,
+      "closed": true
+    },
+    {
+      "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: 782\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"network\":\"\",\"lwd\":\"\",\"config_error\":\"ZCASH_NETWORK not configured\",\"missing\":[\"ZCASH_NETWORK\",\"ZCASH_LWD_URL\",\"ZCASH_WALLET_DB\",\"ZCASH_WALLET_CLI\",\"ZCASH_AUDITOR_UFVK\"],\"roster_path\":\"/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/fixtures/roster.csv\",\"roster\":[{\"id\":\"row2\",\"name\":\"Alice\",\"address\":\"utest189hw2g54g98mmzpja326q9mn4tecm7yjq8xep2unu2zgwp7f867h0a5qwgm0cg8qrgrygqh3vas2wrsr7ex9r7eckv8jx3q9guxpscsv\",\"amount\":\"0.",
+      "elapsed": 0.0,
+      "closed": true
+    },
+    {
+      "response": "HTTP/1.1 200 OK\r\nContent-Type: text/csv; charset=utf-8\r\nContent-Length: 310\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n# network=testnet\n# ufvk=uviewtest1ewkpkaqar0lepvymgvldj84se9dy32wtgywydq4qtgd4n5atjp4thf54s4w8hd2vq4ja7rq730anvau40f38726lsk04vh0q2peznfkxehf0yz4mrkfnft0k3g37ms2fxka6cf7dxscmrh64nls5hxjp8glj40kqvlpmahrr2y0xzhkku3pvflghadxqf\nrun_id,period,status,txid,height,line_index,employee_id,name,address,amount_zec,memo\n",
+      "elapsed": 0.0,
+      "closed": true
+    }
+  ],
+  "evidence": [
+    {
+      "response": "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: 99747\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>Misthos \u00b7 shielded payroll</title>\n<meta name=\"description\" content=\"Misthos pays a payroll from shielded Zcash testnet wallets. The public sees transactions; each employee's viewing key lifts the redaction on their own line only.\">\n<link rel=\"icon\" href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32",
+      "elapsed": 0.0,
+      "closed": true
+    },
+    {
+      "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: 782\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"network\":\"\",\"lwd\":\"\",\"config_error\":\"ZCASH_NETWORK not configured\",\"missing\":[\"ZCASH_NETWORK\",\"ZCASH_LWD_URL\",\"ZCASH_WALLET_DB\",\"ZCASH_WALLET_CLI\",\"ZCASH_AUDITOR_UFVK\"],\"roster_path\":\"/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/fixtures/roster.csv\",\"roster\":[{\"id\":\"row2\",\"name\":\"Alice\",\"address\":\"utest189hw2g54g98mmzpja326q9mn4tecm7yjq8xep2unu2zgwp7f867h0a5qwgm0cg8qrgrygqh3vas2wrsr7ex9r7eckv8jx3q9guxpscsv\",\"amount\":\"0.",
+      "elapsed": 0.0,
+      "closed": true
+    },
+    {
+      "response": "HTTP/1.1 200 OK\r\nContent-Type: text/csv; charset=utf-8\r\nContent-Length: 310\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n# network=testnet\n# ufvk=uviewtest1ewkpkaqar0lepvymgvldj84se9dy32wtgywydq4qtgd4n5atjp4thf54s4w8hd2vq4ja7rq730anvau40f38726lsk04vh0q2peznfkxehf0yz4mrkfnft0k3g37ms2fxka6cf7dxscmrh64nls5hxjp8glj40kqvlpmahrr2y0xzhkku3pvflghadxqf\nrun_id,period,status,txid,height,line_index,employee_id,name,address,amount_zec,memo\n",
+      "elapsed": 0.0,
+      "closed": true
+    }
+  ]
+}

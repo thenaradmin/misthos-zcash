@@ -1,0 +1,23 @@
+{
+  "id": "API-BAD-UTF8",
+  "status": "PASS",
+  "expected": "See unchanged exact expected result in AUDIT.md",
+  "actual": "Exact HTTP status/body assertions matched.",
+  "console": [],
+  "network": [
+    {
+      "response": "HTTP/1.1 400 Bad Request\r\nContent-Type: application/json\r\nContent-Length: 23\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"bad request\"}",
+      "elapsed": 0.0,
+      "closed": true,
+      "request": "GET /api/state HTTP/1.1\r\nHost: localhost\r\nX: \ufffd\r\n\r\n"
+    }
+  ],
+  "evidence": [
+    {
+      "response": "HTTP/1.1 400 Bad Request\r\nContent-Type: application/json\r\nContent-Length: 23\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"bad request\"}",
+      "elapsed": 0.0,
+      "closed": true,
+      "request": "GET /api/state HTTP/1.1\r\nHost: localhost\r\nX: \ufffd\r\n\r\n"
+    }
+  ]
+}

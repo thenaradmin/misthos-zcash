@@ -1,0 +1,4 @@
+setup pid 74891 on http://127.0.0.1:8791
+configured pid 74892 on http://127.0.0.1:8792
+mainnet pid 74893 on http://127.0.0.1:8793
+stack up

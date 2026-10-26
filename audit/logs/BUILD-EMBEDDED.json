@@ -1,0 +1,18 @@
+{
+  "id": "BUILD-EMBEDDED",
+  "status": "PASS",
+  "expected": "Exact unchanged expectation in AUDIT.md",
+  "actual": "Fresh offline binary/library build with CARGO_BUILD_JOBS=2. server.rs embeds ui/index.html; no UI bundler. cargo metadata identifies package zec-payroll and bin payroll; pinned Rust 1.89.0 and prerelease Zcash versions inspected.",
+  "console": [],
+  "network": [],
+  "diagnostics_scope": "Non-browser assertion; browser diagnostics are captured separately per UI row.",
+  "live_http": null,
+  "evidence": [
+    "audit/logs/build.txt",
+    "audit/logs/cargo-metadata.json",
+    "Cargo.toml",
+    "rust-toolchain.toml",
+    "src/server.rs",
+    "audit/logs/rustc-version.txt"
+  ]
+}

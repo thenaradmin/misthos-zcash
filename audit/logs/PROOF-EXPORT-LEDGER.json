@@ -1,0 +1,15 @@
+{
+  "id": "PROOF-EXPORT-LEDGER",
+  "status": "UNTESTED",
+  "expected": "Unchanged exact expectation in AUDIT.md",
+  "actual": "Reviewed exact selector, child paid_txids for adhoc label, zero/multiple txid rejection and roster-sourced amount. Needs isolated signed export/ledger fixture; no real ledger/key access permitted.",
+  "console": [],
+  "network": [],
+  "reviewed_files": [
+    {
+      "path": "src/main.rs",
+      "sha256": "2919b8dc7c07ad915614db2158083a6ebf38793ef176b2fd070dbd4c36026f6f"
+    }
+  ],
+  "additional_evidence": null
+}

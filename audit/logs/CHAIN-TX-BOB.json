@@ -1,0 +1,17 @@
+{
+  "id": "CHAIN-TX-BOB",
+  "status": "UNTESTED",
+  "expected": "See unchanged exact expected result in AUDIT.md",
+  "actual": "public explorer rate-limited (HTTP 429); no wallet and no testnet send",
+  "console": [],
+  "network": {
+    "url": "https://testnet.zecblock.com/tx/287318aa4e0f0c55ca8b6814cb56b51264ce9dbfd549fcc8ef3db57ea06fa65a",
+    "error": "HTTP Error 429: Too Many Requests"
+  },
+  "evidence": {
+    "url": "https://testnet.zecblock.com/tx/287318aa4e0f0c55ca8b6814cb56b51264ce9dbfd549fcc8ef3db57ea06fa65a",
+    "error": "HTTP Error 429: Too Many Requests"
+  },
+  "request_start_unix": 1793016589.326661,
+  "minimum_spacing_seconds": 31
+}

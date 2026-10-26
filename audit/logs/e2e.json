@@ -1,0 +1,2524 @@
+{
+  "config": {
+    "argv": [
+      "/opt/homebrew/Cellar/node/26.5.0/bin/node",
+      "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/node_modules/.bin/playwright",
+      "test",
+      "--reporter=list,json"
+    ],
+    "configFile": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/playwright.config.ts",
+    "rootDir": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/global-setup.ts",
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "desktop",
+        "name": "desktop",
+        "testDir": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "mobile",
+        "name": "mobile",
+        "testDir": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "desk.spec.ts",
+      "file": "desk.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "desk (read-only employer dashboard at /#desk)",
+          "file": "desk.spec.ts",
+          "line": 8,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Setup required: every unset var by name, the roster from the CSV, focus on the heading",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1186,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:54:53.007Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-18caa-he-CSV-focus-on-the-heading-desktop/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-18caa-he-CSV-focus-on-the-heading-desktop/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-18caa-he-CSV-focus-on-the-heading-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a28aa61fdbb67fa3521b-fc0fcd98df6cb4a421a7",
+              "file": "desk.spec.ts",
+              "line": 9,
+              "column": 3
+            },
+            {
+              "title": "the desk says it exposes the employer key; a foreign Host (DNS rebinding) gets 403, loopback gets 200",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 658,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:54:54.506Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-51667--gets-403-loopback-gets-200-desktop/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-51667--gets-403-loopback-gets-200-desktop/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-51667--gets-403-loopback-gets-200-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a28aa61fdbb67fa3521b-e073198c5c9bd480837e",
+              "file": "desk.spec.ts",
+              "line": 54,
+              "column": 3
+            },
+            {
+              "title": "accountant view parses the audit CSV per RFC 4180 (quoted commas, \"\" escapes, line breaks)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 664,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:54:55.196Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-2b7c9-commas-escapes-line-breaks--desktop/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-2b7c9-commas-escapes-line-breaks--desktop/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-2b7c9-commas-escapes-line-breaks--desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a28aa61fdbb67fa3521b-6eea729f1df665152746",
+              "file": "desk.spec.ts",
+              "line": 72,
+              "column": 3
+            },
+            {
+              "title": "Run payroll is disabled with its reason; the server answers POST /api/run with 410",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 888,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:54:55.890Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-d533e-swers-POST-api-run-with-410-desktop/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-d533e-swers-POST-api-run-with-410-desktop/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-d533e-swers-POST-api-run-with-410-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a28aa61fdbb67fa3521b-720975d2a736298dce8f",
+              "file": "desk.spec.ts",
+              "line": 93,
+              "column": 3
+            },
+            {
+              "title": "Accountant's view without ZCASH_AUDITOR_UFVK shows Setup required from /api/state, with no failing request",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1026,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:54:56.808Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-abf6f-ate-with-no-failing-request-desktop/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-abf6f-ate-with-no-failing-request-desktop/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-abf6f-ate-with-no-failing-request-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a28aa61fdbb67fa3521b-74ef5dba9665bad1f67f",
+              "file": "desk.spec.ts",
+              "line": 113,
+              "column": 3
+            },
+            {
+              "title": "configured desk: Chain config loaded; the accountant view shows the UFVK and the empty run list",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 842,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:54:57.865Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-44d54-UFVK-and-the-empty-run-list-desktop/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-44d54-UFVK-and-the-empty-run-list-desktop/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-44d54-UFVK-and-the-empty-run-list-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a28aa61fdbb67fa3521b-7aaf66dfc5e983834460",
+              "file": "desk.spec.ts",
+              "line": 134,
+              "column": 3
+            },
+            {
+              "title": "mainnet is refused; a spending-key-looking auditor value is refused and never shown",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 790,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:54:58.733Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-5fb73--is-refused-and-never-shown-desktop/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-5fb73--is-refused-and-never-shown-desktop/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-5fb73--is-refused-and-never-shown-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a28aa61fdbb67fa3521b-667f3e14f2cdf368357d",
+              "file": "desk.spec.ts",
+              "line": 151,
+              "column": 3
+            },
+            {
+              "title": "loading state: skeleton rows and \"Checking setup…\" until /api/state answers",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 709,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:54:59.550Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-d030a-up…-until-api-state-answers-desktop/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-d030a-up…-until-api-state-answers-desktop/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-d030a-up…-until-api-state-answers-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a28aa61fdbb67fa3521b-3104af412d5b32488462",
+              "file": "desk.spec.ts",
+              "line": 164,
+              "column": 3
+            },
+            {
+              "title": "reduced motion: the loading skeleton does not shimmer",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 672,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:00.294Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-de8a8-g-skeleton-does-not-shimmer-desktop/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-de8a8-g-skeleton-does-not-shimmer-desktop/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-de8a8-g-skeleton-does-not-shimmer-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a28aa61fdbb67fa3521b-e094678402e49c2c42fc",
+              "file": "desk.spec.ts",
+              "line": 183,
+              "column": 3
+            },
+            {
+              "title": "unreachable: the server stops before /api/state; the desk says so and the accountant button too",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 755,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:00.995Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-a4d75-d-the-accountant-button-too-desktop/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-a4d75-d-the-accountant-button-too-desktop/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-a4d75-d-the-accountant-button-too-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a28aa61fdbb67fa3521b-85e513df766241f2a665",
+              "file": "desk.spec.ts",
+              "line": 197,
+              "column": 3
+            },
+            {
+              "title": "empty roster: the server refuses to start rather than show an empty desk",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 170,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:01.780Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-ee7b1-her-than-show-an-empty-desk-desktop/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-ee7b1-her-than-show-an-empty-desk-desktop/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-ee7b1-her-than-show-an-empty-desk-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a28aa61fdbb67fa3521b-b904b911dd6a6825d74b",
+              "file": "desk.spec.ts",
+              "line": 228,
+              "column": 3
+            },
+            {
+              "title": "hash switches boards: back link, nav anchors, browser back/forward",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 874,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:01.959Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-2acc3-nchors-browser-back-forward-desktop/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-2acc3-nchors-browser-back-forward-desktop/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-2acc3-nchors-browser-back-forward-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a28aa61fdbb67fa3521b-42268bbee253f54fd1ed",
+              "file": "desk.spec.ts",
+              "line": 241,
+              "column": 3
+            },
+            {
+              "title": "no button labelled \"log\" exists on the desk; every desk button was exercised",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 637,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:02.883Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-661bb-y-desk-button-was-exercised-desktop/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-661bb-y-desk-button-was-exercised-desktop/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-661bb-y-desk-button-was-exercised-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a28aa61fdbb67fa3521b-0c353d7f5aeab1dc01c2",
+              "file": "desk.spec.ts",
+              "line": 270,
+              "column": 3
+            },
+            {
+              "title": "Setup required: every unset var by name, the roster from the CSV, focus on the heading",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile",
+                  "projectName": "mobile",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1174,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:16.320Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-18caa-he-CSV-focus-on-the-heading-mobile/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-18caa-he-CSV-focus-on-the-heading-mobile/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-18caa-he-CSV-focus-on-the-heading-mobile/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a28aa61fdbb67fa3521b-1d2125bd53554d9ae632",
+              "file": "desk.spec.ts",
+              "line": 9,
+              "column": 3
+            },
+            {
+              "title": "the desk says it exposes the employer key; a foreign Host (DNS rebinding) gets 403, loopback gets 200",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile",
+                  "projectName": "mobile",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 566,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:17.936Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-51667--gets-403-loopback-gets-200-mobile/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-51667--gets-403-loopback-gets-200-mobile/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-51667--gets-403-loopback-gets-200-mobile/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a28aa61fdbb67fa3521b-1e2fcbe5d32623f7eace",
+              "file": "desk.spec.ts",
+              "line": 54,
+              "column": 3
+            },
+            {
+              "title": "accountant view parses the audit CSV per RFC 4180 (quoted commas, \"\" escapes, line breaks)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile",
+                  "projectName": "mobile",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 677,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:18.528Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-2b7c9-commas-escapes-line-breaks--mobile/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-2b7c9-commas-escapes-line-breaks--mobile/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-2b7c9-commas-escapes-line-breaks--mobile/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a28aa61fdbb67fa3521b-6e0d5c0ef02c4fa1be9d",
+              "file": "desk.spec.ts",
+              "line": 72,
+              "column": 3
+            },
+            {
+              "title": "Run payroll is disabled with its reason; the server answers POST /api/run with 410",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile",
+                  "projectName": "mobile",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 951,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:19.236Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-d533e-swers-POST-api-run-with-410-mobile/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-d533e-swers-POST-api-run-with-410-mobile/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-d533e-swers-POST-api-run-with-410-mobile/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a28aa61fdbb67fa3521b-1e9314d6c9d3b6f6d9b1",
+              "file": "desk.spec.ts",
+              "line": 93,
+              "column": 3
+            },
+            {
+              "title": "Accountant's view without ZCASH_AUDITOR_UFVK shows Setup required from /api/state, with no failing request",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile",
+                  "projectName": "mobile",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 769,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:20.222Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-abf6f-ate-with-no-failing-request-mobile/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-abf6f-ate-with-no-failing-request-mobile/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-abf6f-ate-with-no-failing-request-mobile/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a28aa61fdbb67fa3521b-255859bf516e592789cb",
+              "file": "desk.spec.ts",
+              "line": 113,
+              "column": 3
+            },
+            {
+              "title": "configured desk: Chain config loaded; the accountant view shows the UFVK and the empty run list",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile",
+                  "projectName": "mobile",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 826,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:21.019Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-44d54-UFVK-and-the-empty-run-list-mobile/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-44d54-UFVK-and-the-empty-run-list-mobile/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-44d54-UFVK-and-the-empty-run-list-mobile/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a28aa61fdbb67fa3521b-3b95f17ba9eb747e71b2",
+              "file": "desk.spec.ts",
+              "line": 134,
+              "column": 3
+            },
+            {
+              "title": "mainnet is refused; a spending-key-looking auditor value is refused and never shown",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile",
+                  "projectName": "mobile",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 777,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:21.876Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-5fb73--is-refused-and-never-shown-mobile/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-5fb73--is-refused-and-never-shown-mobile/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-5fb73--is-refused-and-never-shown-mobile/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a28aa61fdbb67fa3521b-f2c28623fef74c1d6bb0",
+              "file": "desk.spec.ts",
+              "line": 151,
+              "column": 3
+            },
+            {
+              "title": "loading state: skeleton rows and \"Checking setup…\" until /api/state answers",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile",
+                  "projectName": "mobile",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 645,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:22.687Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-d030a-up…-until-api-state-answers-mobile/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-d030a-up…-until-api-state-answers-mobile/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-d030a-up…-until-api-state-answers-mobile/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a28aa61fdbb67fa3521b-98a78aaf3c10936c2ac5",
+              "file": "desk.spec.ts",
+              "line": 164,
+              "column": 3
+            },
+            {
+              "title": "reduced motion: the loading skeleton does not shimmer",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile",
+                  "projectName": "mobile",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 637,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:23.364Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-de8a8-g-skeleton-does-not-shimmer-mobile/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-de8a8-g-skeleton-does-not-shimmer-mobile/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-de8a8-g-skeleton-does-not-shimmer-mobile/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a28aa61fdbb67fa3521b-ba2e25607ced19dfbc01",
+              "file": "desk.spec.ts",
+              "line": 183,
+              "column": 3
+            },
+            {
+              "title": "unreachable: the server stops before /api/state; the desk says so and the accountant button too",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile",
+                  "projectName": "mobile",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 829,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:24.027Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-a4d75-d-the-accountant-button-too-mobile/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-a4d75-d-the-accountant-button-too-mobile/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-a4d75-d-the-accountant-button-too-mobile/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a28aa61fdbb67fa3521b-a8c3674f7fc90f57e8d2",
+              "file": "desk.spec.ts",
+              "line": 197,
+              "column": 3
+            },
+            {
+              "title": "empty roster: the server refuses to start rather than show an empty desk",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile",
+                  "projectName": "mobile",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 145,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:24.884Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-ee7b1-her-than-show-an-empty-desk-mobile/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-ee7b1-her-than-show-an-empty-desk-mobile/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-ee7b1-her-than-show-an-empty-desk-mobile/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a28aa61fdbb67fa3521b-7bbdee7713f978347ef8",
+              "file": "desk.spec.ts",
+              "line": 228,
+              "column": 3
+            },
+            {
+              "title": "hash switches boards: back link, nav anchors, browser back/forward",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile",
+                  "projectName": "mobile",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 821,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:25.038Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-2acc3-nchors-browser-back-forward-mobile/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-2acc3-nchors-browser-back-forward-mobile/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-2acc3-nchors-browser-back-forward-mobile/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a28aa61fdbb67fa3521b-cc0599e9745c7f7d1ab2",
+              "file": "desk.spec.ts",
+              "line": 241,
+              "column": 3
+            },
+            {
+              "title": "no button labelled \"log\" exists on the desk; every desk button was exercised",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile",
+                  "projectName": "mobile",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 681,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:25.898Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-661bb-y-desk-button-was-exercised-mobile/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-661bb-y-desk-button-was-exercised-mobile/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/desk-desk-read-only-employ-661bb-y-desk-button-was-exercised-mobile/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a28aa61fdbb67fa3521b-f5d73f37db2f7ed8247b",
+              "file": "desk.spec.ts",
+              "line": 270,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "landing.spec.ts",
+      "file": "landing.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "landing (the redacted payslip)",
+          "file": "landing.spec.ts",
+          "line": 15,
+          "column": 6,
+          "specs": [
+            {
+              "title": "loads the payslip; no horizontal scroll; the desk chip reads Setup required",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 730,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:03.553Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-af829-k-chip-reads-Setup-required-desktop/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-af829-k-chip-reads-Setup-required-desktop/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-af829-k-chip-reads-Setup-required-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4e5b49d369fd48ca0656-0015860984c6a0d9f35c",
+              "file": "landing.spec.ts",
+              "line": 16,
+              "column": 3
+            },
+            {
+              "title": "no key shows bars; Alice's key lifts her line once; Bob's key; back to no key",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4616,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:04.337Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-53b7c-ce-Bob-s-key-back-to-no-key-desktop/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-53b7c-ce-Bob-s-key-back-to-no-key-desktop/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-53b7c-ce-Bob-s-key-back-to-no-key-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4e5b49d369fd48ca0656-f8bd99f78ddae3c669fe",
+              "file": "landing.spec.ts",
+              "line": 30,
+              "column": 3
+            },
+            {
+              "title": "funding hop: the run total is hatched and no employee key lifts it",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 832,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:09.142Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-8f004-nd-no-employee-key-lifts-it-desktop/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-8f004-nd-no-employee-key-lifts-it-desktop/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-8f004-nd-no-employee-key-lifts-it-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4e5b49d369fd48ca0656-05148c4edfd40bed0755",
+              "file": "landing.spec.ts",
+              "line": 86,
+              "column": 3
+            },
+            {
+              "title": "reduced motion: Alice's line is lifted at once, with no transition",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 702,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:10.026Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-8c095--at-once-with-no-transition-desktop/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-8c095--at-once-with-no-transition-desktop/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-8c095--at-once-with-no-transition-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4e5b49d369fd48ca0656-039bf7a2bc4829c2d634",
+              "file": "landing.spec.ts",
+              "line": 101,
+              "column": 3
+            },
+            {
+              "title": "payout txids and heights match the recorded run; explorer links name each full txid",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 745,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:10.769Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-72b6a-r-links-name-each-full-txid-desktop/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-72b6a-r-links-name-each-full-txid-desktop/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-72b6a-r-links-name-each-full-txid-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4e5b49d369fd48ca0656-6de483c09c3845efc460",
+              "file": "landing.spec.ts",
+              "line": 113,
+              "column": 3
+            },
+            {
+              "title": "who-can-read table: each key reads its own line; the employer reads all",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 623,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:11.571Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-324ff-line-the-employer-reads-all-desktop/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-324ff-line-the-employer-reads-all-desktop/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-324ff-line-the-employer-reads-all-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4e5b49d369fd48ca0656-f2435741461ad7bc84fd",
+              "file": "landing.spec.ts",
+              "line": 124,
+              "column": 3
+            },
+            {
+              "title": "block ruler: pins sit at +11 and +19 blocks, labels do not overlap",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 647,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:12.221Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-105ed-locks-labels-do-not-overlap-desktop/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-105ed-locks-labels-do-not-overlap-desktop/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-105ed-locks-labels-do-not-overlap-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4e5b49d369fd48ca0656-019ab6c3b29ed9229e2b",
+              "file": "landing.spec.ts",
+              "line": 139,
+              "column": 3
+            },
+            {
+              "title": "proof format: the signed fields are Alice's recorded values and the published key",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 646,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:12.894Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-b85a4-alues-and-the-published-key-desktop/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-b85a4-alues-and-the-published-key-desktop/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-b85a4-alues-and-the-published-key-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4e5b49d369fd48ca0656-061667b1135a0277a512",
+              "file": "landing.spec.ts",
+              "line": 164,
+              "column": 3
+            },
+            {
+              "title": "deductions list the limits, including the 410 on the desk",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 746,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:13.573Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-b80ff-cluding-the-410-on-the-desk-desktop/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-b80ff-cluding-the-410-on-the-desk-desktop/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-b80ff-cluding-the-410-on-the-desk-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4e5b49d369fd48ca0656-99524d649683edc7ad75",
+              "file": "landing.spec.ts",
+              "line": 178,
+              "column": 3
+            },
+            {
+              "title": "nav links, hero buttons and the brand land on their targets",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 958,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:14.342Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-302a3-brand-land-on-their-targets-desktop/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-302a3-brand-land-on-their-targets-desktop/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-302a3-brand-land-on-their-targets-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4e5b49d369fd48ca0656-39f8d855d4f7553bd1a6",
+              "file": "landing.spec.ts",
+              "line": 198,
+              "column": 3
+            },
+            {
+              "title": "no button labelled \"log\" exists on the payslip",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 597,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:15.359Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-2b40e-d-log-exists-on-the-payslip-desktop/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-2b40e-d-log-exists-on-the-payslip-desktop/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-2b40e-d-log-exists-on-the-payslip-desktop/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4e5b49d369fd48ca0656-0c4251b3cb50569f4056",
+              "file": "landing.spec.ts",
+              "line": 222,
+              "column": 3
+            },
+            {
+              "title": "loads the payslip; no horizontal scroll; the desk chip reads Setup required",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile",
+                  "projectName": "mobile",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 697,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:26.617Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-af829-k-chip-reads-Setup-required-mobile/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-af829-k-chip-reads-Setup-required-mobile/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-af829-k-chip-reads-Setup-required-mobile/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4e5b49d369fd48ca0656-ef55fc8484005059d549",
+              "file": "landing.spec.ts",
+              "line": 16,
+              "column": 3
+            },
+            {
+              "title": "no key shows bars; Alice's key lifts her line once; Bob's key; back to no key",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile",
+                  "projectName": "mobile",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4472,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:27.359Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-53b7c-ce-Bob-s-key-back-to-no-key-mobile/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-53b7c-ce-Bob-s-key-back-to-no-key-mobile/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-53b7c-ce-Bob-s-key-back-to-no-key-mobile/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4e5b49d369fd48ca0656-375015a59c86fdbd1e87",
+              "file": "landing.spec.ts",
+              "line": 30,
+              "column": 3
+            },
+            {
+              "title": "funding hop: the run total is hatched and no employee key lifts it",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile",
+                  "projectName": "mobile",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 774,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:31.900Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-8f004-nd-no-employee-key-lifts-it-mobile/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-8f004-nd-no-employee-key-lifts-it-mobile/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-8f004-nd-no-employee-key-lifts-it-mobile/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4e5b49d369fd48ca0656-5b273b43e65685375f36",
+              "file": "landing.spec.ts",
+              "line": 86,
+              "column": 3
+            },
+            {
+              "title": "reduced motion: Alice's line is lifted at once, with no transition",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile",
+                  "projectName": "mobile",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 754,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:32.715Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-8c095--at-once-with-no-transition-mobile/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-8c095--at-once-with-no-transition-mobile/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-8c095--at-once-with-no-transition-mobile/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4e5b49d369fd48ca0656-54c484d9b07a631966e1",
+              "file": "landing.spec.ts",
+              "line": 101,
+              "column": 3
+            },
+            {
+              "title": "payout txids and heights match the recorded run; explorer links name each full txid",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile",
+                  "projectName": "mobile",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 692,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:33.496Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-72b6a-r-links-name-each-full-txid-mobile/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-72b6a-r-links-name-each-full-txid-mobile/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-72b6a-r-links-name-each-full-txid-mobile/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4e5b49d369fd48ca0656-893de4531d351b732a7b",
+              "file": "landing.spec.ts",
+              "line": 113,
+              "column": 3
+            },
+            {
+              "title": "who-can-read table: each key reads its own line; the employer reads all",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile",
+                  "projectName": "mobile",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 564,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:34.227Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-324ff-line-the-employer-reads-all-mobile/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-324ff-line-the-employer-reads-all-mobile/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-324ff-line-the-employer-reads-all-mobile/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4e5b49d369fd48ca0656-fffd59fff5b1baeb3abf",
+              "file": "landing.spec.ts",
+              "line": 124,
+              "column": 3
+            },
+            {
+              "title": "block ruler: pins sit at +11 and +19 blocks, labels do not overlap",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile",
+                  "projectName": "mobile",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 734,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:34.813Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-105ed-locks-labels-do-not-overlap-mobile/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-105ed-locks-labels-do-not-overlap-mobile/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-105ed-locks-labels-do-not-overlap-mobile/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4e5b49d369fd48ca0656-ded27e118f29cce382d9",
+              "file": "landing.spec.ts",
+              "line": 139,
+              "column": 3
+            },
+            {
+              "title": "proof format: the signed fields are Alice's recorded values and the published key",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile",
+                  "projectName": "mobile",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 690,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:35.575Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-b85a4-alues-and-the-published-key-mobile/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-b85a4-alues-and-the-published-key-mobile/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-b85a4-alues-and-the-published-key-mobile/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4e5b49d369fd48ca0656-70fd6a825f6bdfb48b77",
+              "file": "landing.spec.ts",
+              "line": 164,
+              "column": 3
+            },
+            {
+              "title": "deductions list the limits, including the 410 on the desk",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile",
+                  "projectName": "mobile",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 652,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:36.293Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-b80ff-cluding-the-410-on-the-desk-mobile/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-b80ff-cluding-the-410-on-the-desk-mobile/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-b80ff-cluding-the-410-on-the-desk-mobile/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4e5b49d369fd48ca0656-d789f35f09e2620a9cf5",
+              "file": "landing.spec.ts",
+              "line": 178,
+              "column": 3
+            },
+            {
+              "title": "nav links, hero buttons and the brand land on their targets",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile",
+                  "projectName": "mobile",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 952,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:36.969Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-302a3-brand-land-on-their-targets-mobile/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-302a3-brand-land-on-their-targets-mobile/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-302a3-brand-land-on-their-targets-mobile/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4e5b49d369fd48ca0656-0f6b627d9cea5e44de78",
+              "file": "landing.spec.ts",
+              "line": 198,
+              "column": 3
+            },
+            {
+              "title": "no button labelled \"log\" exists on the payslip",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile",
+                  "projectName": "mobile",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 686,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-26T12:55:37.973Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-2b40e-d-log-exists-on-the-payslip-mobile/test-finished-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-2b40e-d-log-exists-on-the-payslip-mobile/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t2-execute/e2e/test-results/landing-landing-the-redact-2b40e-d-log-exists-on-the-payslip-mobile/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4e5b49d369fd48ca0656-e9e9b1b90ccfaa7d15a5",
+              "file": "landing.spec.ts",
+              "line": 222,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-26T12:54:52.763Z",
+    "duration": 46067.541000000005,
+    "expected": 48,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

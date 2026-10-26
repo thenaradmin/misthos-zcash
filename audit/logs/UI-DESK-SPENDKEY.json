@@ -1,0 +1,178 @@
+{
+  "id": "UI-DESK-SPENDKEY",
+  "status": "FAIL",
+  "runs": [
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "status": "FAIL",
+      "expected": "Exact row text in AUDIT.md and literal assertions in audit/run/ui.mjs",
+      "error": "Expected zero console/page/unexpected same-origin errors; actual: {\"badConsole\":[{\"type\":\"error\",\"text\":\"Failed to load resource: the server responded with a status of 400 (Bad Request)\",\"location\":{\"url\":\"http://127.0.0.1:8793/api/audit\",\"line\":0,\"column\":0,\"lineNumber\":0,\"columnNumber\":0}}],\"pageErrors\":[],\"badNetwork\":[{\"event\":\"response\",\"url\":\"http://127.0.0.1:8793/api/audit\",\"status\":400}]}",
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+          "location": {
+            "url": "http://127.0.0.1:8793/api/audit",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "pageErrors": [],
+      "network": [
+        {
+          "event": "request",
+          "url": "http://127.0.0.1:8793/",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:8793/",
+          "status": 200
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Sometype+Mono:wght@400;500&display=swap",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Sometype+Mono:wght@400;500&display=swap",
+          "status": 200
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.gstatic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9GayojdSFO.woff2",
+          "method": "GET"
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.gstatic.com/s/sometypemono/v4/70lVu745KGk_R3uxyq0WrROhKpShQWVB_m4.woff2",
+          "method": "GET"
+        },
+        {
+          "event": "request",
+          "url": "http://127.0.0.1:8793/api/state",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:8793/api/state",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.gstatic.com/s/sometypemono/v4/70lVu745KGk_R3uxyq0WrROhKpShQWVB_m4.woff2",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.gstatic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9GayojdSFO.woff2",
+          "status": 200
+        },
+        {
+          "event": "request",
+          "url": "http://127.0.0.1:8793/api/audit",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:8793/api/audit",
+          "status": 400
+        }
+      ],
+      "screenshot": "audit/logs/UI-DESK-SPENDKEY-1280.jpg"
+    },
+    {
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "status": "FAIL",
+      "expected": "Exact row text in AUDIT.md and literal assertions in audit/run/ui.mjs",
+      "error": "Expected zero console/page/unexpected same-origin errors; actual: {\"badConsole\":[{\"type\":\"error\",\"text\":\"Failed to load resource: the server responded with a status of 400 (Bad Request)\",\"location\":{\"url\":\"http://127.0.0.1:8793/api/audit\",\"line\":0,\"column\":0,\"lineNumber\":0,\"columnNumber\":0}}],\"pageErrors\":[],\"badNetwork\":[{\"event\":\"response\",\"url\":\"http://127.0.0.1:8793/api/audit\",\"status\":400}]}",
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+          "location": {
+            "url": "http://127.0.0.1:8793/api/audit",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "pageErrors": [],
+      "network": [
+        {
+          "event": "request",
+          "url": "http://127.0.0.1:8793/",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:8793/",
+          "status": 200
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Sometype+Mono:wght@400;500&display=swap",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Sometype+Mono:wght@400;500&display=swap",
+          "status": 200
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.gstatic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9GayojdSFO.woff2",
+          "method": "GET"
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.gstatic.com/s/sometypemono/v4/70lVu745KGk_R3uxyq0WrROhKpShQWVB_m4.woff2",
+          "method": "GET"
+        },
+        {
+          "event": "request",
+          "url": "http://127.0.0.1:8793/api/state",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:8793/api/state",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.gstatic.com/s/sometypemono/v4/70lVu745KGk_R3uxyq0WrROhKpShQWVB_m4.woff2",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.gstatic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9GayojdSFO.woff2",
+          "status": 200
+        },
+        {
+          "event": "request",
+          "url": "http://127.0.0.1:8793/api/audit",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:8793/api/audit",
+          "status": 400
+        }
+      ],
+      "screenshot": "audit/logs/UI-DESK-SPENDKEY-375.jpg"
+    }
+  ]
+}

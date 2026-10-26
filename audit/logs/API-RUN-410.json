@@ -1,0 +1,23 @@
+{
+  "id": "API-RUN-410",
+  "status": "PASS",
+  "expected": "See unchanged exact expected result in AUDIT.md",
+  "actual": "Exact HTTP status/body assertions matched.",
+  "console": [],
+  "network": [
+    {
+      "response": "HTTP/1.1 410 Gone\r\nContent-Type: application/json\r\nContent-Length: 170\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"The dashboard no longer pays: a direct treasury payout cannot be proven per employee. Run `payroll pay <roster.csv> --two-step --label <period>` from the CLI.\"}",
+      "elapsed": 0.0,
+      "closed": true,
+      "request": "POST /api/run HTTP/1.1\r\nHost: 127.0.0.1:8791\r\n\r\n"
+    }
+  ],
+  "evidence": [
+    {
+      "response": "HTTP/1.1 410 Gone\r\nContent-Type: application/json\r\nContent-Length: 170\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"The dashboard no longer pays: a direct treasury payout cannot be proven per employee. Run `payroll pay <roster.csv> --two-step --label <period>` from the CLI.\"}",
+      "elapsed": 0.0,
+      "closed": true,
+      "request": "POST /api/run HTTP/1.1\r\nHost: 127.0.0.1:8791\r\n\r\n"
+    }
+  ]
+}

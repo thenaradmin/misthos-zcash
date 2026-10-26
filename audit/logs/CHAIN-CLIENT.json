@@ -1,0 +1,15 @@
+{
+  "id": "CHAIN-CLIENT",
+  "status": "UNTESTED",
+  "expected": "Unchanged exact expectation in AUDIT.md",
+  "actual": "Reviewed reversed 32-byte hash, raw transaction bytes, 0/u32::MAX unmined mapping, checked tip conversion and TLS roots/30s endpoint timeout. Needs authorized direct lightwalletd fixture exercising every return mapping; not executed.",
+  "console": [],
+  "network": [],
+  "reviewed_files": [
+    {
+      "path": "src/chain.rs",
+      "sha256": "edc9fe5f02da3b0cc5dbf98469d5adfc007b8abfc820a851d87c30ce8f439b18"
+    }
+  ],
+  "additional_evidence": null
+}

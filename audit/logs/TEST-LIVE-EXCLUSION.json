@@ -1,0 +1,14 @@
+{
+  "id": "TEST-LIVE-EXCLUSION",
+  "status": "PASS",
+  "expected": "Exact unchanged expectation in AUDIT.md",
+  "actual": "cargo test --offline observed 4 ignored live tests and none executed. Static inventory names wallet height, direct tip, broadcasting CSV payout and two-employee privacy. TESTNET TEST CANNOT RUN guards inspected.",
+  "console": [],
+  "network": [],
+  "diagnostics_scope": "Non-browser assertion; browser diagnostics are captured separately per UI row.",
+  "live_http": null,
+  "evidence": [
+    "audit/logs/cargo-test.txt",
+    "tests/testnet.rs"
+  ]
+}
