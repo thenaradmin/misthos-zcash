@@ -30,13 +30,13 @@
     "path": "audit/logs/CLI-PLAN-OK.json"
   },
   "CLI-PLAN-BAD": {
-    "status": "FAIL",
-    "detail": "Expected MAINNET address refusal plus one numbered diagnostic per bad row; actual exit 1 reports line 2 as not a valid Zcash address: Not a Zcash address, and line 3 as amount abc not decimal. No Draft/stdout or broadcast.",
+    "status": "PASS",
+    "detail": "Real binary exited 1 with exactly two numbered row errors, including MAINNET address refusal; stdout empty, no partial Draft/import or broadcast.",
     "path": "audit/logs/CLI-PLAN-BAD.json"
   },
   "EDGE-BAD-CSV": {
-    "status": "FAIL",
-    "detail": "Expected MAINNET address refusal plus one numbered diagnostic per bad row; actual exit 1 reports line 2 as not a valid Zcash address: Not a Zcash address, and line 3 as amount abc not decimal. No Draft/stdout or broadcast.",
+    "status": "PASS",
+    "detail": "Real binary exited 1 with exactly two numbered row errors, including MAINNET address refusal; stdout empty, no partial Draft/import or broadcast.",
     "path": "audit/logs/EDGE-BAD-CSV.json"
   },
   "CLI-PLAN-CAPS": {

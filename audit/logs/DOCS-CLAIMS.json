@@ -1,31 +1,11 @@
 {
   "id": "DOCS-CLAIMS",
-  "status": "FAIL",
-  "expected": "Unchanged exact expectation in AUDIT.md",
-  "actual": "Expected current crate/bin identifiers; README identifies repo/crate together as zec-private-payroll / payroll, but executed cargo metadata reports package/crate zec-payroll and bin payroll. Historical test counts remain dated; TESTING.md edits prohibited. No forbidden feature authority inferred.",
-  "console": [],
-  "network": [],
-  "reviewed_files": [
-    {
-      "path": "README.md",
-      "sha256": "db130de9d750a08043a243e1248eeded4bd77af0a2f524774ea3868eb976557d"
-    },
-    {
-      "path": "TESTING.md",
-      "sha256": "4037edd9a4b084712fe84b7421c079fa3ee4b82c392bbc057ac7b4f337206821"
-    },
-    {
-      "path": "CLAUDE.md",
-      "sha256": "e1608a8b82005f57c9986f675a4f6854b3c2fe4f7244e23fda5563856b4d5b69"
-    },
-    {
-      "path": "Cargo.toml",
-      "sha256": "3acd3d9a23fa356868df5b4380998c7cc016bf749c50fc615efecb293df6dae0"
-    }
-  ],
-  "additional_evidence": {
+  "status": "PASS",
+  "actual": "Fresh offline cargo metadata agrees with README: repo zec-private-payroll, package zec-payroll, library zec_payroll, CLI payroll. Historical counts and recorded chain wording unchanged.",
+  "evidence": {
+    "command": "cargo metadata --offline --no-deps --format-version 1",
     "metadata_package": "zec-payroll",
-    "metadata_targets": [
+    "targets": [
       {
         "name": "zec_payroll",
         "kind": [
@@ -69,6 +49,7 @@
         ]
       }
     ],
-    "readme_excerpt": "**Misthos** (Greek \u03bc\u03b9\u03c3\u03b8\u03cc\u03c2, \"wages\") is the product name; the repo, crate and CLI stay `zec-private-payroll` / `payroll`. It is a portfolio project, not a Zecathon entry."
+    "readme_excerpt": "**Misthos** (Greek \u03bc\u03b9\u03c3\u03b8\u03cc\u03c2, \"wages\") is the product name; the repo is `zec-private-payroll`, the Cargo package is `zec-payroll` (library crate `zec_payroll`), and the CLI is `payroll`. It is a portfolio project, not a Zecathon entry.",
+    "readme_sha256": "94c204f738859a686d9a4a3e209eb20b042f1f73474656fd70dfea3a85655484"
   }
 }
