@@ -1,0 +1,82 @@
+{
+  "WALLET-COMMAND": {
+    "status": "UNTESTED",
+    "detail": "Reviewed run_in session args and single quicksend receiver JSON. Needs an authorized executable wallet-command observation; no successful send permitted. Existing failure and receiver-JSON unit checks do not observe every argv field.",
+    "path": "audit/logs/WALLET-COMMAND.json"
+  },
+  "WALLET-CHILD-INIT": {
+    "status": "UNTESTED",
+    "detail": "Existing temp probe checks initial seed env/birthday and failed balance; it does not assert 0700, later calls removing inherited seed, or all directory semantics. Needs expanded isolated probe; no real wallet permitted.",
+    "path": "audit/logs/WALLET-CHILD-INIT.json"
+  },
+  "PAY-TWOSTEP-PREFLIGHT": {
+    "status": "UNTESTED",
+    "detail": "Reviewed label/duplicate/pending gates, child sync loop and tip before funding. Needs controlled pre-broadcast execution with wallet/chain dependencies; forbidden funded path not executed; code review alone is not PASS.",
+    "path": "audit/logs/PAY-TWOSTEP-PREFLIGHT.json"
+  },
+  "PAY-TWOSTEP-RESUME": {
+    "status": "UNTESTED",
+    "detail": "Reviewed Fresh/Funded/Paid selection and pending-before-send ordering, ambiguous outcome refusal and known-unsent retry. Needs controlled payout/resume execution; funded send forbidden.",
+    "path": "audit/logs/PAY-TWOSTEP-RESUME.json"
+  },
+  "PAY-TWOSTEP-CLEAR": {
+    "status": "UNTESTED",
+    "detail": "Reviewed period-specific filter, temporary-file write, sync_all, rename and fatal read/write handling. Private function has no existing runtime fixture; needs isolated executable clear-marker probe.",
+    "path": "audit/logs/PAY-TWOSTEP-CLEAR.json"
+  },
+  "PAY-TWOSTEP-WAITS": {
+    "status": "UNTESTED",
+    "detail": "Reviewed all-funding-mined aggregation, max height, saved targets, ten failed tip polls and named employee timeout. Needs controlled funded-run/lightwalletd observations; funded send forbidden.",
+    "path": "audit/logs/PAY-TWOSTEP-WAITS.json"
+  },
+  "CHAIN-CLIENT": {
+    "status": "UNTESTED",
+    "detail": "Reviewed reversed 32-byte hash, raw transaction bytes, 0/u32::MAX unmined mapping, checked tip conversion and TLS roots/30s endpoint timeout. Needs authorized direct lightwalletd fixture exercising every return mapping; not executed.",
+    "path": "audit/logs/CHAIN-CLIENT.json"
+  },
+  "PROOF-EXPORT-LEDGER": {
+    "status": "UNTESTED",
+    "detail": "Reviewed exact selector, child paid_txids for adhoc label, zero/multiple txid rejection and roster-sourced amount. Needs isolated signed export/ledger fixture; no real ledger/key access permitted.",
+    "path": "audit/logs/PROOF-EXPORT-LEDGER.json"
+  },
+  "PROOF-VERIFY-ORDER": {
+    "status": "UNTESTED",
+    "detail": "Reviewed parse, expected key, signature, child and signed-txid checks before HTTPS fetch; fetched raw/mined height and exact amount checks. Needs signed recorded proof files from 2026-10-20 for live path; no wallet replacements allowed.",
+    "path": "audit/logs/PROOF-VERIFY-ORDER.json"
+  },
+  "SCRIPT-TWO-EMPLOYEES": {
+    "status": "UNTESTED",
+    "detail": "Inspected only: requires employer seed, existing payout A/B, period roster; writes employee proofs, verifies live/cross-key then invokes ignored test. Needs PAYROLL_PAYOUT_A / PAYROLL_PAYOUT_B and period roster; script execution forbidden.",
+    "path": "audit/logs/SCRIPT-TWO-EMPLOYEES.json"
+  },
+  "CONTAINER-IMAGE": {
+    "status": "UNTESTED",
+    "detail": "Inspected rust:1.89-bookworm, locked release payroll build, Debian slim UID 10001, fixture CSV and no wallet/.env copies. Needs image build/runtime verification for PASS beyond source; image build/run excluded for this row.",
+    "path": "audit/logs/CONTAINER-IMAGE.json"
+  },
+  "CONTAINER-COMPOSE": {
+    "status": "UNTESTED",
+    "detail": "Inspected published-host bind with allow-remote, 0.0.0.0 extra_hosts, Traefik TLS/CORS, loopback healthcheck and no chain vars. Needs deployed configuration/runtime inspection beyond the permitted public GETs; SSH/redeploy forbidden.",
+    "path": "audit/logs/CONTAINER-COMPOSE.json"
+  },
+  "CHAIN-VERIFY-LIVE": {
+    "status": "UNTESTED",
+    "detail": "needs the signed proof files from the 2026-10-20 run; not in the repo; wallet and testnet send are forbidden",
+    "path": "audit/logs/CHAIN-VERIFY-LIVE.json"
+  },
+  "EXT-LIVE": {
+    "status": "PASS",
+    "detail": "One read-only GET each: / and /api/state returned 200; recorded payslip, two fixture rows, all five missing vars, Setup required configuration, empty runs. No deploy/SSH.",
+    "path": "audit/logs/EXT-LIVE.json"
+  },
+  "EXT-MCP": {
+    "status": "PASS",
+    "detail": "Executed repository integration search: no MCP server/tool-list implementation or dependency found. No feature added.",
+    "path": "audit/logs/EXT-MCP.json"
+  },
+  "DOCS-CLAIMS": {
+    "status": "FAIL",
+    "detail": "Expected current crate/bin identifiers; README identifies repo/crate together as zec-private-payroll / payroll, but executed cargo metadata reports package/crate zec-payroll and bin payroll. Historical test counts remain dated; TESTING.md edits prohibited. No forbidden feature authority inferred.",
+    "path": "audit/logs/DOCS-CLAIMS.json"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "id": "API-AUDIT-SPENDKEY",
+  "status": "PASS",
+  "expected": "See unchanged exact expected result in AUDIT.md",
+  "actual": "Exact refusal and no synthetic value echoed: True",
+  "console": [],
+  "network": {
+    "response": "HTTP/1.1 400 Bad Request\r\nContent-Type: application/json\r\nContent-Length: 79\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"ZCASH_AUDITOR_UFVK looks like a spending key; refusing to export it\"}",
+    "elapsed": 0.0,
+    "closed": true
+  },
+  "evidence": {
+    "response": "HTTP/1.1 400 Bad Request\r\nContent-Type: application/json\r\nContent-Length: 79\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"ZCASH_AUDITOR_UFVK looks like a spending key; refusing to export it\"}",
+    "elapsed": 0.0,
+    "closed": true
+  }
+}

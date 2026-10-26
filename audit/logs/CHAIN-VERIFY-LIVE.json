@@ -1,0 +1,17 @@
+{
+  "id": "CHAIN-VERIFY-LIVE",
+  "status": "UNTESTED",
+  "expected": "Unchanged exact expectation in AUDIT.md",
+  "actual": "needs the signed proof files from the 2026-10-20 run; not in the repo; wallet and testnet send are forbidden",
+  "console": [],
+  "network": [],
+  "reviewed_files": [
+    {
+      "path": "tests/proof_real_tx.rs",
+      "sha256": "202bf7c6def6fc1339cc8c3c7ffa41adb9bdbefd808be69c2579a66640d96aeb"
+    }
+  ],
+  "additional_evidence": {
+    "tracked_signed_proof_files": []
+  }
+}

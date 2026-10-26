@@ -1,0 +1,57 @@
+{
+  "id": "TEST-E2E",
+  "status": "FAIL",
+  "expected": "Exact unchanged expectation in AUDIT.md",
+  "actual": "Existing real-Chrome suite observed 48 passed, 0 failed, 0 skipped, 0 flaky. Audit expected zero console errors: trace extraction found 2 spending-key HTTP 400 console errors hidden by the harness allowlist. Desktop 1280\u00d7800 and mobile 375\u00d7812.",
+  "console": [],
+  "network": [],
+  "diagnostics_scope": "Non-browser assertion; browser diagnostics are captured separately per UI row.",
+  "live_http": null,
+  "evidence": {
+    "stats": {
+      "startTime": "2026-10-26T12:54:52.763Z",
+      "duration": 46067.541000000005,
+      "expected": 48,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "strict_console_errors": [
+      {
+        "test": "desk-desk-read-only-employ-5fb73--is-refused-and-never-shown-mobile",
+        "error": {
+          "type": "console",
+          "messageType": "error",
+          "text": "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+          "args": [],
+          "location": {
+            "url": "http://127.0.0.1:8793/api/audit",
+            "lineNumber": 0,
+            "columnNumber": 0
+          },
+          "time": 29906.42,
+          "pageId": "page@fc97b923cbdcca917909f9d5f1829bef"
+        }
+      },
+      {
+        "test": "desk-desk-read-only-employ-5fb73--is-refused-and-never-shown-desktop",
+        "error": {
+          "type": "console",
+          "messageType": "error",
+          "text": "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+          "args": [],
+          "location": {
+            "url": "http://127.0.0.1:8793/api/audit",
+            "lineNumber": 0,
+            "columnNumber": 0
+          },
+          "time": 6813.789,
+          "pageId": "page@752b3b1a87475b2031bf392317c3def4"
+        }
+      }
+    ],
+    "diagnostics": "audit/logs/e2e-diagnostics.json",
+    "report": "audit/logs/e2e.json",
+    "stdout": "audit/logs/e2e.txt"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "id": "E2E-HARNESS",
+  "status": "PASS",
+  "expected": "Exact unchanged expectation in AUDIT.md",
+  "actual": "Real setup was run against the live stack and after stopping each server by PID; each URL failed with its exact startup instruction. Configuration inspection: Chrome, one worker, zero retries, video/trace/screenshots; existing watcher attaches diagnostic failures.",
+  "console": [],
+  "network": [],
+  "diagnostics_scope": "Non-browser assertion; browser diagnostics are captured separately per UI row.",
+  "live_http": null,
+  "evidence": [
+    "audit/logs/harness-down-final.txt",
+    "audit/logs/e2e.json",
+    "e2e/global-setup.ts",
+    "e2e/playwright.config.ts",
+    "e2e/tests/fixtures.ts"
+  ]
+}

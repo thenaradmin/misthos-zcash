@@ -1,0 +1,212 @@
+{
+  "UI-PAYSLIP-LOAD": {
+    "status": "PASS",
+    "path": "audit/logs/UI-PAYSLIP-LOAD.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-PAYSLIP-NOKEY": {
+    "status": "PASS",
+    "path": "audit/logs/UI-PAYSLIP-NOKEY.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-PAYSLIP-ALICE": {
+    "status": "PASS",
+    "path": "audit/logs/UI-PAYSLIP-ALICE.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-PAYSLIP-BOB": {
+    "status": "PASS",
+    "path": "audit/logs/UI-PAYSLIP-BOB.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-PAYSLIP-FUNDING": {
+    "status": "PASS",
+    "path": "audit/logs/UI-PAYSLIP-FUNDING.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-PAYSLIP-TXIDS": {
+    "status": "PASS",
+    "path": "audit/logs/UI-PAYSLIP-TXIDS.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-EXPLORER-LINKS": {
+    "status": "PASS",
+    "path": "audit/logs/UI-EXPLORER-LINKS.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-KEYS-TABLE": {
+    "status": "PASS",
+    "path": "audit/logs/UI-KEYS-TABLE.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-BLOCKS": {
+    "status": "PASS",
+    "path": "audit/logs/UI-BLOCKS.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-PROOF-SECTION": {
+    "status": "PASS",
+    "path": "audit/logs/UI-PROOF-SECTION.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-LIMITS": {
+    "status": "PASS",
+    "path": "audit/logs/UI-LIMITS.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-NAV": {
+    "status": "PASS",
+    "path": "audit/logs/UI-NAV.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-375-PAYSLIP": {
+    "status": "PASS",
+    "path": "audit/logs/UI-375-PAYSLIP.json",
+    "detail": "Independent Chrome assertions passed at 375px; console/network captured."
+  },
+  "UI-REDUCED-MOTION": {
+    "status": "PASS",
+    "path": "audit/logs/UI-REDUCED-MOTION.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-DESK-SETUP": {
+    "status": "PASS",
+    "path": "audit/logs/UI-DESK-SETUP.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-DESK-ROSTER": {
+    "status": "PASS",
+    "path": "audit/logs/UI-DESK-ROSTER.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-DESK-RUN-DISABLED": {
+    "status": "PASS",
+    "path": "audit/logs/UI-DESK-RUN-DISABLED.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-DESK-CLI": {
+    "status": "PASS",
+    "path": "audit/logs/UI-DESK-CLI.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-DESK-AUDIT-MISSING": {
+    "status": "PASS",
+    "path": "audit/logs/UI-DESK-AUDIT-MISSING.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-DESK-AUDIT-LOADED": {
+    "status": "PASS",
+    "path": "audit/logs/UI-DESK-AUDIT-LOADED.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-DESK-MAINNET": {
+    "status": "PASS",
+    "path": "audit/logs/UI-DESK-MAINNET.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-DESK-SPENDKEY": {
+    "status": "FAIL",
+    "path": "audit/logs/UI-DESK-SPENDKEY.json",
+    "detail": "Both viewports show the required refusal and no synthetic spending value, but GET :8793/api/audit produces HTTP 400 and Chrome console.error: Failed to load resource: the server responded with a status of 400 (Bad Request). This row has no 400 exemption."
+  },
+  "UI-DESK-LOADING": {
+    "status": "PASS",
+    "path": "audit/logs/UI-DESK-LOADING.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-DESK-DOWN": {
+    "status": "PASS",
+    "path": "audit/logs/UI-DESK-DOWN.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-DESK-HASH": {
+    "status": "PASS",
+    "path": "audit/logs/UI-DESK-HASH.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-DESK-375": {
+    "status": "PASS",
+    "path": "audit/logs/UI-DESK-375.json",
+    "detail": "Independent Chrome assertions passed at 375px; console/network captured."
+  },
+  "UI-DESK-UNAUTH-COPY": {
+    "status": "FAIL",
+    "path": "audit/logs/UI-DESK-UNAUTH-COPY.json",
+    "detail": "Both viewports: setup and configured ledes explain key exposure to anyone reaching the port and 127.0.0.1; setup copy correctly says no key is set. Neither lede explicitly states that the desk has no login, as required. Full actual copy is captured in each browser log."
+  },
+  "UI-NO-LOG-BUTTON": {
+    "status": "PASS",
+    "path": "audit/logs/UI-NO-LOG-BUTTON.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-PAYSLIP-FUNDING-NOTE": {
+    "status": "PASS",
+    "path": "audit/logs/UI-PAYSLIP-FUNDING-NOTE.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-PAYSLIP-A11Y": {
+    "status": "PASS",
+    "path": "audit/logs/UI-PAYSLIP-A11Y.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-HERO-ART": {
+    "status": "PASS",
+    "path": "audit/logs/UI-HERO-ART.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-REVEAL-TRIGGER": {
+    "status": "PASS",
+    "path": "audit/logs/UI-REVEAL-TRIGGER.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-LIMITS-DETAILS": {
+    "status": "PASS",
+    "path": "audit/logs/UI-LIMITS-DETAILS.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-PROOF-REJECTIONS": {
+    "status": "PASS",
+    "path": "audit/logs/UI-PROOF-REJECTIONS.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-DESK-FOCUS": {
+    "status": "PASS",
+    "path": "audit/logs/UI-DESK-FOCUS.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-DESK-CLI-PATH": {
+    "status": "PASS",
+    "path": "audit/logs/UI-DESK-CLI-PATH.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-DESK-REDUCED-LOADING": {
+    "status": "PASS",
+    "path": "audit/logs/UI-DESK-REDUCED-LOADING.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-DESK-AUDIT-PARSER": {
+    "status": "PASS",
+    "path": "audit/logs/UI-DESK-AUDIT-PARSER.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "UI-DESK-TEXT-ESCAPING": {
+    "status": "PASS",
+    "path": "audit/logs/UI-DESK-TEXT-ESCAPING.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "EXT-FONTS": {
+    "status": "PASS",
+    "path": "audit/logs/EXT-FONTS.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "EDGE-INTERRUPT": {
+    "status": "PASS",
+    "path": "audit/logs/EDGE-INTERRUPT.json",
+    "detail": "Independent Chrome assertions passed at 1280 and 375px; console/network captured."
+  },
+  "EDGE-375": {
+    "status": "PASS",
+    "path": "audit/logs/EDGE-375.json",
+    "detail": "Independent Chrome assertions passed at 375px; console/network captured."
+  }
+}

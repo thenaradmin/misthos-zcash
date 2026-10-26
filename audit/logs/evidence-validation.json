@@ -1,0 +1,20 @@
+{
+  "rows": 154,
+  "counts": {
+    "PASS": 130,
+    "FAIL": 8,
+    "UNTESTED": 16
+  },
+  "pending_rows": 0,
+  "evidence_files": 283,
+  "total_bytes": 4769925,
+  "max_screenshot_bytes": 66611,
+  "source_scope": "AUDIT.md and audit/ only",
+  "screenshot_visual_qa": [
+    "UI-PAYSLIP-LOAD-1280.jpg",
+    "UI-375-PAYSLIP-375.jpg",
+    "UI-DESK-375-375.jpg",
+    "UI-BLOCKS-375.jpg",
+    "UI-DESK-TEXT-ESCAPING-1280.jpg"
+  ]
+}

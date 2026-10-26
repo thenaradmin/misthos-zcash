@@ -1,0 +1,3 @@
+setup (74891) already gone
+configured (74892) already gone
+mainnet (74893) already gone

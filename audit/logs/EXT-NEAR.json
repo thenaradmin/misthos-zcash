@@ -1,0 +1,16 @@
+{
+  "id": "EXT-NEAR",
+  "status": "PASS",
+  "expected": "Exact unchanged expectation in AUDIT.md",
+  "actual": "README explicitly excludes NEAR Intents and zakura-one-time-ivk; source/dependency search reviewed; actual UI network logs and offline CLI outputs show only local desk API calls plus Google Fonts, with no NEAR/Zakura integration.",
+  "console": [],
+  "network": [],
+  "diagnostics_scope": "Non-browser assertion; browser diagnostics are captured separately per UI row.",
+  "live_http": null,
+  "evidence": [
+    "README.md",
+    "Cargo.toml",
+    "audit/ui-results.json",
+    "audit/results.json"
+  ]
+}

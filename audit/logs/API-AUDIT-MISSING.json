@@ -1,0 +1,23 @@
+{
+  "id": "API-AUDIT-MISSING",
+  "status": "PASS",
+  "expected": "See unchanged exact expected result in AUDIT.md",
+  "actual": "Exact HTTP status/body assertions matched.",
+  "console": [],
+  "network": [
+    {
+      "response": "HTTP/1.1 400 Bad Request\r\nContent-Type: application/json\r\nContent-Length: 45\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"ZCASH_AUDITOR_UFVK not configured\"}",
+      "elapsed": 0.0,
+      "closed": true,
+      "request": "GET /api/audit HTTP/1.1\r\nHost: 127.0.0.1:8791\r\n\r\n"
+    }
+  ],
+  "evidence": [
+    {
+      "response": "HTTP/1.1 400 Bad Request\r\nContent-Type: application/json\r\nContent-Length: 45\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"ZCASH_AUDITOR_UFVK not configured\"}",
+      "elapsed": 0.0,
+      "closed": true,
+      "request": "GET /api/audit HTTP/1.1\r\nHost: 127.0.0.1:8791\r\n\r\n"
+    }
+  ]
+}

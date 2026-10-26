@@ -1,0 +1,21 @@
+{
+  "observed_at": "2026-10-26T13:07:07.290546+00:00",
+  "owned_pids_checked": [
+    59222,
+    77587,
+    75059,
+    66723,
+    74891,
+    74892,
+    74893,
+    66781,
+    67009
+  ],
+  "ps_exit": 1,
+  "ps_output": "  PID  PPID COMM\n",
+  "current_heavy_slot_owner": "ghost-nebius-audit 18859 2026-10-26T13:03:58Z",
+  "misthos_slot_released": true,
+  "stack_stop": "audit/logs/stack-stop.txt",
+  "browser_lifecycle": "audit/logs/chrome-lifecycle.json",
+  "note": "Each interruption probe awaited termination of its own server; Playwright managed and closed its per-test Chrome browsers."
+}

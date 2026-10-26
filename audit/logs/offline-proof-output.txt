@@ -1,0 +1,8 @@
+EMPLOYER SIGNATURE OK: key ed6a47a39da869b5446155e40b2d93f1e3f0167be26732bae7a3ef9d8e3a3fd3 (expected key from --employer-pubkey) signed 1250000 zat, period adhoc:2026-10, child utest1mpm56y4dt3hq3e6tc3ry034qra7jt63z4qrve8wlgaup72jyl9d6heymtf02dx5jr6kq3hcqqnl8k69sp6xevs43s48hmpsdcdvcdwvxsz458tnjuqngrseednf8vas4rmjvanmvkvh8z5z4mzcw64ymeeefmakvkm64k4c475ey0ned
+DECRYPTED OFFLINE (NOT checked on chain: the tx bytes and height 4465126 are whatever the supplier gave you; use --lwd): txid=0cceed8de6e9d5ca34d104b290b80cdc507a4285eaa2c0fbdc032192f2a8cab0
+employee_id (NOT signed; as written in the file): emp-a
+  PayoutOut Sapling 0.0125 ZEC recipient=6ebe9c4d892e2c9ccf5c24880b7f2b170be63a1d44be728028869fadf145442ba9eb250bb6ba8f0a48e1e7 memo="payroll emp-a"
+PAID OUT 0.0125 ZEC
+NOTE: the signature binds this payout to whoever holds the employer key above; it is only as good as your source for that key.
+NOTE: the proof is a bearer document: it shows this employer's child wallet paid the recipient above, not who is holding the file. Match the PayoutOut recipient bytes against the borrower's own address.
+AUDIT PROOF-VERIFY-OFFLINE PASS (synthetic fixture; not chain confirmation)

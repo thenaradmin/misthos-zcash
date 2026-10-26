@@ -1,0 +1,33 @@
+{
+  "id": "EXT-MCP",
+  "status": "PASS",
+  "expected": "Unchanged exact expectation in AUDIT.md",
+  "actual": "Executed repository integration search: no MCP server/tool-list implementation or dependency found. No feature added.",
+  "console": [],
+  "network": [],
+  "reviewed_files": [
+    {
+      "path": "Cargo.toml",
+      "sha256": "3acd3d9a23fa356868df5b4380998c7cc016bf749c50fc615efecb293df6dae0"
+    },
+    {
+      "path": "e2e/package.json",
+      "sha256": "d353e3ac88fe9115e8bb74e18eba579ff91c9aaef5d5981de13961eed2c72893"
+    }
+  ],
+  "additional_evidence": {
+    "command": [
+      "rg",
+      "-n",
+      "-i",
+      "mcp|modelcontextprotocol",
+      "src",
+      "tests",
+      "Cargo.toml",
+      "e2e/package.json"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": ""
+  }
+}

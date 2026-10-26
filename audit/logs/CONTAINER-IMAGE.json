@@ -1,0 +1,15 @@
+{
+  "id": "CONTAINER-IMAGE",
+  "status": "UNTESTED",
+  "expected": "Unchanged exact expectation in AUDIT.md",
+  "actual": "Inspected rust:1.89-bookworm, locked release payroll build, Debian slim UID 10001, fixture CSV and no wallet/.env copies. Needs image build/runtime verification for PASS beyond source; image build/run excluded for this row.",
+  "console": [],
+  "network": [],
+  "reviewed_files": [
+    {
+      "path": "Dockerfile",
+      "sha256": "b554b3d113f9e57d018539efa390f359404d5a8a8885dc609c60fbefb63482ce"
+    }
+  ],
+  "additional_evidence": null
+}
