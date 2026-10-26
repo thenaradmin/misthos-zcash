@@ -1,11 +1,31 @@
 {
   "id": "DOCS-CLAIMS",
   "status": "PASS",
-  "actual": "Fresh offline cargo metadata agrees with README: repo zec-private-payroll, package zec-payroll, library zec_payroll, CLI payroll. Historical counts and recorded chain wording unchanged.",
-  "evidence": {
-    "command": "cargo metadata --offline --no-deps --format-version 1",
+  "expected": "Unchanged exact expectation in AUDIT.md",
+  "actual": "Fresh offline cargo metadata confirms repo zec-private-payroll, package zec-payroll, library zec_payroll and CLI payroll. TESTING.md updated from this run. README labels recorded chain evidence and offline synthetic proof fixtures; timing linkage and unsigned identity limitations remain explicit. CLAUDE historical feature notes do not authorize new work.",
+  "console": [],
+  "network": [],
+  "reviewed_files": [
+    {
+      "path": "README.md",
+      "sha256": "be8cf928aa03ca30e943aeb99f31c0298907ff8578b9ed1924e10d208a6eae2b"
+    },
+    {
+      "path": "TESTING.md",
+      "sha256": "bb7c85a54f0fefa9d735892696dfa18432e7ca0dcc5bfe5fb840d29d05bf6a15"
+    },
+    {
+      "path": "CLAUDE.md",
+      "sha256": "e1608a8b82005f57c9986f675a4f6854b3c2fe4f7244e23fda5563856b4d5b69"
+    },
+    {
+      "path": "Cargo.toml",
+      "sha256": "3acd3d9a23fa356868df5b4380998c7cc016bf749c50fc615efecb293df6dae0"
+    }
+  ],
+  "additional_evidence": {
     "metadata_package": "zec-payroll",
-    "targets": [
+    "metadata_targets": [
       {
         "name": "zec_payroll",
         "kind": [
@@ -48,8 +68,6 @@
           "test"
         ]
       }
-    ],
-    "readme_excerpt": "**Misthos** (Greek \u03bc\u03b9\u03c3\u03b8\u03cc\u03c2, \"wages\") is the product name; the repo is `zec-private-payroll`, the Cargo package is `zec-payroll` (library crate `zec_payroll`), and the CLI is `payroll`. It is a portfolio project, not a Zecathon entry.",
-    "readme_sha256": "94c204f738859a686d9a4a3e209eb20b042f1f73474656fd70dfea3a85655484"
+    ]
   }
 }

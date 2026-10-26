@@ -1,8 +1,5 @@
 {
-  "wait_started": "2026-10-26T11:20Z",
-  "last_observed": "2026-10-26T11:35:11.492285+00:00",
-  "owner": "fuin-audit-local 35667 2026-10-26T11:02:45Z",
-  "heavy_work_started": true,
-  "granted_at": "2026-10-26T12:53:01.131449+00:00",
-  "granted_owner": "misthos-audit 54197 2026-10-26T12:52:38Z"
+  "owner": "misthos-reverify 98167 2026-10-26T13:23:56Z",
+  "acquired_before_server_or_chrome": true,
+  "checked_at": "2026-10-26T13:24:22.401839+00:00"
 }

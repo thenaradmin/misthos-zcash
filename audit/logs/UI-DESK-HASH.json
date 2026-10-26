@@ -55,12 +55,12 @@
         },
         {
           "event": "response",
-          "url": "https://fonts.gstatic.com/s/sometypemono/v4/70lVu745KGk_R3uxyq0WrROhKpShQWVB_m4.woff2",
+          "url": "https://fonts.gstatic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9GayojdSFO.woff2",
           "status": 200
         },
         {
           "event": "response",
-          "url": "https://fonts.gstatic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9GayojdSFO.woff2",
+          "url": "https://fonts.gstatic.com/s/sometypemono/v4/70lVu745KGk_R3uxyq0WrROhKpShQWVB_m4.woff2",
           "status": 200
         }
       ],

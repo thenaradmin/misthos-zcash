@@ -2,7 +2,7 @@
   "id": "EXT-LIVE",
   "status": "PASS",
   "expected": "Unchanged exact expectation in AUDIT.md",
-  "actual": "One read-only GET each: / and /api/state returned 200; recorded payslip, two fixture rows, all five missing vars, Setup required configuration, empty runs. No deploy/SSH.",
+  "actual": "GET https://misthos-api.201-18-198-162.sslip.io/: HTTP 200; captured body requires exact expected content Exactly one read-only GET of /; extra deployed API request forbidden by this task. No SSH or redeploy.",
   "console": [],
   "network": [],
   "reviewed_files": [
@@ -12,7 +12,6 @@
     }
   ],
   "additional_evidence": [
-    "audit/logs/EXT-LIVE-ROOT.json",
-    "audit/logs/EXT-LIVE-STATE.json"
+    "audit/logs/EXT-LIVE-ROOT.json"
   ]
 }

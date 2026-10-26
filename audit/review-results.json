@@ -66,7 +66,7 @@
   },
   "EXT-LIVE": {
     "status": "PASS",
-    "detail": "One read-only GET each: / and /api/state returned 200; recorded payslip, two fixture rows, all five missing vars, Setup required configuration, empty runs. No deploy/SSH.",
+    "detail": "GET https://misthos-api.201-18-198-162.sslip.io/: HTTP 200; captured body requires exact expected content Exactly one read-only GET of /; extra deployed API request forbidden by this task. No SSH or redeploy.",
     "path": "audit/logs/EXT-LIVE.json"
   },
   "EXT-MCP": {
@@ -76,7 +76,7 @@
   },
   "DOCS-CLAIMS": {
     "status": "PASS",
-    "detail": "Fresh offline cargo metadata agrees with README: repo zec-private-payroll, package zec-payroll, library zec_payroll, CLI payroll. Historical counts and recorded chain wording unchanged.",
+    "detail": "Fresh offline cargo metadata confirms repo zec-private-payroll, package zec-payroll, library zec_payroll and CLI payroll. TESTING.md updated from this run. README labels recorded chain evidence and offline synthetic proof fixtures; timing linkage and unsigned identity limitations remain explicit. CLAUDE historical feature notes do not authorize new work.",
     "path": "audit/logs/DOCS-CLAIMS.json"
   }
 }

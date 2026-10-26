@@ -1,8 +1,8 @@
 {
   "id": "UI-CONSOLE",
-  "status": "FAIL",
+  "status": "PASS",
   "expected": "Exact unchanged expectation in AUDIT.md",
-  "actual": "81 independent UI/viewport logs captured. Expected zero console/page/unexpected same-origin errors; diagnostics found on 2 runs. No spending-key 400 exemption.",
+  "actual": "81 independent UI/viewport logs captured. Zero unexpected console/page/same-origin errors; intentional interruption recorded separately.",
   "console": [],
   "network": [],
   "diagnostics_scope": "Non-browser assertion; browser diagnostics are captured separately per UI row.",
@@ -298,52 +298,16 @@
     {
       "id": "UI-DESK-SPENDKEY",
       "width": 1280,
-      "console_errors": [
-        {
-          "type": "error",
-          "text": "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-          "location": {
-            "url": "http://127.0.0.1:8793/api/audit",
-            "line": 0,
-            "column": 0,
-            "lineNumber": 0,
-            "columnNumber": 0
-          }
-        }
-      ],
+      "console_errors": [],
       "page_errors": [],
-      "network_errors": [
-        {
-          "event": "response",
-          "url": "http://127.0.0.1:8793/api/audit",
-          "status": 400
-        }
-      ]
+      "network_errors": []
     },
     {
       "id": "UI-DESK-SPENDKEY",
       "width": 375,
-      "console_errors": [
-        {
-          "type": "error",
-          "text": "Failed to load resource: the server responded with a status of 400 (Bad Request)",
-          "location": {
-            "url": "http://127.0.0.1:8793/api/audit",
-            "line": 0,
-            "column": 0,
-            "lineNumber": 0,
-            "columnNumber": 0
-          }
-        }
-      ],
+      "console_errors": [],
       "page_errors": [],
-      "network_errors": [
-        {
-          "event": "response",
-          "url": "http://127.0.0.1:8793/api/audit",
-          "status": 400
-        }
-      ]
+      "network_errors": []
     },
     {
       "id": "UI-DESK-LOADING",

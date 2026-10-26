@@ -18,7 +18,7 @@ WALLET-TXIDS PASS
 WALLET-FAILURE PASS
 
 thread 'main' panicked at src/wallet.rs:238:23:
-cannot read /var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/misthos-audit-ledger-74727/payroll-ledger: Is a directory (os error 21); refusing to guess the payout state
+cannot read /var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/misthos-audit-ledger-19297/payroll-ledger: Is a directory (os error 21); refusing to guess the payout state
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 WALLET-LEDGER PASS
 API-JSON-ESCAPING PASS

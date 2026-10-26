@@ -2,7 +2,7 @@
   "id": "CHAIN-TX-FUNDING",
   "status": "UNTESTED",
   "expected": "See unchanged exact expected result in AUDIT.md",
-  "actual": "public explorer rate-limited (HTTP 429); no wallet and no testnet send",
+  "actual": "Expected public transaction and height; explorer fetch failed. HTTP Error 429: Too Many Requests",
   "console": [],
   "network": {
     "url": "https://testnet.zecblock.com/tx/e0a93ebccc788ba5d6570478b927ebf1758318c0012f2d95ddda6624ef2cca87",
@@ -11,7 +11,5 @@
   "evidence": {
     "url": "https://testnet.zecblock.com/tx/e0a93ebccc788ba5d6570478b927ebf1758318c0012f2d95ddda6624ef2cca87",
     "error": "HTTP Error 429: Too Many Requests"
-  },
-  "request_start_unix": 1793016527.046912,
-  "minimum_spacing_seconds": 31
+  }
 }

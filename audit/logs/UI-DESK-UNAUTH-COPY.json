@@ -1,16 +1,15 @@
 {
   "id": "UI-DESK-UNAUTH-COPY",
-  "status": "FAIL",
+  "status": "PASS",
   "runs": [
     {
       "viewport": {
         "width": 1280,
         "height": 800
       },
-      "status": "FAIL",
+      "status": "PASS",
       "expected": "Exact row text in AUDIT.md and literal assertions in audit/run/ui.mjs",
-      "actual": null,
-      "error": "Expected explicit no-login statement in both ledes; actual: [{\"url\":\"http://127.0.0.1:8791\",\"text\":\"The employer's copy of the roster, with nothing redacted. It cannot pay. No employer viewing key is set here, so it shows none; a desk that has one shows it to anyone who can reach its port, so keep that one on 127.0.0.1.\"},{\"url\":\"http://127.0.0.1:8792\",\"text\":\"The employer's copy of the roster, with nothing redacted. It cannot pay. It shows the employer's viewing key to anyone who can reach this port, so keep it on 127.0.0.1.\"}]",
+      "error": null,
       "console": [],
       "pageErrors": [],
       "network": [
@@ -122,10 +121,9 @@
         "width": 375,
         "height": 812
       },
-      "status": "FAIL",
+      "status": "PASS",
       "expected": "Exact row text in AUDIT.md and literal assertions in audit/run/ui.mjs",
-      "actual": null,
-      "error": "Expected explicit no-login statement in both ledes; actual: [{\"url\":\"http://127.0.0.1:8791\",\"text\":\"The employer's copy of the roster, with nothing redacted. It cannot pay. No employer viewing key is set here, so it shows none; a desk that has one shows it to anyone who can reach its port, so keep that one on 127.0.0.1.\"},{\"url\":\"http://127.0.0.1:8792\",\"text\":\"The employer's copy of the roster, with nothing redacted. It cannot pay. It shows the employer's viewing key to anyone who can reach this port, so keep it on 127.0.0.1.\"}]",
+      "error": null,
       "console": [],
       "pageErrors": [],
       "network": [

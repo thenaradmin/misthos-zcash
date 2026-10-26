@@ -12,7 +12,6 @@
     "audit/logs/cargo-metadata.json",
     "Cargo.toml",
     "rust-toolchain.toml",
-    "src/server.rs",
-    "audit/logs/rustc-version.txt"
+    "src/server.rs"
   ]
 }

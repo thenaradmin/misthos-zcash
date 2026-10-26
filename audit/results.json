@@ -1,28 +1,23 @@
 {
   "CHAIN-TX-FUNDING": {
     "status": "UNTESTED",
-    "detail": "public explorer rate-limited (HTTP 429); no wallet and no testnet send",
+    "detail": "Expected public transaction and height; explorer fetch failed. HTTP Error 429: Too Many Requests",
     "path": "audit/logs/CHAIN-TX-FUNDING.json"
   },
   "CHAIN-TX-ALICE": {
     "status": "UNTESTED",
-    "detail": "public explorer rate-limited (HTTP 429); no wallet and no testnet send",
+    "detail": "Expected public transaction and height; explorer fetch failed. HTTP Error 429: Too Many Requests",
     "path": "audit/logs/CHAIN-TX-ALICE.json"
   },
   "CHAIN-TX-BOB": {
     "status": "UNTESTED",
-    "detail": "public explorer rate-limited (HTTP 429); no wallet and no testnet send",
+    "detail": "Expected public transaction and height; explorer fetch failed. HTTP Error 429: Too Many Requests",
     "path": "audit/logs/CHAIN-TX-BOB.json"
   },
   "EXT-LIVE-ROOT": {
     "status": "PASS",
     "detail": "GET https://misthos-api.201-18-198-162.sslip.io/: HTTP 200; captured body requires exact expected content",
     "path": "audit/logs/EXT-LIVE-ROOT.json"
-  },
-  "EXT-LIVE-STATE": {
-    "status": "PASS",
-    "detail": "GET https://misthos-api.201-18-198-162.sslip.io/api/state: HTTP 200; captured body requires exact expected content",
-    "path": "audit/logs/EXT-LIVE-STATE.json"
   },
   "CLI-PLAN-OK": {
     "status": "PASS",
@@ -31,12 +26,12 @@
   },
   "CLI-PLAN-BAD": {
     "status": "PASS",
-    "detail": "Real binary exited 1 with exactly two numbered row errors, including MAINNET address refusal; stdout empty, no partial Draft/import or broadcast.",
+    "detail": "All literal exit/output assertions matched.",
     "path": "audit/logs/CLI-PLAN-BAD.json"
   },
   "EDGE-BAD-CSV": {
     "status": "PASS",
-    "detail": "Real binary exited 1 with exactly two numbered row errors, including MAINNET address refusal; stdout empty, no partial Draft/import or broadcast.",
+    "detail": "All literal exit/output assertions matched.",
     "path": "audit/logs/EDGE-BAD-CSV.json"
   },
   "CLI-PLAN-CAPS": {
@@ -155,8 +150,8 @@
     "path": "audit/logs/API-GET-ROOT.json"
   },
   "API-STATE-SETUP": {
-    "status": "FAIL",
-    "detail": "Expected config_error to identify all five missing variables; actual config_error='ZCASH_NETWORK not configured'; ordered missing=['ZCASH_NETWORK', 'ZCASH_LWD_URL', 'ZCASH_WALLET_DB', 'ZCASH_WALLET_CLI', 'ZCASH_AUDITOR_UFVK']",
+    "status": "PASS",
+    "detail": "Expected config_error to identify all five missing variables; actual config_error='ZCASH_NETWORK not configured; ZCASH_LWD_URL not configured; ZCASH_WALLET_DB not configured; ZCASH_WALLET_CLI not configured; ZCASH_AUDITOR_UFVK not configured'; ordered missing=['ZCASH_NETWORK', 'ZCASH_LWD_URL', 'ZCASH_WALLET_DB', 'ZCASH_WALLET_CLI', 'ZCASH_AUDITOR_UFVK']",
     "path": "audit/logs/API-STATE-SETUP.json"
   },
   "API-STATE-CONFIGURED": {

@@ -99,12 +99,12 @@
         },
         {
           "event": "request",
-          "url": "https://fonts.gstatic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9GayojdSFO.woff2",
+          "url": "https://fonts.gstatic.com/l/font?kit=JqzH5SSPQuCQF3t8uOwiUL-taUTtarVKQ9vZ6pJJWlMNIsFiROCehM02Pzjt8nmeHbuPHiH_3eg&skey=1415227f49c9e832&v=v7",
           "method": "GET"
         },
         {
           "event": "request",
-          "url": "https://fonts.gstatic.com/s/sometypemono/v4/70lVu745KGk_R3uxyq0WrROhKpShQWVB_m4.woff2",
+          "url": "https://fonts.gstatic.com/l/font?kit=70lzu745KGk_R3uxyq0WrROhAJiJsJ_eTWllpTAMGC1Ro_CDLxiAohhgQILzd8NGpQTwMQ&skey=179b8e1a2b812095&v=v4",
           "method": "GET"
         },
         {
@@ -119,12 +119,12 @@
         },
         {
           "event": "response",
-          "url": "https://fonts.gstatic.com/s/sometypemono/v4/70lVu745KGk_R3uxyq0WrROhKpShQWVB_m4.woff2",
+          "url": "https://fonts.gstatic.com/l/font?kit=70lzu745KGk_R3uxyq0WrROhAJiJsJ_eTWllpTAMGC1Ro_CDLxiAohhgQILzd8NGpQTwMQ&skey=179b8e1a2b812095&v=v4",
           "status": 200
         },
         {
           "event": "response",
-          "url": "https://fonts.gstatic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9GayojdSFO.woff2",
+          "url": "https://fonts.gstatic.com/l/font?kit=JqzH5SSPQuCQF3t8uOwiUL-taUTtarVKQ9vZ6pJJWlMNIsFiROCehM02Pzjt8nmeHbuPHiH_3eg&skey=1415227f49c9e832&v=v7",
           "status": 200
         }
       ],

@@ -6,7 +6,7 @@
   "console": [],
   "network": {
     "hold_count": 64,
-    "setup_elapsed": 0.16099066600145306,
+    "setup_elapsed": 0.1635114170057932,
     "65th": {
       "response": "HTTP/1.1 503 Service Unavailable\r\nContent-Type: application/json\r\nContent-Length: 32\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"too many connections\"}",
       "elapsed": 0.0,
@@ -15,7 +15,7 @@
   },
   "evidence": {
     "hold_count": 64,
-    "setup_elapsed": 0.16099066600145306,
+    "setup_elapsed": 0.1635114170057932,
     "65th": {
       "response": "HTTP/1.1 503 Service Unavailable\r\nContent-Type: application/json\r\nContent-Length: 32\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"too many connections\"}",
       "elapsed": 0.0,
