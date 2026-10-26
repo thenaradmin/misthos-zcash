@@ -1,0 +1,93 @@
+{
+  "checked_at": "2026-10-26T13:28:34.729569+00:00",
+  "rows": 154,
+  "totals": {
+    "PASS": 138,
+    "UNTESTED": 16
+  },
+  "evidence_links_valid": true,
+  "all_former_fail_fixes_filled": true,
+  "screenshots": 81,
+  "max_screenshot_bytes": 92275,
+  "audit_bytes": 7397130,
+  "forbidden_artifacts": [],
+  "rust": {
+    "observed_sections": [
+      {
+        "result": "ok",
+        "passed": 72,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered": 0
+      },
+      {
+        "result": "ok",
+        "passed": 0,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered": 0
+      },
+      {
+        "result": "ok",
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered": 0
+      },
+      {
+        "result": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered": 0
+      },
+      {
+        "result": "ok",
+        "passed": 7,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered": 0
+      },
+      {
+        "result": "ok",
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered": 0
+      },
+      {
+        "result": "ok",
+        "passed": 0,
+        "failed": 0,
+        "ignored": 4,
+        "measured": 0,
+        "filtered": 0
+      },
+      {
+        "result": "ok",
+        "passed": 0,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered": 0
+      }
+    ],
+    "passed": 85,
+    "failed": 0,
+    "ignored": 4
+  },
+  "e2e": {
+    "startTime": "2026-10-26T13:25:42.766Z",
+    "duration": 45304.254,
+    "expected": 48,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

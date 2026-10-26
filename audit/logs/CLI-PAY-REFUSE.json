@@ -1,0 +1,23 @@
+{
+  "id": "CLI-PAY-REFUSE",
+  "status": "PASS",
+  "expected": "See unchanged exact expected result in AUDIT.md",
+  "actual": "All literal exit/output assertions matched.",
+  "console": [],
+  "network": [],
+  "evidence": [
+    {
+      "command": [
+        "env",
+        "-i",
+        "PATH=/Users/jaibajrang/.dpm/bin:/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home/bin:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/jaibajrang/.bb:/Users/jaibajrang/.bb:/Users/jaibajrang/.cre/bin:/Users/jaibajrang/.local/bin:/Users/jaibajrang/.grok/bin:/Users/jaibajrang/.dpm/bin:/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home/bin:/Users/jaibajrang/.antigravity-ide/antigravity-ide/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.opencode/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.bun/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.cargo/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/opt/homebrew/bin:/Users/jaibajrang/.nvm/versions/node/v24.13.0/bin:/Users/jaibajrang/.local/bin:/Users/jaibajrang/.dpm/bin:/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home/bin:/Users/jaibajrang/.local/share/solana/install/active_release/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/opt/homebrew/bin:/Users/jaibajrang/.dpm/bin:/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home/bin:/Users/jaibajrang/.codex/tmp/arg0-macos/codex-arg0IdVHhX:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/jaibajrang/.bb:/Users/jaibajrang/.cre/bin:/Users/jaibajrang/Library/pnpm:/Users/jaibajrang/.local/bin:/Users/jaibajrang/.grok/bin:/Users/jaibajrang/.railway/bin:/Users/jaibajrang/.antigravity-ide/antigravity-ide/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.opencode/bin:/Users/jaibajrang/.bun/bin:/Users/jaibajrang/.cargo/bin:/Users/jaibajrang/.aiken/bin:/Users/jaibajrang/.nvm/versions/node/v24.13.0/bin:/Users/jaibajrang/.local/share/solana/install/active_release/bin:/opt/homebrew/sbin:/Users/jaibajrang/.foundry/bin:/Users/jaibajrang/.risc0/bin:/Users/jaibajrang/.nargo/bin:/Users/jaibajrang/.nvm/versions/node/v20.20.0/bin:/Users/jaibajrang/.nvm/versions/node/v22.22.0/bin:/Users/jaibajrang/.nvm/versions/node/v22.22.2/bin:/Users/jaibajrang/go/bin:/Users/jaibajrang/bin:/Users/jaibajrang/.risc0/bin:/Users/jaibajrang/.nargo/bin:/Users/jaibajrang/.local/bin:/Users/jaibajrang/.local/bin:/Users/jaibajrang/.local/bin:/Users/jaibajrang/.foundry/bin:/Users/jaibajrang/.foundry/bin:/Users/jaibajrang/.foundry/bin",
+        "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t4-reverify/target/debug/payroll",
+        "pay",
+        "e2e/fixtures/roster.csv"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "ERROR: ZCASH_NETWORK not configured\n"
+    }
+  ]
+}

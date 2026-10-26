@@ -1,0 +1,15 @@
+{
+  "id": "CONTAINER-COMPOSE",
+  "status": "UNTESTED",
+  "expected": "Unchanged exact expectation in AUDIT.md",
+  "actual": "Inspected published-host bind with allow-remote, 0.0.0.0 extra_hosts, Traefik TLS/CORS, loopback healthcheck and no chain vars. Needs deployed configuration/runtime inspection beyond the permitted public GETs; SSH/redeploy forbidden.",
+  "console": [],
+  "network": [],
+  "reviewed_files": [
+    {
+      "path": "docker-compose.yml",
+      "sha256": "0d3a76b9713e97a8f0a861ca5f3057bcbcc57a848fe6e87017feb71e7bf6d05a"
+    }
+  ],
+  "additional_evidence": null
+}

@@ -1,0 +1,113 @@
+{
+  "id": "PROOF-SIGNATURE",
+  "status": "PASS",
+  "expected": "Exact unchanged expectation in AUDIT.md",
+  "actual": "6/6 named assertions completed successfully; real-key offline fixtures, not chain confirmation.",
+  "console": [],
+  "network": [],
+  "diagnostics_scope": "Non-browser assertion; browser diagnostics are captured separately per UI row.",
+  "live_http": null,
+  "evidence": {
+    "tests": [
+      {
+        "name": "attest::tests::valid_signature_passes",
+        "passed": true
+      },
+      {
+        "name": "attest::tests::forged_with_other_key_is_rejected",
+        "passed": true
+      },
+      {
+        "name": "attest::tests::any_changed_field_is_rejected",
+        "passed": true
+      },
+      {
+        "name": "attest::tests::fields_cannot_smuggle_lines",
+        "passed": true
+      },
+      {
+        "name": "disclosure::tests::signed_proof_rejects_tampering_forgery_and_network_swap",
+        "passed": true
+      },
+      {
+        "name": "attacks",
+        "passed": true
+      }
+    ],
+    "logs": [
+      "audit/logs/cargo-lib.txt",
+      "audit/logs/cargo-integrations.txt"
+    ],
+    "suite_counts": {
+      "observed_sections": [
+        {
+          "result": "ok",
+          "passed": 72,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "result": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "result": "ok",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "result": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "result": "ok",
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "result": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "result": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 4,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "result": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        }
+      ],
+      "passed": 85,
+      "failed": 0,
+      "ignored": 4
+    }
+  }
+}

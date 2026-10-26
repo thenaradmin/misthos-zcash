@@ -1,0 +1,402 @@
+{
+  "id": "TEST-E2E",
+  "status": "PASS",
+  "expected": "Exact unchanged expectation in AUDIT.md",
+  "actual": "Real Chrome via e2e/playwright.config.ts: 48 passed, 0 failed, 0 skipped, 0 flaky; 0 unexpected console/page/network errors. Desktop 1280\u00d7800 and mobile 375\u00d7812. Deliberate shutdown and explicit API refusal assertions are individually recorded.",
+  "console": [],
+  "network": [],
+  "diagnostics_scope": "Non-browser assertion; browser diagnostics are captured separately per UI row.",
+  "live_http": null,
+  "evidence": {
+    "stats": {
+      "startTime": "2026-10-26T13:25:42.766Z",
+      "duration": 45304.254,
+      "expected": 48,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "unexpected_diagnostics": [],
+    "expected_diagnostics": [
+      {
+        "test": "desk-desk-read-only-employ-51667--gets-403-loopback-gets-200-desktop",
+        "network": {
+          "url": "http://127.0.0.1:8792/api/audit",
+          "method": "GET",
+          "status": 403,
+          "failure": null,
+          "request_headers": [
+            {
+              "name": "user-agent",
+              "value": "Playwright/1.63.0 (arm64; macOS 26.5) node/26.5"
+            },
+            {
+              "name": "accept",
+              "value": "*/*"
+            },
+            {
+              "name": "accept-encoding",
+              "value": "gzip,deflate,br"
+            },
+            {
+              "name": "Host",
+              "value": "attacker.example:8792"
+            }
+          ]
+        },
+        "expected_reason": "explicit foreign-Host refusal API assertion"
+      },
+      {
+        "test": "desk-desk-read-only-employ-51667--gets-403-loopback-gets-200-desktop",
+        "network": {
+          "url": "http://127.0.0.1:8792/api/state",
+          "method": "GET",
+          "status": 403,
+          "failure": null,
+          "request_headers": [
+            {
+              "name": "user-agent",
+              "value": "Playwright/1.63.0 (arm64; macOS 26.5) node/26.5"
+            },
+            {
+              "name": "accept",
+              "value": "*/*"
+            },
+            {
+              "name": "accept-encoding",
+              "value": "gzip,deflate,br"
+            },
+            {
+              "name": "Host",
+              "value": "attacker.example:8792"
+            }
+          ]
+        },
+        "expected_reason": "explicit foreign-Host refusal API assertion"
+      },
+      {
+        "test": "desk-desk-read-only-employ-51667--gets-403-loopback-gets-200-desktop",
+        "network": {
+          "url": "http://127.0.0.1:8792/",
+          "method": "GET",
+          "status": 403,
+          "failure": null,
+          "request_headers": [
+            {
+              "name": "user-agent",
+              "value": "Playwright/1.63.0 (arm64; macOS 26.5) node/26.5"
+            },
+            {
+              "name": "accept",
+              "value": "*/*"
+            },
+            {
+              "name": "accept-encoding",
+              "value": "gzip,deflate,br"
+            },
+            {
+              "name": "Host",
+              "value": "attacker.example:8792"
+            }
+          ]
+        },
+        "expected_reason": "explicit foreign-Host refusal API assertion"
+      },
+      {
+        "test": "desk-desk-read-only-employ-51667--gets-403-loopback-gets-200-mobile",
+        "network": {
+          "url": "http://127.0.0.1:8792/api/audit",
+          "method": "GET",
+          "status": 403,
+          "failure": null,
+          "request_headers": [
+            {
+              "name": "user-agent",
+              "value": "Playwright/1.63.0 (arm64; macOS 26.5) node/26.5"
+            },
+            {
+              "name": "accept",
+              "value": "*/*"
+            },
+            {
+              "name": "accept-encoding",
+              "value": "gzip,deflate,br"
+            },
+            {
+              "name": "Host",
+              "value": "attacker.example:8792"
+            }
+          ]
+        },
+        "expected_reason": "explicit foreign-Host refusal API assertion"
+      },
+      {
+        "test": "desk-desk-read-only-employ-51667--gets-403-loopback-gets-200-mobile",
+        "network": {
+          "url": "http://127.0.0.1:8792/api/state",
+          "method": "GET",
+          "status": 403,
+          "failure": null,
+          "request_headers": [
+            {
+              "name": "user-agent",
+              "value": "Playwright/1.63.0 (arm64; macOS 26.5) node/26.5"
+            },
+            {
+              "name": "accept",
+              "value": "*/*"
+            },
+            {
+              "name": "accept-encoding",
+              "value": "gzip,deflate,br"
+            },
+            {
+              "name": "Host",
+              "value": "attacker.example:8792"
+            }
+          ]
+        },
+        "expected_reason": "explicit foreign-Host refusal API assertion"
+      },
+      {
+        "test": "desk-desk-read-only-employ-51667--gets-403-loopback-gets-200-mobile",
+        "network": {
+          "url": "http://127.0.0.1:8792/",
+          "method": "GET",
+          "status": 403,
+          "failure": null,
+          "request_headers": [
+            {
+              "name": "user-agent",
+              "value": "Playwright/1.63.0 (arm64; macOS 26.5) node/26.5"
+            },
+            {
+              "name": "accept",
+              "value": "*/*"
+            },
+            {
+              "name": "accept-encoding",
+              "value": "gzip,deflate,br"
+            },
+            {
+              "name": "Host",
+              "value": "attacker.example:8792"
+            }
+          ]
+        },
+        "expected_reason": "explicit foreign-Host refusal API assertion"
+      },
+      {
+        "test": "desk-desk-read-only-employ-a4d75-d-the-accountant-button-too-desktop",
+        "console": {
+          "type": "console",
+          "messageType": "error",
+          "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+          "args": [],
+          "location": {
+            "url": "http://127.0.0.1:8794/api/state",
+            "lineNumber": 0,
+            "columnNumber": 0
+          },
+          "time": 8138.462,
+          "pageId": "page@6112879c934661d9f99eae80accc4238"
+        }
+      },
+      {
+        "test": "desk-desk-read-only-employ-a4d75-d-the-accountant-button-too-desktop",
+        "console": {
+          "type": "console",
+          "messageType": "error",
+          "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+          "args": [],
+          "location": {
+            "url": "http://127.0.0.1:8794/api/audit",
+            "lineNumber": 0,
+            "columnNumber": 0
+          },
+          "time": 8330.178,
+          "pageId": "page@6112879c934661d9f99eae80accc4238"
+        }
+      },
+      {
+        "test": "desk-desk-read-only-employ-a4d75-d-the-accountant-button-too-mobile",
+        "console": {
+          "type": "console",
+          "messageType": "error",
+          "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+          "args": [],
+          "location": {
+            "url": "http://127.0.0.1:8794/api/state",
+            "lineNumber": 0,
+            "columnNumber": 0
+          },
+          "time": 31086.319,
+          "pageId": "page@d6a1feea64faf50573998268d11bd9de"
+        }
+      },
+      {
+        "test": "desk-desk-read-only-employ-a4d75-d-the-accountant-button-too-mobile",
+        "console": {
+          "type": "console",
+          "messageType": "error",
+          "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+          "args": [],
+          "location": {
+            "url": "http://127.0.0.1:8794/api/audit",
+            "lineNumber": 0,
+            "columnNumber": 0
+          },
+          "time": 31281.657,
+          "pageId": "page@d6a1feea64faf50573998268d11bd9de"
+        }
+      },
+      {
+        "test": "desk-desk-read-only-employ-abf6f-ate-with-no-failing-request-desktop",
+        "network": {
+          "url": "http://127.0.0.1:8791/api/audit",
+          "method": "GET",
+          "status": 400,
+          "failure": null,
+          "request_headers": [
+            {
+              "name": "user-agent",
+              "value": "Playwright/1.63.0 (arm64; macOS 26.5) node/26.5"
+            },
+            {
+              "name": "accept",
+              "value": "*/*"
+            },
+            {
+              "name": "accept-encoding",
+              "value": "gzip,deflate,br"
+            }
+          ]
+        },
+        "expected_reason": "explicit missing-UFVK API assertion"
+      },
+      {
+        "test": "desk-desk-read-only-employ-abf6f-ate-with-no-failing-request-mobile",
+        "network": {
+          "url": "http://127.0.0.1:8791/api/audit",
+          "method": "GET",
+          "status": 400,
+          "failure": null,
+          "request_headers": [
+            {
+              "name": "user-agent",
+              "value": "Playwright/1.63.0 (arm64; macOS 26.5) node/26.5"
+            },
+            {
+              "name": "accept",
+              "value": "*/*"
+            },
+            {
+              "name": "accept-encoding",
+              "value": "gzip,deflate,br"
+            }
+          ]
+        },
+        "expected_reason": "explicit missing-UFVK API assertion"
+      },
+      {
+        "test": "desk-desk-read-only-employ-d533e-swers-POST-api-run-with-410-desktop",
+        "network": {
+          "url": "http://127.0.0.1:8791/api/run",
+          "method": "POST",
+          "status": 410,
+          "failure": null,
+          "request_headers": [
+            {
+              "name": "user-agent",
+              "value": "Playwright/1.63.0 (arm64; macOS 26.5) node/26.5"
+            },
+            {
+              "name": "accept",
+              "value": "*/*"
+            },
+            {
+              "name": "accept-encoding",
+              "value": "gzip,deflate,br"
+            }
+          ]
+        },
+        "expected_reason": "explicit disabled-endpoint API assertion"
+      },
+      {
+        "test": "desk-desk-read-only-employ-d533e-swers-POST-api-run-with-410-desktop",
+        "network": {
+          "url": "http://127.0.0.1:8791/api/proof?employee=row2",
+          "method": "GET",
+          "status": 410,
+          "failure": null,
+          "request_headers": [
+            {
+              "name": "user-agent",
+              "value": "Playwright/1.63.0 (arm64; macOS 26.5) node/26.5"
+            },
+            {
+              "name": "accept",
+              "value": "*/*"
+            },
+            {
+              "name": "accept-encoding",
+              "value": "gzip,deflate,br"
+            }
+          ]
+        },
+        "expected_reason": "explicit disabled-endpoint API assertion"
+      },
+      {
+        "test": "desk-desk-read-only-employ-d533e-swers-POST-api-run-with-410-mobile",
+        "network": {
+          "url": "http://127.0.0.1:8791/api/run",
+          "method": "POST",
+          "status": 410,
+          "failure": null,
+          "request_headers": [
+            {
+              "name": "user-agent",
+              "value": "Playwright/1.63.0 (arm64; macOS 26.5) node/26.5"
+            },
+            {
+              "name": "accept",
+              "value": "*/*"
+            },
+            {
+              "name": "accept-encoding",
+              "value": "gzip,deflate,br"
+            }
+          ]
+        },
+        "expected_reason": "explicit disabled-endpoint API assertion"
+      },
+      {
+        "test": "desk-desk-read-only-employ-d533e-swers-POST-api-run-with-410-mobile",
+        "network": {
+          "url": "http://127.0.0.1:8791/api/proof?employee=row2",
+          "method": "GET",
+          "status": 410,
+          "failure": null,
+          "request_headers": [
+            {
+              "name": "user-agent",
+              "value": "Playwright/1.63.0 (arm64; macOS 26.5) node/26.5"
+            },
+            {
+              "name": "accept",
+              "value": "*/*"
+            },
+            {
+              "name": "accept-encoding",
+              "value": "gzip,deflate,br"
+            }
+          ]
+        },
+        "expected_reason": "explicit disabled-endpoint API assertion"
+      }
+    ],
+    "diagnostics": "audit/logs/e2e-diagnostics.json",
+    "report": "audit/logs/e2e.json",
+    "stdout": "audit/logs/e2e.txt"
+  }
+}

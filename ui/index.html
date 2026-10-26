@@ -503,7 +503,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
       <div>
         <a class="back" href="#top">← The payslip</a>
         <h1 id="desk-h" tabindex="-1">The desk</h1>
-        <p id="desk-lede">The employer's copy of the roster, with nothing redacted. It cannot pay. It shows the employer's viewing key to anyone who can reach this port, so keep it on 127.0.0.1.</p>
+        <p id="desk-lede">The employer's copy of the roster, with nothing redacted. It cannot pay. It has no login. It shows the employer's viewing key to anyone who can reach this port, so keep it on 127.0.0.1.</p>
       </div>
     </div>
 
@@ -612,6 +612,7 @@ function setChip(el,s){
 }
 /* true once /api/state lists ZCASH_AUDITOR_UFVK as missing: /api/audit would only answer 400 */
 let noAuditor=false;
+let auditorError=null;
 async function state(){
   let s=null;
   try{ const r=await fetch('/api/state'); if(!r.ok) throw new Error('HTTP '+r.status); s=await r.json(); }
@@ -624,7 +625,8 @@ async function state(){
   }
   setChip($('net'),s);
   noAuditor=s.missing.includes('ZCASH_AUDITOR_UFVK');
-  if(noAuditor) $('desk-lede').textContent="The employer's copy of the roster, with nothing redacted. It cannot pay. No employer viewing key is set here, so it shows none; a desk that has one shows it to anyone who can reach its port, so keep that one on 127.0.0.1.";
+  auditorError=s.auditor_error;
+  if(noAuditor) $('desk-lede').textContent="The employer's copy of the roster, with nothing redacted. It cannot pay. It has no login. No employer viewing key is set here, so it shows none; a desk that has one shows it to anyone who can reach its port, so keep that one on 127.0.0.1.";
   const env=$('env');
   if(s.missing.length||s.config_error){
     env.className='env bad';
@@ -669,6 +671,7 @@ function parseCsv(text){
 $('loadAudit').onclick=async()=>{
   const box=$('audit'), btn=$('loadAudit');
   if(noAuditor){ box.innerHTML='<div class="alert"><b>Setup required</b>ZCASH_AUDITOR_UFVK not configured</div>'; return; }
+  if(auditorError){ box.innerHTML='<div class="alert"><b>Setup required</b>'+esc(auditorError)+'</div>'; return; }
   btn.disabled=true; btn.textContent='Opening…';
   try{
     const r=await fetch('/api/audit');

@@ -1,0 +1,16 @@
+{
+  "id": "CORE-DATE",
+  "status": "PASS",
+  "expected": "Exact unchanged expectation in AUDIT.md",
+  "actual": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+  "console": [],
+  "network": [],
+  "diagnostics_scope": "Non-browser assertion; browser diagnostics are captured separately per UI row.",
+  "live_http": null,
+  "evidence": [
+    "audit/run/probe.rs",
+    "audit/logs/probe-build.txt",
+    "audit/logs/probe.txt",
+    "audit/logs/cargo-lib.txt"
+  ]
+}

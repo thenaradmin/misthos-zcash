@@ -1,0 +1,24 @@
+{
+  "id": "CLI-AUDIT-EXPORT-OK",
+  "status": "PASS",
+  "expected": "See unchanged exact expected result in AUDIT.md",
+  "actual": "All literal exit/output assertions matched.",
+  "console": [],
+  "network": [],
+  "evidence": [
+    {
+      "command": [
+        "env",
+        "-i",
+        "PATH=/Users/jaibajrang/.dpm/bin:/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home/bin:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/jaibajrang/.bb:/Users/jaibajrang/.bb:/Users/jaibajrang/.cre/bin:/Users/jaibajrang/.local/bin:/Users/jaibajrang/.grok/bin:/Users/jaibajrang/.dpm/bin:/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home/bin:/Users/jaibajrang/.antigravity-ide/antigravity-ide/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.opencode/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.bun/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.cargo/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/opt/homebrew/bin:/Users/jaibajrang/.nvm/versions/node/v24.13.0/bin:/Users/jaibajrang/.local/bin:/Users/jaibajrang/.dpm/bin:/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home/bin:/Users/jaibajrang/.local/share/solana/install/active_release/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/opt/homebrew/bin:/Users/jaibajrang/.dpm/bin:/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home/bin:/Users/jaibajrang/.codex/tmp/arg0-macos/codex-arg0IdVHhX:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/jaibajrang/.bb:/Users/jaibajrang/.cre/bin:/Users/jaibajrang/Library/pnpm:/Users/jaibajrang/.local/bin:/Users/jaibajrang/.grok/bin:/Users/jaibajrang/.railway/bin:/Users/jaibajrang/.antigravity-ide/antigravity-ide/bin:/Users/jaibajrang/.antigravity/antigravity/bin:/Users/jaibajrang/.opencode/bin:/Users/jaibajrang/.bun/bin:/Users/jaibajrang/.cargo/bin:/Users/jaibajrang/.aiken/bin:/Users/jaibajrang/.nvm/versions/node/v24.13.0/bin:/Users/jaibajrang/.local/share/solana/install/active_release/bin:/opt/homebrew/sbin:/Users/jaibajrang/.foundry/bin:/Users/jaibajrang/.risc0/bin:/Users/jaibajrang/.nargo/bin:/Users/jaibajrang/.nvm/versions/node/v20.20.0/bin:/Users/jaibajrang/.nvm/versions/node/v22.22.0/bin:/Users/jaibajrang/.nvm/versions/node/v22.22.2/bin:/Users/jaibajrang/go/bin:/Users/jaibajrang/bin:/Users/jaibajrang/.risc0/bin:/Users/jaibajrang/.nargo/bin:/Users/jaibajrang/.local/bin:/Users/jaibajrang/.local/bin:/Users/jaibajrang/.local/bin:/Users/jaibajrang/.foundry/bin:/Users/jaibajrang/.foundry/bin:/Users/jaibajrang/.foundry/bin",
+        "ZCASH_AUDITOR_UFVK=uviewtest1ewkpkaqar0lepvymgvldj84se9dy32wtgywydq4qtgd4n5atjp4thf54s4w8hd2vq4ja7rq730anvau40f38726lsk04vh0q2peznfkxehf0yz4mrkfnft0k3g37ms2fxka6cf7dxscmrh64nls5hxjp8glj40kqvlpmahrr2y0xzhkku3pvflghadxqf",
+        "/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t4-reverify/target/debug/payroll",
+        "audit-export",
+        "e2e/fixtures/roster.csv"
+      ],
+      "exit": 0,
+      "stdout": "# network=testnet\n# ufvk=uviewtest1ewkpkaqar0lepvymgvldj84se9dy32wtgywydq4qtgd4n5atjp4thf54s4w8hd2vq4ja7rq730anvau40f38726lsk04vh0q2peznfkxehf0yz4mrkfnft0k3g37ms2fxka6cf7dxscmrh64nls5hxjp8glj40kqvlpmahrr2y0xzhkku3pvflghadxqf\nrun_id,period,status,txid,height,line_index,employee_id,name,address,amount_zec,memo\n1,adhoc:e2e/fixtures/roster.csv,draft,,,0,row2,Alice,utest189hw2g54g98mmzpja326q9mn4tecm7yjq8xep2unu2zgwp7f867h0a5qwgm0cg8qrgrygqh3vas2wrsr7ex9r7eckv8jx3q9guxpscsv,0.02 ZEC,Oct 2026 demo pay\n1,adhoc:e2e/fixtures/roster.csv,draft,,,1,row3,Bob,utest10j66p2gxd9ne5xtahaufda9ft8ge2sy6jelme605cwzn7xd83wks84vqdra5a82nzqj7yawttmsw9fspvr7t3sseru2zf0wp9qde527n,0.02 ZEC,Oct 2026 demo pay\n",
+      "stderr": ""
+    }
+  ]
+}

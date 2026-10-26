@@ -1,0 +1,17 @@
+{
+  "id": "API-STATE-SETUP",
+  "status": "PASS",
+  "expected": "See unchanged exact expected result in AUDIT.md",
+  "actual": "Expected config_error to identify all five missing variables; actual config_error='ZCASH_NETWORK not configured; ZCASH_LWD_URL not configured; ZCASH_WALLET_DB not configured; ZCASH_WALLET_CLI not configured; ZCASH_AUDITOR_UFVK not configured'; ordered missing=['ZCASH_NETWORK', 'ZCASH_LWD_URL', 'ZCASH_WALLET_DB', 'ZCASH_WALLET_CLI', 'ZCASH_AUDITOR_UFVK']",
+  "console": [],
+  "network": {
+    "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: 934\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"network\":\"\",\"lwd\":\"\",\"config_error\":\"ZCASH_NETWORK not configured; ZCASH_LWD_URL not configured; ZCASH_WALLET_DB not configured; ZCASH_WALLET_CLI not configured; ZCASH_AUDITOR_UFVK not configured\",\"auditor_error\":null,\"missing\":[\"ZCASH_NETWORK\",\"ZCASH_LWD_URL\",\"ZCASH_WALLET_DB\",\"ZCASH_WALLET_CLI\",\"ZCASH_AUDITOR_UFVK\"],\"roster_path\":\"/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t4-reverify/e2e/fixtures/roster.csv\",\"roster\":[{\"id\":\"row2\",\"name\":\"Alice\",\"address\":\"utest189hw2g54g98mmzpja326q9mn4tecm7yjq8xep2unu2zgwp7f867h0a5qwgm0cg8qrgrygqh3vas2wrsr7ex9r7eckv8jx3q9guxpscsv\",\"amount\":\"0.02 ZEC\",\"memo\":\"Oct 2026 demo pay\",\"active\":true},{\"id\":\"row3\",\"name\":\"Bob\",\"address\":\"utest10j66p2gxd9ne5xtahaufda9ft8ge2sy6jelme605cwzn7xd83wks84vqdra5a82nzqj7yawttmsw9fspvr7t3sseru2zf0wp9qde527n\",\"amount\":\"0.02 ZEC\",\"memo\":\"Oct 2026 demo pay\",\"active\":true}],\"roster_total\":\"0.04 ZEC\",\"runs\":[]}",
+    "elapsed": 0.0,
+    "closed": true
+  },
+  "evidence": {
+    "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: 934\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"network\":\"\",\"lwd\":\"\",\"config_error\":\"ZCASH_NETWORK not configured; ZCASH_LWD_URL not configured; ZCASH_WALLET_DB not configured; ZCASH_WALLET_CLI not configured; ZCASH_AUDITOR_UFVK not configured\",\"auditor_error\":null,\"missing\":[\"ZCASH_NETWORK\",\"ZCASH_LWD_URL\",\"ZCASH_WALLET_DB\",\"ZCASH_WALLET_CLI\",\"ZCASH_AUDITOR_UFVK\"],\"roster_path\":\"/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t4-reverify/e2e/fixtures/roster.csv\",\"roster\":[{\"id\":\"row2\",\"name\":\"Alice\",\"address\":\"utest189hw2g54g98mmzpja326q9mn4tecm7yjq8xep2unu2zgwp7f867h0a5qwgm0cg8qrgrygqh3vas2wrsr7ex9r7eckv8jx3q9guxpscsv\",\"amount\":\"0.02 ZEC\",\"memo\":\"Oct 2026 demo pay\",\"active\":true},{\"id\":\"row3\",\"name\":\"Bob\",\"address\":\"utest10j66p2gxd9ne5xtahaufda9ft8ge2sy6jelme605cwzn7xd83wks84vqdra5a82nzqj7yawttmsw9fspvr7t3sseru2zf0wp9qde527n\",\"amount\":\"0.02 ZEC\",\"memo\":\"Oct 2026 demo pay\",\"active\":true}],\"roster_total\":\"0.04 ZEC\",\"runs\":[]}",
+    "elapsed": 0.0,
+    "closed": true
+  }
+}

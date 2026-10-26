@@ -1,0 +1,64 @@
+{
+  "checked_at": "2026-10-26T13:27:41.733581+00:00",
+  "known_processes": [
+    {
+      "pid": 20855,
+      "label": "setup",
+      "alive": false
+    },
+    {
+      "pid": 20856,
+      "label": "configured",
+      "alive": false
+    },
+    {
+      "pid": 20857,
+      "label": "mainnet",
+      "alive": false
+    },
+    {
+      "pid": 23521,
+      "label": "independent Chrome",
+      "alive": false
+    },
+    {
+      "pid": 48501,
+      "label": "renderer server",
+      "alive": false
+    },
+    {
+      "pid": 48552,
+      "label": "renderer server",
+      "alive": false
+    }
+  ],
+  "local_ports": [
+    {
+      "port": 8791,
+      "accepts_connection": false
+    },
+    {
+      "port": 8792,
+      "accepts_connection": false
+    },
+    {
+      "port": 8793,
+      "accepts_connection": false
+    },
+    {
+      "port": 8794,
+      "accepts_connection": false
+    },
+    {
+      "port": 8795,
+      "accepts_connection": false
+    },
+    {
+      "port": 8796,
+      "accepts_connection": false
+    }
+  ],
+  "slot_released": true,
+  "slot_current_owner": "misthos-fix 82825 2026-10-26T13:26:32Z",
+  "stack_pid_file_absent": true
+}

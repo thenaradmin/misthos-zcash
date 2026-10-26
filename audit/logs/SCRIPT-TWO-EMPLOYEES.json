@@ -1,0 +1,15 @@
+{
+  "id": "SCRIPT-TWO-EMPLOYEES",
+  "status": "UNTESTED",
+  "expected": "Unchanged exact expectation in AUDIT.md",
+  "actual": "Inspected only: requires employer seed, existing payout A/B, period roster; writes employee proofs, verifies live/cross-key then invokes ignored test. Needs PAYROLL_PAYOUT_A / PAYROLL_PAYOUT_B and period roster; script execution forbidden.",
+  "console": [],
+  "network": [],
+  "reviewed_files": [
+    {
+      "path": "scripts/testnet-two-employees.sh",
+      "sha256": "ef682d16215f6abcacb08bcb310ef974b6919b656a92dd648d9d62001772c609"
+    }
+  ],
+  "additional_evidence": null
+}

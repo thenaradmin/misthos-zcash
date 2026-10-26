@@ -1,0 +1,204 @@
+{
+  "id": "UI-DESK-TEXT-ESCAPING",
+  "status": "PASS",
+  "runs": [
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "status": "PASS",
+      "expected": "Exact row text in AUDIT.md and literal assertions in audit/run/ui.mjs",
+      "actual": {
+        "server_pid": 48501,
+        "name": "<img src=x onerror=\"window.__injected=1\"> & Alice",
+        "memo": "<svg onload=\"window.__injected=2\"> & memo",
+        "config_error_value": "invalid<svg/onload=window.__injected=3>",
+        "fixture_ufvk": "uviewtest1ewkpkaqar0lepvymgvldj84se9dy32wtgywydq4qtgd4n5atjp4thf54s4w8hd2vq4ja7rq730anvau40f38726lsk04vh0q2peznfkxehf0yz4mrkfnft0k3g37ms2fxka6cf7dxscmrh64nls5hxjp8glj40kqvlpmahrr2y0xzhkku3pvflghadxqf<b id=\"bad-key\">view</b>",
+        "address_helper_cases": [
+          {
+            "input": "<img src=x onerror=\"window.__injected=4\">",
+            "text": "<img src=x onerror=\"window.__injected=4\">",
+            "children": 0
+          },
+          {
+            "input": "A & B \"quoted\"",
+            "text": "A & B \"quoted\"",
+            "children": 0
+          },
+          {
+            "input": "<svg onload=alert(1)>",
+            "text": "<svg onload=alert(1)>",
+            "children": 0
+          }
+        ],
+        "scope": "Names/memos/config errors/UFVK rendered by real server and page; address-like HTML exercised through actual esc helper because accepted Zcash addresses contain no HTML."
+      },
+      "error": null,
+      "console": [],
+      "pageErrors": [],
+      "network": [
+        {
+          "event": "request",
+          "url": "http://127.0.0.1:8796/",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:8796/",
+          "status": 200
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Sometype+Mono:wght@400;500&display=swap",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Sometype+Mono:wght@400;500&display=swap",
+          "status": 200
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.gstatic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9GayojdSFO.woff2",
+          "method": "GET"
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.gstatic.com/s/sometypemono/v4/70lVu745KGk_R3uxyq0WrROhKpShQWVB_m4.woff2",
+          "method": "GET"
+        },
+        {
+          "event": "request",
+          "url": "http://127.0.0.1:8796/api/state",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:8796/api/state",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.gstatic.com/s/sometypemono/v4/70lVu745KGk_R3uxyq0WrROhKpShQWVB_m4.woff2",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.gstatic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9GayojdSFO.woff2",
+          "status": 200
+        },
+        {
+          "event": "request",
+          "url": "http://127.0.0.1:8796/api/audit",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:8796/api/audit",
+          "status": 200
+        }
+      ],
+      "screenshot": "audit/logs/UI-DESK-TEXT-ESCAPING-1280.jpg"
+    },
+    {
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "status": "PASS",
+      "expected": "Exact row text in AUDIT.md and literal assertions in audit/run/ui.mjs",
+      "actual": {
+        "server_pid": 48552,
+        "name": "<img src=x onerror=\"window.__injected=1\"> & Alice",
+        "memo": "<svg onload=\"window.__injected=2\"> & memo",
+        "config_error_value": "invalid<svg/onload=window.__injected=3>",
+        "fixture_ufvk": "uviewtest1ewkpkaqar0lepvymgvldj84se9dy32wtgywydq4qtgd4n5atjp4thf54s4w8hd2vq4ja7rq730anvau40f38726lsk04vh0q2peznfkxehf0yz4mrkfnft0k3g37ms2fxka6cf7dxscmrh64nls5hxjp8glj40kqvlpmahrr2y0xzhkku3pvflghadxqf<b id=\"bad-key\">view</b>",
+        "address_helper_cases": [
+          {
+            "input": "<img src=x onerror=\"window.__injected=4\">",
+            "text": "<img src=x onerror=\"window.__injected=4\">",
+            "children": 0
+          },
+          {
+            "input": "A & B \"quoted\"",
+            "text": "A & B \"quoted\"",
+            "children": 0
+          },
+          {
+            "input": "<svg onload=alert(1)>",
+            "text": "<svg onload=alert(1)>",
+            "children": 0
+          }
+        ],
+        "scope": "Names/memos/config errors/UFVK rendered by real server and page; address-like HTML exercised through actual esc helper because accepted Zcash addresses contain no HTML."
+      },
+      "error": null,
+      "console": [],
+      "pageErrors": [],
+      "network": [
+        {
+          "event": "request",
+          "url": "http://127.0.0.1:8796/",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:8796/",
+          "status": 200
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Sometype+Mono:wght@400;500&display=swap",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Sometype+Mono:wght@400;500&display=swap",
+          "status": 200
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.gstatic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9GayojdSFO.woff2",
+          "method": "GET"
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.gstatic.com/s/sometypemono/v4/70lVu745KGk_R3uxyq0WrROhKpShQWVB_m4.woff2",
+          "method": "GET"
+        },
+        {
+          "event": "request",
+          "url": "http://127.0.0.1:8796/api/state",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:8796/api/state",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.gstatic.com/s/sometypemono/v4/70lVu745KGk_R3uxyq0WrROhKpShQWVB_m4.woff2",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.gstatic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9GayojdSFO.woff2",
+          "status": 200
+        },
+        {
+          "event": "request",
+          "url": "http://127.0.0.1:8796/api/audit",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:8796/api/audit",
+          "status": 200
+        }
+      ],
+      "screenshot": "audit/logs/UI-DESK-TEXT-ESCAPING-375.jpg"
+    }
+  ]
+}

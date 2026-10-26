@@ -1,0 +1,715 @@
+{
+  "id": "UI-CONSOLE",
+  "status": "PASS",
+  "expected": "Exact unchanged expectation in AUDIT.md",
+  "actual": "81 independent UI/viewport logs captured. Zero unexpected console/page/same-origin errors; intentional interruption recorded separately.",
+  "console": [],
+  "network": [],
+  "diagnostics_scope": "Non-browser assertion; browser diagnostics are captured separately per UI row.",
+  "live_http": null,
+  "evidence": [
+    {
+      "id": "UI-PAYSLIP-LOAD",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-PAYSLIP-LOAD",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-PAYSLIP-NOKEY",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-PAYSLIP-NOKEY",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-PAYSLIP-ALICE",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-PAYSLIP-ALICE",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-PAYSLIP-BOB",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-PAYSLIP-BOB",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-PAYSLIP-FUNDING",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-PAYSLIP-FUNDING",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-PAYSLIP-TXIDS",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-PAYSLIP-TXIDS",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-EXPLORER-LINKS",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-EXPLORER-LINKS",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-KEYS-TABLE",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-KEYS-TABLE",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-BLOCKS",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-BLOCKS",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-PROOF-SECTION",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-PROOF-SECTION",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-LIMITS",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-LIMITS",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-NAV",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-NAV",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-375-PAYSLIP",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-REDUCED-MOTION",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-REDUCED-MOTION",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-SETUP",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-SETUP",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-ROSTER",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-ROSTER",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-RUN-DISABLED",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-RUN-DISABLED",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-CLI",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-CLI",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-AUDIT-MISSING",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-AUDIT-MISSING",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-AUDIT-LOADED",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-AUDIT-LOADED",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-MAINNET",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-MAINNET",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-SPENDKEY",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-SPENDKEY",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-LOADING",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-LOADING",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-DOWN",
+      "width": 1280,
+      "console_errors": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+          "location": {
+            "url": "http://127.0.0.1:8794/api/state",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+          "location": {
+            "url": "http://127.0.0.1:8794/api/audit",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "page_errors": [],
+      "network_errors": [
+        {
+          "event": "failed",
+          "url": "http://127.0.0.1:8794/api/state",
+          "error": "net::ERR_CONNECTION_REFUSED"
+        },
+        {
+          "event": "failed",
+          "url": "http://127.0.0.1:8794/api/audit",
+          "error": "net::ERR_CONNECTION_REFUSED"
+        }
+      ]
+    },
+    {
+      "id": "UI-DESK-DOWN",
+      "width": 375,
+      "console_errors": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+          "location": {
+            "url": "http://127.0.0.1:8794/api/state",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+          "location": {
+            "url": "http://127.0.0.1:8794/api/audit",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "page_errors": [],
+      "network_errors": [
+        {
+          "event": "failed",
+          "url": "http://127.0.0.1:8794/api/state",
+          "error": "net::ERR_CONNECTION_REFUSED"
+        },
+        {
+          "event": "failed",
+          "url": "http://127.0.0.1:8794/api/audit",
+          "error": "net::ERR_CONNECTION_REFUSED"
+        }
+      ]
+    },
+    {
+      "id": "UI-DESK-HASH",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-HASH",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-375",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-UNAUTH-COPY",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-UNAUTH-COPY",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-NO-LOG-BUTTON",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-NO-LOG-BUTTON",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-PAYSLIP-FUNDING-NOTE",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-PAYSLIP-FUNDING-NOTE",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-PAYSLIP-A11Y",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-PAYSLIP-A11Y",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-HERO-ART",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-HERO-ART",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-REVEAL-TRIGGER",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-REVEAL-TRIGGER",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-LIMITS-DETAILS",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-LIMITS-DETAILS",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-PROOF-REJECTIONS",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-PROOF-REJECTIONS",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-FOCUS",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-FOCUS",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-CLI-PATH",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-CLI-PATH",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-REDUCED-LOADING",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-REDUCED-LOADING",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-AUDIT-PARSER",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-AUDIT-PARSER",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-TEXT-ESCAPING",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "UI-DESK-TEXT-ESCAPING",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "EXT-FONTS",
+      "width": 1280,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "EXT-FONTS",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    },
+    {
+      "id": "EDGE-INTERRUPT",
+      "width": 1280,
+      "console_errors": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+          "location": {
+            "url": "http://127.0.0.1:8794/api/state",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+          "location": {
+            "url": "http://127.0.0.1:8794/api/audit",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "page_errors": [],
+      "network_errors": [
+        {
+          "event": "failed",
+          "url": "http://127.0.0.1:8794/api/state",
+          "error": "net::ERR_CONNECTION_REFUSED"
+        },
+        {
+          "event": "failed",
+          "url": "http://127.0.0.1:8794/api/audit",
+          "error": "net::ERR_CONNECTION_REFUSED"
+        }
+      ]
+    },
+    {
+      "id": "EDGE-INTERRUPT",
+      "width": 375,
+      "console_errors": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+          "location": {
+            "url": "http://127.0.0.1:8794/api/state",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+          "location": {
+            "url": "http://127.0.0.1:8794/api/audit",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "page_errors": [],
+      "network_errors": [
+        {
+          "event": "failed",
+          "url": "http://127.0.0.1:8794/api/state",
+          "error": "net::ERR_CONNECTION_REFUSED"
+        },
+        {
+          "event": "failed",
+          "url": "http://127.0.0.1:8794/api/audit",
+          "error": "net::ERR_CONNECTION_REFUSED"
+        }
+      ]
+    },
+    {
+      "id": "EDGE-375",
+      "width": 375,
+      "console_errors": [],
+      "page_errors": [],
+      "network_errors": []
+    }
+  ]
+}

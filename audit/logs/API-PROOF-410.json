@@ -1,0 +1,35 @@
+{
+  "id": "API-PROOF-410",
+  "status": "PASS",
+  "expected": "See unchanged exact expected result in AUDIT.md",
+  "actual": "Exact HTTP status/body assertions matched.",
+  "console": [],
+  "network": [
+    {
+      "response": "HTTP/1.1 410 Gone\r\nContent-Type: application/json\r\nContent-Length: 176\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"Proof download is disabled (it had no login). Export one employee's signed proof from the CLI: `payroll export-proof <roster.csv> --employee <id> --label <period>`.\"}",
+      "elapsed": 0.0,
+      "closed": true,
+      "request": "GET /api/proof HTTP/1.1\r\nHost: 127.0.0.1:8791\r\n\r\n"
+    },
+    {
+      "response": "HTTP/1.1 410 Gone\r\nContent-Type: application/json\r\nContent-Length: 176\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"Proof download is disabled (it had no login). Export one employee's signed proof from the CLI: `payroll export-proof <roster.csv> --employee <id> --label <period>`.\"}",
+      "elapsed": 0.0,
+      "closed": true,
+      "request": "GET /api/proof?employee=1 HTTP/1.1\r\nHost: 127.0.0.1:8791\r\n\r\n"
+    }
+  ],
+  "evidence": [
+    {
+      "response": "HTTP/1.1 410 Gone\r\nContent-Type: application/json\r\nContent-Length: 176\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"Proof download is disabled (it had no login). Export one employee's signed proof from the CLI: `payroll export-proof <roster.csv> --employee <id> --label <period>`.\"}",
+      "elapsed": 0.0,
+      "closed": true,
+      "request": "GET /api/proof HTTP/1.1\r\nHost: 127.0.0.1:8791\r\n\r\n"
+    },
+    {
+      "response": "HTTP/1.1 410 Gone\r\nContent-Type: application/json\r\nContent-Length: 176\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"Proof download is disabled (it had no login). Export one employee's signed proof from the CLI: `payroll export-proof <roster.csv> --employee <id> --label <period>`.\"}",
+      "elapsed": 0.0,
+      "closed": true,
+      "request": "GET /api/proof?employee=1 HTTP/1.1\r\nHost: 127.0.0.1:8791\r\n\r\n"
+    }
+  ]
+}

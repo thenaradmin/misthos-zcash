@@ -24,7 +24,7 @@ test.describe('desk (read-only employer dashboard at /#desk)', () => {
     await expect(page.locator('#net')).toHaveText('Setup required');
     // Without an auditor key this desk has no viewing key to show (a public demo desk says so).
     await expect(page.locator('#desk-lede')).toHaveText(
-      "The employer's copy of the roster, with nothing redacted. It cannot pay. No employer viewing key is set here, so it shows none; a desk that has one shows it to anyone who can reach its port, so keep that one on 127.0.0.1.",
+      "The employer's copy of the roster, with nothing redacted. It cannot pay. It has no login. No employer viewing key is set here, so it shows none; a desk that has one shows it to anyone who can reach its port, so keep that one on 127.0.0.1.",
     );
 
     const rows = rosterRows();
@@ -54,7 +54,7 @@ test.describe('desk (read-only employer dashboard at /#desk)', () => {
   test('the desk says it exposes the employer key; a foreign Host (DNS rebinding) gets 403, loopback gets 200', async ({ page, request }) => {
     await page.goto(URLS.configured + '/#desk');
     await expect(page.locator('#desk-lede')).toHaveText(
-      "The employer's copy of the roster, with nothing redacted. It cannot pay. It shows the employer's viewing key to anyone who can reach this port, so keep it on 127.0.0.1.",
+      "The employer's copy of the roster, with nothing redacted. It cannot pay. It has no login. It shows the employer's viewing key to anyone who can reach this port, so keep it on 127.0.0.1.",
     );
     const port = new URL(URLS.configured).port;
     for (const path of ['/api/audit', '/api/state', '/']) {
@@ -148,8 +148,9 @@ test.describe('desk (read-only employer dashboard at /#desk)', () => {
     await page.screenshot({ path: ti.outputPath(`desk-configured-${ti.project.name}.png`), fullPage: true });
   });
 
-  test('mainnet is refused; a spending-key-looking auditor value is refused and never shown', async ({ page, watch }, ti) => {
-    watch.allow(/\/api\/audit$/, 400);
+  test('mainnet is refused; a spending-key-looking auditor value is refused and never shown', async ({ page }, ti) => {
+    let auditRequests = 0;
+    page.on('request', (r) => { if (r.url().endsWith('/api/audit')) auditRequests++; });
     await page.goto(URLS.mainnet + '/#desk');
     const env = page.locator('#env');
     await expect(env.locator('h3')).toHaveText('Setup required');
@@ -157,6 +158,8 @@ test.describe('desk (read-only employer dashboard at /#desk)', () => {
     await expect(env.locator('.vars')).toHaveCount(0);
     await page.getByRole('button', { name: "Open the accountant's view" }).click();
     await expect(page.locator('#audit .alert')).toContainText('looks like a spending key; refusing to export it');
+    expect(auditRequests, 'invalid auditor key must be refused without a failing fetch').toBe(0);
+    await expect(page.locator('#loadAudit')).toBeEnabled();
     expect(await page.content()).not.toContain('secret-extended-key');
     await page.locator('.audit').screenshot({ path: ti.outputPath(`desk-audit-refused-${ti.project.name}.png`) });
   });

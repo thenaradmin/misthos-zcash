@@ -1,0 +1,13 @@
+{
+  "id": "CHAIN-UNIT",
+  "status": "PASS",
+  "expected": "Exact unchanged expectation in AUDIT.md",
+  "actual": "proof_real_tx: 7 passed, 0 failed, 0 ignored; sig_attacks: 1 passed, 0 failed, 0 ignored. Offline synthetic transactions only: real keys/Halo2 for Ironwood, made-up transparent outpoints and Sapling mock proof bytes; no chain confirmation.",
+  "console": [],
+  "network": [],
+  "diagnostics_scope": "Non-browser assertion; browser diagnostics are captured separately per UI row.",
+  "live_http": null,
+  "evidence": [
+    "audit/logs/cargo-integrations.txt"
+  ]
+}

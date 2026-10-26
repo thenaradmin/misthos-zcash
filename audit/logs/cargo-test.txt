@@ -1,0 +1,138 @@
+   Compiling zec-payroll v0.1.0 (/Volumes/Extreme SSD/Projects/.loom-worktrees/zec-private-payroll-6746fcc475ac/omvp5loed/t4-reverify)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.19s
+     Running unittests src/lib.rs (target/debug/deps/zec_payroll-01639a524871df2c)
+
+running 72 tests
+test audit::tests::quotes_fields_with_commas ... ok
+test audit::tests::neutralises_spreadsheet_formulas_and_quotes_cr ... ok
+test attest::tests::fields_cannot_smuggle_lines ... ok
+test attest::tests::valid_signature_passes ... ok
+test attest::tests::forged_with_other_key_is_rejected ... ok
+test attest::tests::key_loading_never_shows_the_secret ... ok
+test attest::tests::expected_pubkey_prefers_flag_then_env ... ok
+test audit::tests::refuses_spending_material ... ok
+test config::tests::names_the_missing_var ... ok
+test config::tests::ok ... ok
+test config::tests::refuses_mainnet_and_plain_http ... ok
+test csv::tests::bad_header_and_empty ... ok
+test csv::tests::quoting ... ok
+test csv::tests::select_employee_refuses_an_id_name_collision ... ok
+test csv::tests::parses_good_csv ... ok
+test date::tests::roundtrip_and_epoch ... ok
+test date::tests::validates ... ok
+test csv::tests::names_shaped_like_row_ids_are_refused ... ok
+test csv::tests::reports_every_bad_row ... ok
+test delay::tests::default_range_is_2_to_6 ... ok
+test attest::tests::any_changed_field_is_rejected ... ok
+test delay::tests::invalid_config_is_refused_naming_the_var ... ok
+test delay::tests::stagger_is_cumulative ... ok
+test delay::tests::staggered_employees_get_staggered_deadlines ... ok
+test delay::tests::timeout_starts_only_after_the_delay ... ok
+test employee::tests::address_checks ... ok
+test employee::tests::memo_limit ... ok
+test engine::tests::adhoc_batch_validates_and_dedupes_label ... ok
+test engine::tests::approve_rechecks_tightened_caps ... ok
+test engine::tests::cap_at_exact_limit_passes ... ok
+test engine::tests::inactive_employees_are_skipped ... ok
+test engine::tests::no_double_pay_unless_failed ... ok
+test engine::tests::per_employee_and_recipient_caps_report_all_violations ... ok
+test engine::tests::plans_scheduled_run_with_exact_total ... ok
+test delay::tests::draws_stay_in_bounds_and_hit_both_ends ... ok
+test engine::tests::rejects_off_schedule_and_unknowns ... ok
+test engine::tests::run_total_cap ... ok
+test money::tests::display_trims ... ok
+test engine::tests::status_machine ... ok
+test money::tests::parses_exact_decimals ... ok
+test money::tests::rejects_bad_amounts ... ok
+test schedule::tests::biweekly ... ok
+test schedule::tests::monthly_clamps_to_month_end ... ok
+test schedule::tests::weekly ... ok
+test server::tests::connection_slots_are_capped_and_released ... ok
+test server::tests::escapes_json ... ok
+test server::tests::host_rules ... ok
+test server::tests::lists_every_missing_var ... ok
+test server::tests::non_loopback_bind_is_detected ... ok
+test server::tests::proof_endpoint_is_gone_and_leaks_no_key ... ok
+test server::tests::run_endpoint_is_gone_and_points_to_the_cli ... ok
+test attest::tests::key_file_must_be_0600_and_is_never_overwritten ... ok
+test server::tests::oversized_head_gets_431_not_unbounded_memory ... ok
+test wallet::tests::finds_txids_only_in_txids_array ... ok
+test server::tests::foreign_host_gets_403_and_no_roster_or_key ... ok
+test wallet::tests::names_missing_wallet_cli ... ok
+test wallet::tests::failing_cli_is_an_error_not_success ... ok
+test wallet::tests::receivers_json_shape ... ok
+test disclosure::tests::seed_debug_is_redacted_and_bad_mnemonic_hides_value ... ok
+test wallet::tests::second_two_step_run_cannot_take_the_wallet_db_lock ... ok
+test zip321::tests::base64url_matches_rfc4648_vectors ... ok
+test zip321::tests::three_outputs_one_uri_and_draft_refused ... ok
+test zip321::tests::zec_decimals ... ok
+test wallet::tests::unreadable_ledger_is_not_treated_as_fresh ... ok
+test wallet::tests::ledger_blocks_refund_and_repay ... ok
+test wallet::tests::persisted_delay_target_is_reused_and_never_changes_the_step ... ok
+test disclosure::tests::treasury_is_never_exported_and_export_has_no_spending_key ... ok
+test disclosure::tests::signed_proof_rejects_tampering_forgery_and_network_swap ... ok
+test disclosure::tests::child_wallets_are_stable_distinct_and_keyed_on_the_employer_seed ... ok
+test attest::tests::cwd_pubkey_file_fallback_warns_with_absolute_path ... ok
+test server::tests::stalled_client_is_dropped_after_the_timeout ... ok
+test wallet::tests::child_init_refuses_on_cli_failure_and_keeps_seed_out_of_argv ... ok
+
+test result: ok. 72 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.51s
+
+     Running unittests src/main.rs (target/debug/deps/payroll-3d1668a7b4853076)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/cli_label.rs (target/debug/deps/cli_label-a1e212e5bfe4d1e7)
+
+running 4 tests
+test export_proof_requires_label ... ok
+test two_step_pay_requires_label ... ok
+test export_proof_usage_says_the_amount_comes_from_the_roster ... ok
+test concurrent_two_step_run_stops_on_the_wallet_db_lock ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.16s
+
+     Running tests/cli_serve.rs (target/debug/deps/cli_serve-c6ef0f42b2788c27)
+
+running 1 test
+test non_loopback_addr_is_refused_without_allow_remote ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/proof_real_tx.rs (target/debug/deps/proof_real_tx-03bc2f78d4381225)
+
+running 7 tests
+test shared_tx_reveals_only_the_holders_outputs ... ok
+test employee_a_proves_own_payout_and_b_key_sees_nothing ... ok
+test pubkey_file_from_current_dir_is_warned_with_its_absolute_path ... ok
+test edited_employee_id_still_verifies_and_is_labelled_unsigned ... ok
+test signed_proof_is_bound_to_the_real_payout ... ok
+test verify_proof_attacks ... ok
+test ironwood_payout_verifies_with_real_halo2_bundle ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.69s
+
+     Running tests/sig_attacks.rs (target/debug/deps/sig_attacks-157a56ff189401c3)
+
+running 1 test
+test attacks ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/testnet.rs (target/debug/deps/testnet-729491f87083986d)
+
+running 4 tests
+test lightwalletd_grpc_tip_height_for_delays ... ignored, hits real testnet lightwalletd; run with --ignored
+test lightwalletd_reports_chain_height ... ignored, hits real testnet lightwalletd; run with --ignored
+test sends_one_shielded_tx_to_all_csv_recipients ... ignored, spends testnet ZEC; run with --ignored
+test testnet_employee_a_key_cannot_see_employee_b_payout ... ignored, needs two real funded testnet payouts; run with --ignored
+
+test result: ok. 0 passed; 0 failed; 4 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests zec_payroll
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

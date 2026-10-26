@@ -1,0 +1,242 @@
+{
+  "TEST-LIB": {
+    "status": "PASS",
+    "detail": "cargo test --offline --lib: 72 passed, 0 failed, 0 ignored. TESTING.md updated to this measured count on 2026-10-26.",
+    "path": "audit/logs/TEST-LIB.json"
+  },
+  "TEST-CLI-LABEL": {
+    "status": "PASS",
+    "detail": "cargo test --offline --test cli_label: 4 passed, 0 failed, 0 ignored.",
+    "path": "audit/logs/TEST-CLI-LABEL.json"
+  },
+  "TEST-CLI-SERVE": {
+    "status": "PASS",
+    "detail": "cargo test --offline --test cli_serve: 1 passed, 0 failed, 0 ignored.",
+    "path": "audit/logs/TEST-CLI-SERVE.json"
+  },
+  "CHAIN-UNIT": {
+    "status": "PASS",
+    "detail": "proof_real_tx: 7 passed, 0 failed, 0 ignored; sig_attacks: 1 passed, 0 failed, 0 ignored. Offline synthetic transactions only: real keys/Halo2 for Ironwood, made-up transparent outpoints and Sapling mock proof bytes; no chain confirmation.",
+    "path": "audit/logs/CHAIN-UNIT.json"
+  },
+  "CLI-KEYGEN-REFUSE": {
+    "status": "PASS",
+    "detail": "1/1 named assertions completed successfully; isolated library/temp-directory checks; no real wallet or funded send.",
+    "path": "audit/logs/CLI-KEYGEN-REFUSE.json"
+  },
+  "WALLET-LOCK": {
+    "status": "PASS",
+    "detail": "2/2 named assertions completed successfully; isolated library/temp-directory checks; no real wallet or funded send.",
+    "path": "audit/logs/WALLET-LOCK.json"
+  },
+  "WALLET-LEDGER-TARGET": {
+    "status": "PASS",
+    "detail": "1/1 named assertions completed successfully; isolated library/temp-directory checks; no real wallet or funded send.",
+    "path": "audit/logs/WALLET-LEDGER-TARGET.json"
+  },
+  "API-SLOTS-RELEASE": {
+    "status": "PASS",
+    "detail": "2/2 named assertions completed successfully; isolated library/temp-directory checks; no real wallet or funded send.",
+    "path": "audit/logs/API-SLOTS-RELEASE.json"
+  },
+  "PROOF-SIGNATURE": {
+    "status": "PASS",
+    "detail": "6/6 named assertions completed successfully; real-key offline fixtures, not chain confirmation.",
+    "path": "audit/logs/PROOF-SIGNATURE.json"
+  },
+  "PROOF-DECRYPT": {
+    "status": "PASS",
+    "detail": "4/4 named assertions completed successfully; real-key offline fixtures, not chain confirmation.",
+    "path": "audit/logs/PROOF-DECRYPT.json"
+  },
+  "PROOF-TX-TAMPER": {
+    "status": "PASS",
+    "detail": "1/1 named assertions completed successfully; real-key offline fixtures, not chain confirmation.",
+    "path": "audit/logs/PROOF-TX-TAMPER.json"
+  },
+  "PROOF-UNSIGNED-ID": {
+    "status": "PASS",
+    "detail": "1/1 named assertions completed successfully; real-key offline fixtures, not chain confirmation.",
+    "path": "audit/logs/PROOF-UNSIGNED-ID.json"
+  },
+  "CORE-MONEY": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/CORE-MONEY.json"
+  },
+  "CORE-DATE": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/CORE-DATE.json"
+  },
+  "CORE-SCHEDULE": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/CORE-SCHEDULE.json"
+  },
+  "CORE-EMPLOYEE": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/CORE-EMPLOYEE.json"
+  },
+  "CORE-CSV-QUOTING": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/CORE-CSV-QUOTING.json"
+  },
+  "CORE-CSV-DUPLICATES": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/CORE-CSV-DUPLICATES.json"
+  },
+  "CORE-ENGINE-REGISTRY": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/CORE-ENGINE-REGISTRY.json"
+  },
+  "CORE-ENGINE-PLAN": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/CORE-ENGINE-PLAN.json"
+  },
+  "CORE-ENGINE-CAPS": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/CORE-ENGINE-CAPS.json"
+  },
+  "CORE-ENGINE-PERIOD": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/CORE-ENGINE-PERIOD.json"
+  },
+  "CORE-ENGINE-STATUS": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/CORE-ENGINE-STATUS.json"
+  },
+  "CORE-ZIP321": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/CORE-ZIP321.json"
+  },
+  "CORE-AUDIT-KEYS": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/CORE-AUDIT-KEYS.json"
+  },
+  "CORE-AUDIT-CSV": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/CORE-AUDIT-CSV.json"
+  },
+  "CORE-DELAY": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/CORE-DELAY.json"
+  },
+  "CORE-DELAY-TIMEOUT": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/CORE-DELAY-TIMEOUT.json"
+  },
+  "WALLET-TXIDS": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/WALLET-TXIDS.json"
+  },
+  "WALLET-FAILURE": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/WALLET-FAILURE.json"
+  },
+  "WALLET-LEDGER": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/WALLET-LEDGER.json"
+  },
+  "API-JSON-ESCAPING": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/API-JSON-ESCAPING.json"
+  },
+  "API-HOST-ACCEPT": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/API-HOST-ACCEPT.json"
+  },
+  "PROOF-FUNDING": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/PROOF-FUNDING.json"
+  },
+  "PROOF-CHILD-DERIVATION": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/PROOF-CHILD-DERIVATION.json"
+  },
+  "PROOF-EXPORT": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/PROOF-EXPORT.json"
+  },
+  "PROOF-PARSER": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/PROOF-PARSER.json"
+  },
+  "ATTEST-KEY-LOAD": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/ATTEST-KEY-LOAD.json"
+  },
+  "ATTEST-TRUST-SOURCE": {
+    "status": "PASS",
+    "detail": "Independent offline audit assertions matched every literal assertion in probe.rs. Library suite: {'result': 'ok', 'passed': 72, 'failed': 0, 'ignored': 0, 'measured': 0, 'filtered': 0}",
+    "path": "audit/logs/ATTEST-TRUST-SOURCE.json"
+  },
+  "PROOF-VERIFY-OFFLINE": {
+    "status": "PASS",
+    "detail": "Captured real CLI exit 0 using existing fixed synthetic fixture helpers: EMPLOYER SIGNATURE OK, DECRYPTED OFFLINE (NOT checked on chain), PayoutOut/Sapling/recipient/memo, PAID OUT 0.0125 ZEC; VERIFIED ON CHAIN absent. No chain-validity claim or wallet proof used.",
+    "path": "audit/logs/PROOF-VERIFY-OFFLINE.json"
+  },
+  "TEST-LIVE-EXCLUSION": {
+    "status": "PASS",
+    "detail": "cargo test --offline observed 4 ignored live tests and none executed. Static inventory names wallet height, direct tip, broadcasting CSV payout and two-employee privacy. TESTNET TEST CANNOT RUN guards inspected.",
+    "path": "audit/logs/TEST-LIVE-EXCLUSION.json"
+  },
+  "TEST-E2E": {
+    "status": "PASS",
+    "detail": "Real Chrome via e2e/playwright.config.ts: 48 passed, 0 failed, 0 skipped, 0 flaky; 0 unexpected console/page/network errors. Desktop 1280\u00d7800 and mobile 375\u00d7812. Deliberate shutdown and explicit API refusal assertions are individually recorded.",
+    "path": "audit/logs/TEST-E2E.json"
+  },
+  "UI-CONSOLE": {
+    "status": "PASS",
+    "detail": "81 independent UI/viewport logs captured. Zero unexpected console/page/same-origin errors; intentional interruption recorded separately.",
+    "path": "audit/logs/UI-CONSOLE.json"
+  },
+  "E2E-STACK": {
+    "status": "PASS",
+    "detail": "Executed clean stack with all three recorded PIDs and real state readiness checks. Synthetic UFVK and no-wallet path only; explicit final shutdown by those PIDs.",
+    "path": "audit/logs/E2E-STACK.json"
+  },
+  "E2E-HARNESS": {
+    "status": "PASS",
+    "detail": "Real setup was run against the live stack and after stopping each server by PID; each URL failed with its exact startup instruction. Configuration inspection: Chrome, one worker, zero retries, video/trace/screenshots; existing watcher attaches diagnostic failures.",
+    "path": "audit/logs/E2E-HARNESS.json"
+  },
+  "BUILD-EMBEDDED": {
+    "status": "PASS",
+    "detail": "Fresh offline binary/library build with CARGO_BUILD_JOBS=2. server.rs embeds ui/index.html; no UI bundler. cargo metadata identifies package zec-payroll and bin payroll; pinned Rust 1.89.0 and prerelease Zcash versions inspected.",
+    "path": "audit/logs/BUILD-EMBEDDED.json"
+  },
+  "EXT-NEAR": {
+    "status": "PASS",
+    "detail": "README explicitly excludes NEAR Intents and zakura-one-time-ivk; source/dependency search reviewed; actual UI network logs and offline CLI outputs show only local desk API calls plus Google Fonts, with no NEAR/Zakura integration.",
+    "path": "audit/logs/EXT-NEAR.json"
+  },
+  "SCOPE-EXECUTION": {
+    "status": "PASS",
+    "detail": "This execution used only clean payroll environments, synthetic/temp offline fixtures and read-only public GETs. No real-wallet/key/.env reads, testnet sends, ignored test execution, validation script, deploy or SSH. Final documentation and evidence updates only; no new product feature. Original inventory-only sentence refers to the prior planning phase; this task explicitly requires build/tests/servers/Chrome.",
+    "path": "audit/logs/SCOPE-EXECUTION.json"
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "id": "UI-PAYSLIP-BOB",
+  "status": "PASS",
+  "runs": [
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "status": "PASS",
+      "expected": "Exact row text in AUDIT.md and literal assertions in audit/run/ui.mjs",
+      "error": null,
+      "console": [],
+      "pageErrors": [],
+      "network": [
+        {
+          "event": "request",
+          "url": "http://127.0.0.1:8791/",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:8791/",
+          "status": 200
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Sometype+Mono:wght@400;500&display=swap",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Sometype+Mono:wght@400;500&display=swap",
+          "status": 200
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.gstatic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9GayojdSFO.woff2",
+          "method": "GET"
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.gstatic.com/s/sometypemono/v4/70lVu745KGk_R3uxyq0WrROhKpShQWVB_m4.woff2",
+          "method": "GET"
+        },
+        {
+          "event": "request",
+          "url": "http://127.0.0.1:8791/api/state",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:8791/api/state",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.gstatic.com/s/sometypemono/v4/70lVu745KGk_R3uxyq0WrROhKpShQWVB_m4.woff2",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.gstatic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9GayojdSFO.woff2",
+          "status": 200
+        }
+      ],
+      "screenshot": "audit/logs/UI-PAYSLIP-BOB-1280.jpg"
+    },
+    {
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "status": "PASS",
+      "expected": "Exact row text in AUDIT.md and literal assertions in audit/run/ui.mjs",
+      "error": null,
+      "console": [],
+      "pageErrors": [],
+      "network": [
+        {
+          "event": "request",
+          "url": "http://127.0.0.1:8791/",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:8791/",
+          "status": 200
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Sometype+Mono:wght@400;500&display=swap",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Sometype+Mono:wght@400;500&display=swap",
+          "status": 200
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.gstatic.com/l/font?kit=JqzH5SSPQuCQF3t8uOwiUL-taUTtarVKQ9vZ6pJJWlMNIsFiROCehM02Pzjt8nmeHbuPHiH_3eg&skey=1415227f49c9e832&v=v7",
+          "method": "GET"
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.gstatic.com/l/font?kit=70lzu745KGk_R3uxyq0WrROhAJiJsJ_eTWllpTAMGC1Ro_CDLxiAohhgQILzd8NGpQTwMQ&skey=179b8e1a2b812095&v=v4",
+          "method": "GET"
+        },
+        {
+          "event": "request",
+          "url": "http://127.0.0.1:8791/api/state",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:8791/api/state",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.gstatic.com/l/font?kit=70lzu745KGk_R3uxyq0WrROhAJiJsJ_eTWllpTAMGC1Ro_CDLxiAohhgQILzd8NGpQTwMQ&skey=179b8e1a2b812095&v=v4",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.gstatic.com/l/font?kit=JqzH5SSPQuCQF3t8uOwiUL-taUTtarVKQ9vZ6pJJWlMNIsFiROCehM02Pzjt8nmeHbuPHiH_3eg&skey=1415227f49c9e832&v=v7",
+          "status": 200
+        }
+      ],
+      "screenshot": "audit/logs/UI-PAYSLIP-BOB-375.jpg"
+    }
+  ]
+}

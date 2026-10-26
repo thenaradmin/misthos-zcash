@@ -4,7 +4,7 @@
 
 ![The Misthos payslip: the recorded testnet run, with Alice's viewing key lifting the redaction on her line only](docs/payslip.png)
 
-**Misthos** (Greek μισθός, "wages") is the product name; the repo, crate and CLI stay `zec-private-payroll` / `payroll`. It is a portfolio project, not a Zecathon entry.
+**Misthos** (Greek μισθός, "wages") is the product name; the repo is `zec-private-payroll`, the Cargo package is `zec-payroll` (library crate `zec_payroll`), and the CLI is `payroll`. It is a portfolio project, not a Zecathon entry.
 
 This is a batch payroll tool for the Zcash **testnet**. An employer loads a CSV roster. `payroll pay` pays the batch in one shielded `quicksend`; `payroll pay --two-step` pays through one child wallet per employee (one funding transaction, then one payout per employee), so the employer can export a signed proof of one employee's pay. An accountant gets a read-only ledger headed by the employer's viewing key.
 
@@ -32,7 +32,7 @@ On 2026-10-20 a funded two-employee run (label `payroll-2026-10-demo`, Ironwood 
 | ZIP-321 URI (`src/zip321.rs`) | **Done**, offline-tested. Shown for display/audit only; zingo-cli does not accept ZIP-321 URIs |
 | Building + broadcasting the tx | **Delegated to zingo-cli** (`ZCASH_WALLET_CLI`) via one `quicksend` with a JSON receiver list. Syntax checked against zingolib source (0a5cb69, 2026-10-19) and run live against testnet with an unfunded wallet: it syncs and stops at `Insufficient balance (have 0, need 110000 including fee)`. A funded two-step run has since paid out on testnet (see "Live testnet run"). No in-process `zcash_client_backend` builder |
 | Dashboard UI (`payroll serve`): roster, env banner, auditor UFVK panel. It cannot pay and cannot hand out employee proofs (`POST /api/run` and `GET /api/proof` return `410 Gone`, tested). It is **unauthenticated** and shows the employer's viewing key, so it stays on loopback and checks `Host` | Built; endpoint tests pass, and 48 Playwright E2E in Chrome (desktop + 375px) |
-| Per-employee proof of pay: child wallet per employee, employer-signed (ed25519) `export-proof --employee`, `verify-proof` checks the signature against the published employer key | Built. 5 real-key tests on in-process shielded txs pass (Sapling + Ironwood), including forged / changed-amount / changed-period / network-swap rejection. Both steps are wired to zingo-cli (child wallet per employee, pre-broadcast sync check). Funded two-employee testnet run on 2026-10-20 (Ironwood pool), checked on chain with `verify-proof --lwd`; see "Live testnet run" below |
+| Per-employee proof of pay: child wallet per employee, employer-signed (ed25519) `export-proof --employee`, `verify-proof` checks the signature against the published employer key | Built. 7 real-key tests on in-process shielded txs pass (Sapling + Ironwood), including forged / changed-amount / changed-period / network-swap rejection. Both steps are wired to zingo-cli (child wallet per employee, pre-broadcast sync check). Funded two-employee testnet run on 2026-10-20 (Ironwood pool), checked on chain with `verify-proof --lwd`; see "Live testnet run" below |
 | Random block delays in `pay --two-step` (funding → payouts, and between employees), polled from lightwalletd's tip | Built; pure scheduling logic unit tested; the gRPC tip query was run live against `testnet.zec.rocks` (2026-10-20). Used in the funded testnet run (see "Live testnet run") |
 
 The tool does not use NEAR Intents, does not use the `zakura-one-time-ivk` crate, and has received no grant funding.

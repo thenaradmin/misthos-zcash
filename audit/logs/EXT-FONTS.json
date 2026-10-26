@@ -1,0 +1,246 @@
+{
+  "id": "EXT-FONTS",
+  "status": "PASS",
+  "runs": [
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "status": "PASS",
+      "expected": "Exact row text in AUDIT.md and literal assertions in audit/run/ui.mjs",
+      "actual": {
+        "sans": true,
+        "mono": true,
+        "body": "\"Schibsted Grotesk\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "text": 243.28125,
+        "fonts": [
+          {
+            "family": "Schibsted Grotesk",
+            "status": "unloaded"
+          },
+          {
+            "family": "Schibsted Grotesk",
+            "status": "loaded"
+          },
+          {
+            "family": "Schibsted Grotesk",
+            "status": "unloaded"
+          },
+          {
+            "family": "Schibsted Grotesk",
+            "status": "loaded"
+          },
+          {
+            "family": "Schibsted Grotesk",
+            "status": "unloaded"
+          },
+          {
+            "family": "Schibsted Grotesk",
+            "status": "loaded"
+          },
+          {
+            "family": "Schibsted Grotesk",
+            "status": "unloaded"
+          },
+          {
+            "family": "Schibsted Grotesk",
+            "status": "loaded"
+          },
+          {
+            "family": "Sometype Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "Sometype Mono",
+            "status": "loaded"
+          },
+          {
+            "family": "Sometype Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "Sometype Mono",
+            "status": "loaded"
+          }
+        ]
+      },
+      "error": null,
+      "console": [],
+      "pageErrors": [],
+      "network": [
+        {
+          "event": "request",
+          "url": "http://127.0.0.1:8791/",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:8791/",
+          "status": 200
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Sometype+Mono:wght@400;500&display=swap",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Sometype+Mono:wght@400;500&display=swap",
+          "status": 200
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.gstatic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9GayojdSFO.woff2",
+          "method": "GET"
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.gstatic.com/s/sometypemono/v4/70lVu745KGk_R3uxyq0WrROhKpShQWVB_m4.woff2",
+          "method": "GET"
+        },
+        {
+          "event": "request",
+          "url": "http://127.0.0.1:8791/api/state",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:8791/api/state",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.gstatic.com/s/sometypemono/v4/70lVu745KGk_R3uxyq0WrROhKpShQWVB_m4.woff2",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.gstatic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9GayojdSFO.woff2",
+          "status": 200
+        }
+      ],
+      "screenshot": "audit/logs/EXT-FONTS-1280.jpg"
+    },
+    {
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "status": "PASS",
+      "expected": "Exact row text in AUDIT.md and literal assertions in audit/run/ui.mjs",
+      "actual": {
+        "sans": true,
+        "mono": true,
+        "body": "\"Schibsted Grotesk\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+        "text": 115.171875,
+        "fonts": [
+          {
+            "family": "Schibsted Grotesk",
+            "status": "unloaded"
+          },
+          {
+            "family": "Schibsted Grotesk",
+            "status": "loaded"
+          },
+          {
+            "family": "Schibsted Grotesk",
+            "status": "unloaded"
+          },
+          {
+            "family": "Schibsted Grotesk",
+            "status": "loaded"
+          },
+          {
+            "family": "Schibsted Grotesk",
+            "status": "unloaded"
+          },
+          {
+            "family": "Schibsted Grotesk",
+            "status": "loaded"
+          },
+          {
+            "family": "Schibsted Grotesk",
+            "status": "unloaded"
+          },
+          {
+            "family": "Schibsted Grotesk",
+            "status": "loaded"
+          },
+          {
+            "family": "Sometype Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "Sometype Mono",
+            "status": "loaded"
+          },
+          {
+            "family": "Sometype Mono",
+            "status": "unloaded"
+          },
+          {
+            "family": "Sometype Mono",
+            "status": "loaded"
+          }
+        ]
+      },
+      "error": null,
+      "console": [],
+      "pageErrors": [],
+      "network": [
+        {
+          "event": "request",
+          "url": "http://127.0.0.1:8791/",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:8791/",
+          "status": 200
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Sometype+Mono:wght@400;500&display=swap",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Sometype+Mono:wght@400;500&display=swap",
+          "status": 200
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.gstatic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9GayojdSFO.woff2",
+          "method": "GET"
+        },
+        {
+          "event": "request",
+          "url": "https://fonts.gstatic.com/s/sometypemono/v4/70lVu745KGk_R3uxyq0WrROhKpShQWVB_m4.woff2",
+          "method": "GET"
+        },
+        {
+          "event": "request",
+          "url": "http://127.0.0.1:8791/api/state",
+          "method": "GET"
+        },
+        {
+          "event": "response",
+          "url": "http://127.0.0.1:8791/api/state",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.gstatic.com/s/sometypemono/v4/70lVu745KGk_R3uxyq0WrROhKpShQWVB_m4.woff2",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "url": "https://fonts.gstatic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9GayojdSFO.woff2",
+          "status": 200
+        }
+      ],
+      "screenshot": "audit/logs/EXT-FONTS-375.jpg"
+    }
+  ]
+}

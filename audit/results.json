@@ -1,0 +1,252 @@
+{
+  "CHAIN-TX-FUNDING": {
+    "status": "UNTESTED",
+    "detail": "Expected public transaction and height; explorer fetch failed. HTTP Error 429: Too Many Requests",
+    "path": "audit/logs/CHAIN-TX-FUNDING.json"
+  },
+  "CHAIN-TX-ALICE": {
+    "status": "UNTESTED",
+    "detail": "Expected public transaction and height; explorer fetch failed. HTTP Error 429: Too Many Requests",
+    "path": "audit/logs/CHAIN-TX-ALICE.json"
+  },
+  "CHAIN-TX-BOB": {
+    "status": "UNTESTED",
+    "detail": "Expected public transaction and height; explorer fetch failed. HTTP Error 429: Too Many Requests",
+    "path": "audit/logs/CHAIN-TX-BOB.json"
+  },
+  "EXT-LIVE-ROOT": {
+    "status": "PASS",
+    "detail": "GET https://misthos-api.201-18-198-162.sslip.io/: HTTP 200; captured body requires exact expected content",
+    "path": "audit/logs/EXT-LIVE-ROOT.json"
+  },
+  "CLI-PLAN-OK": {
+    "status": "PASS",
+    "detail": "All literal exit/output assertions matched.",
+    "path": "audit/logs/CLI-PLAN-OK.json"
+  },
+  "CLI-PLAN-BAD": {
+    "status": "PASS",
+    "detail": "All literal exit/output assertions matched.",
+    "path": "audit/logs/CLI-PLAN-BAD.json"
+  },
+  "EDGE-BAD-CSV": {
+    "status": "PASS",
+    "detail": "All literal exit/output assertions matched.",
+    "path": "audit/logs/EDGE-BAD-CSV.json"
+  },
+  "CLI-PLAN-CAPS": {
+    "status": "PASS",
+    "detail": "All literal exit/output assertions matched.",
+    "path": "audit/logs/CLI-PLAN-CAPS.json"
+  },
+  "CLI-CHECK-ENV-MISSING": {
+    "status": "PASS",
+    "detail": "All literal exit/output assertions matched.",
+    "path": "audit/logs/CLI-CHECK-ENV-MISSING.json"
+  },
+  "CLI-CHECK-ENV-MAINNET": {
+    "status": "PASS",
+    "detail": "All literal exit/output assertions matched.",
+    "path": "audit/logs/CLI-CHECK-ENV-MAINNET.json"
+  },
+  "CLI-AUDIT-EXPORT-MISSING": {
+    "status": "PASS",
+    "detail": "All literal exit/output assertions matched.",
+    "path": "audit/logs/CLI-AUDIT-EXPORT-MISSING.json"
+  },
+  "CLI-AUDIT-EXPORT-OK": {
+    "status": "PASS",
+    "detail": "All literal exit/output assertions matched.",
+    "path": "audit/logs/CLI-AUDIT-EXPORT-OK.json"
+  },
+  "CLI-PAY-REFUSE": {
+    "status": "PASS",
+    "detail": "All literal exit/output assertions matched.",
+    "path": "audit/logs/CLI-PAY-REFUSE.json"
+  },
+  "CLI-TWOSTEP-LABEL": {
+    "status": "PASS",
+    "detail": "All literal exit/output assertions matched.",
+    "path": "audit/logs/CLI-TWOSTEP-LABEL.json"
+  },
+  "CLI-EXPORT-NO-LABEL": {
+    "status": "PASS",
+    "detail": "All literal exit/output assertions matched.",
+    "path": "audit/logs/CLI-EXPORT-NO-LABEL.json"
+  },
+  "CLI-VERIFY-USAGE": {
+    "status": "PASS",
+    "detail": "All literal exit/output assertions matched.",
+    "path": "audit/logs/CLI-VERIFY-USAGE.json"
+  },
+  "CLI-USAGE": {
+    "status": "PASS",
+    "detail": "All literal exit/output assertions matched.",
+    "path": "audit/logs/CLI-USAGE.json"
+  },
+  "API-LOOPBACK": {
+    "status": "PASS",
+    "detail": "All literal exit/output assertions matched.",
+    "path": "audit/logs/API-LOOPBACK.json"
+  },
+  "CLI-SERVE-NO-ROSTER": {
+    "status": "PASS",
+    "detail": "All literal exit/output assertions matched.",
+    "path": "audit/logs/CLI-SERVE-NO-ROSTER.json"
+  },
+  "CLI-SERVE-BAD-PATH": {
+    "status": "PASS",
+    "detail": "All literal exit/output assertions matched.",
+    "path": "audit/logs/CLI-SERVE-BAD-PATH.json"
+  },
+  "CLI-SERVE-ARGS": {
+    "status": "PASS",
+    "detail": "All literal exit/output assertions matched.",
+    "path": "audit/logs/CLI-SERVE-ARGS.json"
+  },
+  "CLI-PLAN-ARGS": {
+    "status": "PASS",
+    "detail": "All literal exit/output assertions matched.",
+    "path": "audit/logs/CLI-PLAN-ARGS.json"
+  },
+  "CLI-CHECK-ENV-HTTPS": {
+    "status": "PASS",
+    "detail": "All literal exit/output assertions matched.",
+    "path": "audit/logs/CLI-CHECK-ENV-HTTPS.json"
+  },
+  "CLI-AUDIT-TXID": {
+    "status": "PASS",
+    "detail": "All literal exit/output assertions matched.",
+    "path": "audit/logs/CLI-AUDIT-TXID.json"
+  },
+  "CLI-EXPORT-USAGE-AMOUNT": {
+    "status": "PASS",
+    "detail": "All literal exit/output assertions matched.",
+    "path": "audit/logs/CLI-EXPORT-USAGE-AMOUNT.json"
+  },
+  "CLI-TWOSTEP-BAD-DELAY": {
+    "status": "PASS",
+    "detail": "All literal exit/output assertions matched.",
+    "path": "audit/logs/CLI-TWOSTEP-BAD-DELAY.json"
+  },
+  "CLI-TWOSTEP-TIMEOUT-CONFIG": {
+    "status": "PASS",
+    "detail": "All literal exit/output assertions matched.",
+    "path": "audit/logs/CLI-TWOSTEP-TIMEOUT-CONFIG.json"
+  },
+  "UI-DESK-EMPTY": {
+    "status": "PASS",
+    "detail": "All literal exit/output assertions matched.",
+    "path": "audit/logs/UI-DESK-EMPTY.json"
+  },
+  "EDGE-EMPTY-ROSTER": {
+    "status": "PASS",
+    "detail": "All literal exit/output assertions matched.",
+    "path": "audit/logs/EDGE-EMPTY-ROSTER.json"
+  },
+  "API-GET-ROOT": {
+    "status": "PASS",
+    "detail": "Exact HTTP status/body assertions matched.",
+    "path": "audit/logs/API-GET-ROOT.json"
+  },
+  "API-STATE-SETUP": {
+    "status": "PASS",
+    "detail": "Expected config_error to identify all five missing variables; actual config_error='ZCASH_NETWORK not configured; ZCASH_LWD_URL not configured; ZCASH_WALLET_DB not configured; ZCASH_WALLET_CLI not configured; ZCASH_AUDITOR_UFVK not configured'; ordered missing=['ZCASH_NETWORK', 'ZCASH_LWD_URL', 'ZCASH_WALLET_DB', 'ZCASH_WALLET_CLI', 'ZCASH_AUDITOR_UFVK']",
+    "path": "audit/logs/API-STATE-SETUP.json"
+  },
+  "API-STATE-CONFIGURED": {
+    "status": "PASS",
+    "detail": "Configured JSON assertions True",
+    "path": "audit/logs/API-STATE-CONFIGURED.json"
+  },
+  "API-STATE-MAINNET": {
+    "status": "PASS",
+    "detail": "Exact HTTP status/body assertions matched.",
+    "path": "audit/logs/API-STATE-MAINNET.json"
+  },
+  "API-AUDIT-MISSING": {
+    "status": "PASS",
+    "detail": "Exact HTTP status/body assertions matched.",
+    "path": "audit/logs/API-AUDIT-MISSING.json"
+  },
+  "API-AUDIT-OK": {
+    "status": "PASS",
+    "detail": "Expected exactly three CSV header lines and no data; comparison=True",
+    "path": "audit/logs/API-AUDIT-OK.json"
+  },
+  "API-AUDIT-SPENDKEY": {
+    "status": "PASS",
+    "detail": "Exact refusal and no synthetic value echoed: True",
+    "path": "audit/logs/API-AUDIT-SPENDKEY.json"
+  },
+  "API-RUN-410": {
+    "status": "PASS",
+    "detail": "Exact HTTP status/body assertions matched.",
+    "path": "audit/logs/API-RUN-410.json"
+  },
+  "API-PROOF-410": {
+    "status": "PASS",
+    "detail": "Exact HTTP status/body assertions matched.",
+    "path": "audit/logs/API-PROOF-410.json"
+  },
+  "API-404": {
+    "status": "PASS",
+    "detail": "Exact HTTP status/body assertions matched.",
+    "path": "audit/logs/API-404.json"
+  },
+  "API-HOST-403": {
+    "status": "PASS",
+    "detail": "All three foreign-host requests refused with no roster/key/HTML: True",
+    "path": "audit/logs/API-HOST-403.json"
+  },
+  "API-HOST-MISSING": {
+    "status": "PASS",
+    "detail": "Exact HTTP status/body assertions matched.",
+    "path": "audit/logs/API-HOST-MISSING.json"
+  },
+  "API-HOST-DUP": {
+    "status": "PASS",
+    "detail": "Exact HTTP status/body assertions matched.",
+    "path": "audit/logs/API-HOST-DUP.json"
+  },
+  "API-431": {
+    "status": "PASS",
+    "detail": "Exact HTTP status/body assertions matched.",
+    "path": "audit/logs/API-431.json"
+  },
+  "API-503": {
+    "status": "PASS",
+    "detail": "Held exactly 64 incomplete heads; 65th returned exact 503 and closed.",
+    "path": "audit/logs/API-503.json"
+  },
+  "API-STATE-ROSTER": {
+    "status": "PASS",
+    "detail": "Repeated state has exact roster path, total, typed entries and no runs: True",
+    "path": "audit/logs/API-STATE-ROSTER.json"
+  },
+  "API-HOST-ACCEPT": {
+    "status": "PASS",
+    "detail": "Exact HTTP status/body assertions matched.",
+    "path": "audit/logs/API-HOST-ACCEPT.json"
+  },
+  "API-RESPONSE-HEADERS": {
+    "status": "PASS",
+    "detail": "Accurate UTF-8 byte framing, no-store and closed connection on HTML/JSON/CSV: True",
+    "path": "audit/logs/API-RESPONSE-HEADERS.json"
+  },
+  "API-TIMEOUT": {
+    "status": "PASS",
+    "detail": "Incomplete header dropped after ~5 seconds; subsequent request succeeds: True",
+    "path": "audit/logs/API-TIMEOUT.json"
+  },
+  "API-BAD-UTF8": {
+    "status": "PASS",
+    "detail": "Exact HTTP status/body assertions matched.",
+    "path": "audit/logs/API-BAD-UTF8.json"
+  },
+  "API-METHOD-QUERY": {
+    "status": "PASS",
+    "detail": "Exact HTTP status/body assertions matched.",
+    "path": "audit/logs/API-METHOD-QUERY.json"
+  }
+}

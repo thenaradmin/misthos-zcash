@@ -1,0 +1,23 @@
+{
+  "id": "API-HOST-MISSING",
+  "status": "PASS",
+  "expected": "See unchanged exact expected result in AUDIT.md",
+  "actual": "Exact HTTP status/body assertions matched.",
+  "console": [],
+  "network": [
+    {
+      "response": "HTTP/1.1 403 Forbidden\r\nContent-Type: application/json\r\nContent-Length: 121\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"Host not allowed: the desk answers only on 127.0.0.1, localhost or [::1] (or the --addr host it was bound to)\"}",
+      "elapsed": 0.0,
+      "closed": true,
+      "request": "GET /api/state HTTP/1.1\r\n\r\n"
+    }
+  ],
+  "evidence": [
+    {
+      "response": "HTTP/1.1 403 Forbidden\r\nContent-Type: application/json\r\nContent-Length: 121\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{\"error\":\"Host not allowed: the desk answers only on 127.0.0.1, localhost or [::1] (or the --addr host it was bound to)\"}",
+      "elapsed": 0.0,
+      "closed": true,
+      "request": "GET /api/state HTTP/1.1\r\n\r\n"
+    }
+  ]
+}

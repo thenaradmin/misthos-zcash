@@ -1,0 +1,17 @@
+{
+  "id": "EXT-LIVE",
+  "status": "PASS",
+  "expected": "Unchanged exact expectation in AUDIT.md",
+  "actual": "GET https://misthos-api.201-18-198-162.sslip.io/: HTTP 200; captured body requires exact expected content Exactly one read-only GET of /; extra deployed API request forbidden by this task. No SSH or redeploy.",
+  "console": [],
+  "network": [],
+  "reviewed_files": [
+    {
+      "path": "docker-compose.yml",
+      "sha256": "0d3a76b9713e97a8f0a861ca5f3057bcbcc57a848fe6e87017feb71e7bf6d05a"
+    }
+  ],
+  "additional_evidence": [
+    "audit/logs/EXT-LIVE-ROOT.json"
+  ]
+}

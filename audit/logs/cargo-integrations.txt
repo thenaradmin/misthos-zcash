@@ -1,0 +1,37 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.09s
+     Running tests/cli_label.rs (target/debug/deps/cli_label-a1e212e5bfe4d1e7)
+
+running 4 tests
+test export_proof_usage_says_the_amount_comes_from_the_roster ... ok
+test export_proof_requires_label ... ok
+test two_step_pay_requires_label ... ok
+test concurrent_two_step_run_stops_on_the_wallet_db_lock ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.69s
+
+     Running tests/cli_serve.rs (target/debug/deps/cli_serve-c6ef0f42b2788c27)
+
+running 1 test
+test non_loopback_addr_is_refused_without_allow_remote ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/proof_real_tx.rs (target/debug/deps/proof_real_tx-03bc2f78d4381225)
+
+running 7 tests
+test shared_tx_reveals_only_the_holders_outputs ... ok
+test employee_a_proves_own_payout_and_b_key_sees_nothing ... ok
+test edited_employee_id_still_verifies_and_is_labelled_unsigned ... ok
+test pubkey_file_from_current_dir_is_warned_with_its_absolute_path ... ok
+test signed_proof_is_bound_to_the_real_payout ... ok
+test verify_proof_attacks ... ok
+test ironwood_payout_verifies_with_real_halo2_bundle ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.91s
+
+     Running tests/sig_attacks.rs (target/debug/deps/sig_attacks-157a56ff189401c3)
+
+running 1 test
+test attacks ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

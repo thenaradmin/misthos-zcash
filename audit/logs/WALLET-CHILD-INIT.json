@@ -1,0 +1,15 @@
+{
+  "id": "WALLET-CHILD-INIT",
+  "status": "UNTESTED",
+  "expected": "Unchanged exact expectation in AUDIT.md",
+  "actual": "Existing temp probe checks initial seed env/birthday and failed balance; it does not assert 0700, later calls removing inherited seed, or all directory semantics. Needs expanded isolated probe; no real wallet permitted.",
+  "console": [],
+  "network": [],
+  "reviewed_files": [
+    {
+      "path": "src/wallet.rs",
+      "sha256": "e83675f8eb5c02f1b41c31e638c02fb82b1e418bda8271789f574ab84a70e8ee"
+    }
+  ],
+  "additional_evidence": null
+}

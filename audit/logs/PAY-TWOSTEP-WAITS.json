@@ -1,0 +1,15 @@
+{
+  "id": "PAY-TWOSTEP-WAITS",
+  "status": "UNTESTED",
+  "expected": "Unchanged exact expectation in AUDIT.md",
+  "actual": "Reviewed all-funding-mined aggregation, max height, saved targets, ten failed tip polls and named employee timeout. Needs controlled funded-run/lightwalletd observations; funded send forbidden.",
+  "console": [],
+  "network": [],
+  "reviewed_files": [
+    {
+      "path": "src/main.rs",
+      "sha256": "2919b8dc7c07ad915614db2158083a6ebf38793ef176b2fd070dbd4c36026f6f"
+    }
+  ],
+  "additional_evidence": null
+}

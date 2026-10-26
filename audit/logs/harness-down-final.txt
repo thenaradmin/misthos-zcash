@@ -1,0 +1,3 @@
+mainnet: Misthos desk not running (http://127.0.0.1:8793/api/state: ECONNREFUSED). Start it with: npm run stack
+configured: Misthos desk not running (http://127.0.0.1:8792/api/state: ECONNREFUSED). Start it with: npm run stack
+setup: Misthos desk not running (http://127.0.0.1:8791/api/state: ECONNREFUSED). Start it with: npm run stack
