@@ -507,6 +507,106 @@ body:has(#desk-view:not([hidden])) footer{display:none}
   body:has(#desk-view:not([hidden])) .nav .wrap{height:auto}
   body:has(#desk-view:not([hidden])) .nav #net{display:none}
 }
+
+/* Final surface refinement: airy landing, compact operations desk. */
+::selection{background:#d9d1ff;color:var(--ink)}
+.hero{background:radial-gradient(ellipse at 80% 34%,#eee9ff 0,transparent 49%),radial-gradient(ellipse at 18% 84%,#faf4ef 0,transparent 42%),#fafbfc;padding:46px 0 60px}
+.hero .wrap{grid-template-columns:minmax(0,.93fr) minmax(0,1.07fr);column-gap:clamp(38px,5vw,80px);row-gap:32px;align-items:center}
+.hero-head{padding:24px 0 24px}
+.hero h1{font-size:clamp(64px,6.6vw,96px);line-height:.98;letter-spacing:-.04em;max-width:9.5ch}
+.hero .lede{font-size:19px;max-width:39ch;margin-top:32px}
+.hero-cta{margin-top:34px}
+.hero-cta .btn:first-child{background:var(--ink)}
+.hero .slip{z-index:1;border:0;border-radius:22px;box-shadow:0 28px 62px -32px rgba(20,22,26,.28),0 6px 18px -10px rgba(20,22,26,.18)}
+.hero .slip::before,.hero .slip::after{content:"";position:absolute;inset:0;border-radius:22px;z-index:-1;pointer-events:none}
+.hero .slip::before{background:#dcd4ff;transform:translate(15px,17px);box-shadow:0 14px 30px -20px rgba(49,35,108,.35)}
+.hero .slip::after{background:#c8bbff;transform:translate(27px,28px);z-index:-2}
+.hero-stats{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border-top:1px solid #d7dbe3;margin-top:26px;padding-top:28px}
+.hero-stats>div{display:flex;align-items:baseline;gap:13px;padding:0 28px;min-width:0}
+.hero-stats>div:first-child{padding-left:0}.hero-stats>div+div{border-left:1px solid #d7dbe3}
+.hero-stats strong{font:600 clamp(29px,3vw,42px)/1 var(--sans);letter-spacing:-.04em;white-space:nowrap}
+.hero-stats span{font-size:13px;line-height:1.35;color:var(--mute);max-width:18ch}
+.feature-band.wrap{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));max-width:calc(var(--max) - var(--gut)*2);gap:0;margin:40px auto 36px;padding:46px 34px;border-radius:28px;background:#17141f;color:#f6f5f9}
+.feature-band>div{min-width:0;padding:0 28px}.feature-band>div+div{border-left:1px solid #3d3749}
+.feature-icon{display:grid;place-items:center;width:38px;height:38px;margin-bottom:23px;border-radius:11px;background:#2b233f;color:#b9a7ff}
+.feature-icon svg,.desk-nav svg,.kpi-icon svg,.roster-path svg,.topbar-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.nav ul svg{display:none;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.feature-band h3{font-size:20px;line-height:1.2;letter-spacing:-.025em}
+.feature-band p{font-size:14px;line-height:1.65;color:#cbc6d3;margin-top:12px;max-width:30ch}
+
+body:has(#desk-view:not([hidden])){background:#f3f4f6}
+body:has(#desk-view:not([hidden])) .nav{width:250px;border-right:1px solid #e5e7eb;overflow-y:auto}
+body:has(#desk-view:not([hidden])) .nav .wrap{padding:28px 16px 22px}
+body:has(#desk-view:not([hidden])) .nav .mark{margin:0 14px 46px}
+.desk-nav-label{font-size:12px;text-transform:none;letter-spacing:0;color:#727987;padding:0 14px 13px}
+.desk-nav a{height:44px;gap:13px;padding:0 15px;border-radius:12px;font-size:14px;color:#424854}
+.desk-nav a.active{background:var(--violet);color:#fff;font-weight:600;box-shadow:0 5px 13px -8px rgba(70,43,195,.75)}
+.desk-nav a.active::before{display:none}
+.desk-nav a.active:hover{background:#5c3ff0;color:#fff}
+body:has(#desk-view:not([hidden])) .nav ul{margin-top:26px;padding-top:22px;gap:3px}
+body:has(#desk-view:not([hidden])) .nav ul::before{content:"Payslip";font-size:12px;letter-spacing:0;text-transform:none;color:#727987;padding:0 14px 11px}
+body:has(#desk-view:not([hidden])) .nav ul a{height:44px;padding:0 15px;gap:13px}
+body:has(#desk-view:not([hidden])) .nav ul svg{display:block}
+body:has(#desk-view:not([hidden])) #desk-view{margin-left:250px}
+.desk .wrap{padding-top:22px}
+.desk-topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:66px;padding:0 0 22px;border-bottom:1px solid #e2e5ea}
+.roster-path{display:flex;align-items:center;gap:11px;min-width:0;width:min(460px,55%);height:42px;padding:0 15px;border:1px solid #e5e7eb;border-radius:999px;background:#fff;color:#747b88;font-size:13px}
+.roster-path #rpath{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.roster-path #rpath:empty::after{content:"Reading roster…"}
+.desk-topbar-right{display:flex;align-items:center;gap:9px;min-width:0}
+.topbar-icon{display:grid;place-items:center;flex:none;width:38px;height:38px;border:1px solid #e5e7eb;border-radius:50%;background:#fff;color:#525966}
+.desk-topbar-right .chip{margin-left:6px;max-width:30vw;font-family:var(--sans);font-size:12px;font-weight:600;padding:9px 12px}
+.desk-head{padding-top:27px;align-items:center}
+.desk-head h1{font-size:clamp(30px,2.8vw,39px);letter-spacing:-.035em}
+.desk-head .back{display:inline-block}
+.desk-head p{max-width:90ch;margin-top:10px}
+.quick-stats{margin-top:28px;background:#fff;border:1px solid #e5e7eb;border-radius:18px;overflow:hidden}
+.quick-stats-head{display:flex;align-items:center;justify-content:space-between;padding:15px 20px;border-bottom:1px solid #e8eaee;background:#fafafb}
+.quick-stats-head h2{font-size:17px;line-height:1.2;letter-spacing:-.02em;max-width:none}
+.quick-stats-head span{color:#777e89;font-size:20px;line-height:1}
+.kpis{margin:0;gap:12px;padding:16px}
+.kpi{position:relative;min-height:156px;border:1px solid #e8eaee;border-radius:13px;padding:18px 16px;box-shadow:none}
+.kpi-label{font-size:13px;font-weight:500;text-transform:none;letter-spacing:0;color:#4f5663;padding-right:44px}
+.kpi-icon{position:absolute;right:14px;top:14px;display:grid;place-items:center;width:36px;height:36px;border-radius:11px;background:#f0edff;color:var(--violet)}
+.kpi-value{font:600 clamp(27px,2.8vw,39px)/1.08 var(--sans);letter-spacing:-.035em;margin-top:27px}
+.kpi-value.kpi-text{font-size:16px;line-height:1.32;letter-spacing:-.015em}
+.kpi-caption{padding-top:8px;font-size:12px}
+.env{margin-top:19px}
+.desk-grid{margin-top:19px;gap:19px;grid-template-columns:minmax(0,1.55fr) minmax(310px,.85fr)}
+.panel{border-radius:16px;border-color:#e4e7eb}
+.panel-h{padding:18px 20px}
+.roster-toolbar{align-items:center;gap:16px;background:#fafafb}
+.roster-toolbar-title{display:flex;align-items:center;gap:9px;min-width:0}
+.roster-count{font:600 11px/1 var(--sans)!important;color:var(--violet-ink)!important;background:#eeeaff;padding:6px 8px;border-radius:999px;white-space:nowrap}
+.roster-filter{display:flex;align-items:center;gap:2px;background:#f0f1f3;border:1px solid #e6e8ec;border-radius:9px;padding:3px;flex:none}
+.roster-filter span{font:500 12px/1 var(--sans);padding:7px 10px;border-radius:7px;color:#68707c}
+.roster-filter .selected{background:#fff;color:var(--violet-ink);box-shadow:0 1px 3px #1a1a2415}
+.roster thead{background:#fff}
+.roster th{font:500 12px/1.3 var(--sans);text-transform:none;letter-spacing:0;padding-top:15px;padding-bottom:15px;color:#858b96}
+.roster td{height:68px}
+.roster .avatar{width:32px;height:32px}
+.roster tfoot td{border-top:1px solid #e5e7eb;background:#fafafb}
+.audit{background:#121318;border-color:#292a33}
+.audit .panel-h{border-color:#31323b}
+.audit .btn.line{border-radius:9px}
+@media(max-width:1180px){.hero .wrap{column-gap:34px}.hero h1{font-size:clamp(57px,6vw,76px)}.desk-grid{grid-template-columns:1fr}}
+@media(max-width:900px){body:has(#desk-view:not([hidden])) .nav{width:auto}body:has(#desk-view:not([hidden])) #desk-view{margin-left:0}.desk-nav a{height:40px}.desk-topbar{padding-top:6px}}
+@media(max-width:760px){
+  .hero{padding:24px 0 52px}.hero .wrap{display:block}.hero-head{padding:38px 0 42px}.hero h1{font-size:clamp(49px,10vw,70px);max-width:11ch}.hero .lede{font-size:17px;margin-top:26px}
+  .hero .slip::before{transform:translate(7px,9px)}.hero .slip::after{transform:translate(13px,15px)}
+  .hero-stats{margin-top:48px;padding-top:25px;gap:17px}.hero-stats>div{display:block;padding:0 13px}.hero-stats>div:first-child{padding-left:0}.hero-stats strong{display:block;font-size:28px}.hero-stats span{display:block;margin-top:7px;font-size:12px}
+  .feature-band.wrap{grid-template-columns:1fr;margin:24px var(--gut) 20px;padding:26px 24px;border-radius:20px;max-width:none}
+  .feature-band>div{padding:0 0 22px}.feature-band>div+div{border-left:0;border-top:1px solid #3d3749;padding:22px 0}.feature-band>div:last-child{padding-bottom:0}
+  .feature-icon{margin-bottom:13px}.feature-band p{max-width:none}
+  .desk .wrap{padding-top:16px}.desk-topbar{gap:10px}.roster-path{width:auto;flex:1}.desk-topbar-right .topbar-icon{display:none}.desk-topbar-right .chip{max-width:34vw;margin-left:0}
+  .quick-stats{margin-top:22px}.kpis{padding:12px}.kpi{min-height:138px}.kpi-value{font-size:26px}.roster td{height:auto}
+}
+@media(max-width:480px){
+  .hero h1{font-size:48px}.hero-stats{gap:0}.hero-stats>div{padding:0 8px}.hero-stats strong{font-size:21px}.hero-stats>div:nth-child(2) strong{font-size:18px}.hero-stats span{font-size:10px}
+  .desk-topbar-right .chip{max-width:41vw;font-size:10px;padding:8px}.roster-path{height:38px;padding:0 10px;font-size:11px}.roster-path svg{width:15px;height:15px}
+  .desk-head{padding-top:20px}.desk-head-badges{margin-top:12px}.kpi{padding:14px;min-height:132px}.kpi-icon{width:32px;height:32px;right:10px;top:10px}.kpi-label{font-size:12px}.kpi-value{font-size:23px}.kpi-value.kpi-text{font-size:13px}
+  .roster-filter span{font-size:11px;padding:6px}.roster-toolbar{padding:13px 14px}.roster-toolbar-title h2{font-size:16px}
+}
 </style>
 </head>
 <body id="top">
@@ -515,19 +615,19 @@ body:has(#desk-view:not([hidden])) footer{display:none}
   <div class="wrap">
     <a class="mark" href="#top" aria-label="Misthos, home"><i aria-hidden="true"><b></b><b></b></i>Misthos</a>
     <ul>
-      <li><a href="#payslip">Payslip</a></li>
-      <li><a href="#keys">Keys</a></li>
-      <li><a href="#blocks">Blocks</a></li>
-      <li><a href="#proof">Proof</a></li>
-      <li><a href="#limits">Limits</a></li>
+      <li><a href="#payslip"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Payslip</a></li>
+      <li><a href="#keys"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="11" r="3"/><path d="M11 11h10m-4 0v3m4-3v2M3 19h18"/></svg>Keys</a></li>
+      <li><a href="#blocks"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18h18M5 15V8m7 7V4m7 11v-5M3 21h18"/></svg>Blocks</a></li>
+      <li><a href="#proof"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 20 6v5.5c0 5-3.3 8.3-8 10-4.7-1.7-8-5-8-10V6l8-3.5Z"/><path d="m8.5 12 2.3 2.3 4.7-4.8"/></svg>Proof</a></li>
+      <li><a href="#limits"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5m0 4h.01"/></svg>Limits</a></li>
     </ul>
     <div class="desk-nav" aria-label="Desk sections">
-      <span class="desk-nav-label">Workspace</span>
-      <a class="active" href="#desk" data-scroll-target="desk-h">Overview</a>
-      <a href="#desk" data-scroll-target="roster-h">Roster</a>
-      <a href="#desk" data-scroll-target="run-h">Pay run</a>
-      <a href="#desk" data-scroll-target="cli-h">Pay &amp; prove</a>
-      <a href="#desk" data-scroll-target="audit-h">Accountant</a>
+      <span class="desk-nav-label">Menu</span>
+      <a class="active" href="#desk" data-scroll-target="desk-h"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Overview</a>
+      <a href="#desk" data-scroll-target="roster-h"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="8" r="3"/><path d="M2.5 19v-1.2A5.8 5.8 0 0 1 8.3 12h.4a5.8 5.8 0 0 1 5.8 5.8V19M16 6h5M16 10h5M17 15h4M17 19h4"/></svg>Roster</a>
+      <a href="#desk" data-scroll-target="run-h"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4M7 3v3M17 3v3"/></svg>Pay run</a>
+      <a href="#desk" data-scroll-target="cli-h"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="4" width="19" height="16" rx="2"/><path d="m7 9 3 3-3 3m6 0h4"/></svg>Pay &amp; prove</a>
+      <a href="#desk" data-scroll-target="audit-h"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 20 6v5.5c0 5-3.3 8.3-8 10-4.7-1.7-8-5-8-10V6l8-3.5Z"/><path d="m8.5 12 2.3 2.3 4.7-4.8"/></svg>Accountant</a>
     </div>
     <a class="desk-back" href="#top">Back to the payslip</a>
     <a class="chip" id="net" href="#desk">checking setup…</a>
@@ -609,8 +709,19 @@ body:has(#desk-view:not([hidden])) footer{display:none}
           <p class="small">Names come from the employer's roster, not from the chain. The hatched bar is the run total: no employee key can read it.</p>
         </div>
       </article>
+      <div class="hero-stats" aria-label="Recorded run facts">
+        <div><strong>2</strong><span>employees in the recorded run</span></div>
+        <div><strong>+11 / +19</strong><span>blocks from funding to payouts</span></div>
+        <div><strong>6</strong><span>tamper attempts rejected on testnet</span></div>
+      </div>
     </div>
   </header>
+
+  <div class="feature-band wrap" aria-label="How the recorded run works">
+    <div><span class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="8" cy="11" r="3.5"/><path d="M11.5 11H21m-4 0v3m4-3v2M3 19h18"/></svg></span><h3>Each key lifts one line.</h3><p>Each employee is paid from their own child wallet, so its viewing key reads that line and nothing else.</p></div>
+    <div><span class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 18h18M5 15V8m7 7V4m7 11v-5M3 21h18"/><circle cx="5" cy="7" r="1"/><circle cx="12" cy="3" r="1"/><circle cx="19" cy="9" r="1"/></svg></span><h3>Random block waits</h3><p>2 to 6 blocks per step by default, recorded before waiting so a restart never redraws them.</p></div>
+    <div><span class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 12.5 10.5 16 18 8.5"/><path d="M12 2.5 20 6v5.5c0 5-3.3 8.3-8 10-4.7-1.7-8-5-8-10V6l8-3.5Z"/></svg></span><h3>Show one line to a lender.</h3><p>The employer signs every payout. A lender checks one employee's proof against the chain, not a screenshot.</p></div>
+  </div>
 
   <section class="sec" id="keys" aria-labelledby="keys-h">
     <div class="wrap">
@@ -728,27 +839,33 @@ body:has(#desk-view:not([hidden])) footer{display:none}
      scrolls to a #desk fragment on load (that hid the nav and dropped the heading's focus). -->
 <main id="desk-view" class="desk" hidden>
   <div class="wrap">
+    <div class="desk-topbar">
+      <div class="roster-path" aria-label="Roster path"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.3"/><path d="m15.5 15.5 5 5"/></svg><span id="rpath"></span></div>
+      <div class="desk-topbar-right"><span class="topbar-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3a7 7 0 0 0-7 7v3l-2 3h18l-2-3v-3a7 7 0 0 0-7-7ZM9 20h6"/></svg></span><span class="topbar-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span class="chip" id="envstatus">Checking setup…</span></div>
+    </div>
     <div class="desk-head">
       <div>
         <a class="back" href="#top">← The payslip</a>
         <h1 id="desk-h" tabindex="-1">The desk</h1>
         <p id="desk-lede">The employer's copy of the roster, with nothing redacted. It cannot pay. It has no login. It shows the employer's viewing key to anyone who can reach this port, so keep it on 127.0.0.1.</p>
       </div>
-      <div class="desk-head-badges"><span class="chip" id="envstatus">Checking setup…</span><span class="outline-badge">CLI only</span></div>
+      <div class="desk-head-badges"><span class="outline-badge">CLI only</span></div>
     </div>
 
-    <div class="kpis" aria-label="Desk summary">
-      <div class="kpi"><span class="kpi-label">Employees</span><strong id="kpi-employees" class="kpi-value skel-value"><span class="skel"></span></strong><span class="kpi-caption">In the current roster</span></div>
-      <div class="kpi"><span class="kpi-label">Run total</span><strong id="kpi-total" class="kpi-value skel-value"><span class="skel"></span></strong><span class="kpi-caption">Active employees</span></div>
-      <div class="kpi"><span class="kpi-label">Network</span><strong id="kpi-network" class="kpi-value kpi-text skel-value"><span class="skel"></span></strong><span class="kpi-caption">Lightwalletd endpoint</span></div>
-      <div class="kpi"><span class="kpi-label">Auditor key</span><strong id="kpi-auditor" class="kpi-value kpi-text skel-value"><span class="skel"></span></strong><span class="kpi-caption">Employer viewing key</span></div>
-    </div>
+    <section class="quick-stats" aria-label="Desk summary"><div class="quick-stats-head"><h2>Quick stats</h2><span aria-hidden="true">···</span></div>
+      <div class="kpis">
+        <div class="kpi"><span class="kpi-label">Employees</span><span class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M17 6a3 3 0 0 1 0 6m1 3a5 5 0 0 1 3 5"/></svg></span><strong id="kpi-employees" class="kpi-value skel-value"><span class="skel"></span></strong><span class="kpi-caption">In the current roster</span></div>
+        <div class="kpi"><span class="kpi-label">Run total</span><span class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/></svg></span><strong id="kpi-total" class="kpi-value skel-value"><span class="skel"></span></strong><span class="kpi-caption">Active employees</span></div>
+        <div class="kpi"><span class="kpi-label">Network</span><span class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c-3 3-3 15 0 18m0-18c3 3 3 15 0 18"/></svg></span><strong id="kpi-network" class="kpi-value kpi-text skel-value"><span class="skel"></span></strong><span class="kpi-caption">Lightwalletd endpoint</span></div>
+        <div class="kpi"><span class="kpi-label">Auditor key</span><span class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="8" cy="11" r="3"/><path d="M11 11h10m-4 0v3m4-3v2M3 19h18"/></svg></span><strong id="kpi-auditor" class="kpi-value kpi-text skel-value"><span class="skel"></span></strong><span class="kpi-caption">Employer viewing key</span></div>
+      </div>
+    </section>
 
     <div class="env" id="env" role="status"><span class="dot"></span><div><h3>Checking setup…</h3><p>Reading <code>/api/state</code>.</p></div></div>
 
     <div class="desk-grid">
       <section class="panel roster" aria-labelledby="roster-h">
-        <div class="panel-h"><h2 id="roster-h">Roster</h2><span id="rpath"></span></div>
+        <div class="panel-h roster-toolbar"><div class="roster-toolbar-title"><h2 id="roster-h">Roster</h2><span class="roster-count" id="roster-count">—</span></div><div class="roster-filter" aria-hidden="true"><span class="selected">All</span><span>Active</span></div></div>
         <div id="rosterbox"><div class="empty"><span class="skel" style="width:70%"></span><span class="skel" style="width:50%;margin-top:12px"></span><span class="skel" style="width:60%;margin-top:12px"></span></div></div>
       </section>
 
@@ -879,6 +996,7 @@ async function state(){
   catch(e){
     setChip($('net'),null);
     setDeskSummary(null);
+    $('roster-count').textContent='—';
     $('env').className='env bad';
     $('env').innerHTML='<span class="dot"></span><div><h3>Can\'t reach the desk API</h3><p>'+esc(e.message)+'. Is <code>payroll serve</code> still running? Start it with <code>cargo run -- serve</code> and reload.</p></div>';
     $('rosterbox').innerHTML='<p class="empty">No roster: the server did not answer.</p>';
@@ -900,6 +1018,7 @@ async function state(){
   }
   $('rpath').textContent=s.roster.length+(s.roster.length===1?' employee':' employees')+' · '+base(s.roster_path);
   $('rpath').title=s.roster_path;
+  $('roster-count').textContent=String(s.roster.length);
   document.querySelectorAll('.rp').forEach(x=>x.textContent=shq(s.roster_path||'roster.csv'));
   if(!s.roster.length){
     $('rosterbox').innerHTML='<p class="empty">The roster is empty. Add rows (<code>name,ua,amountZEC,memo</code>) to the CSV at <code>PAYROLL_ROSTER_CSV</code> and restart the desk.</p>';
