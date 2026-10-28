@@ -171,6 +171,16 @@ pub fn send_from_child(bin: &str, cfg: &ChainConfig, line: &PayLine) -> Result<V
     extract_txids(&out).ok_or(WalletError::NoTxid(out))
 }
 
+/// A read-only zingo-cli command (e.g. `balance`, `value_transfers`) on an employee's child
+/// wallet, synced first. Used by the desk's on-chain check of an unknown payout outcome.
+pub fn child_command(bin: &str, cfg: &ChainConfig, payout_address: &str, cmd: &[&str]) -> Result<String, WalletError> {
+    let dir = child_data_dir(cfg, payout_address);
+    if std::fs::read_dir(&dir).map(|mut d| d.next().is_none()).unwrap_or(true) {
+        return Err(WalletError::Spawn { bin: bin.into(), err: format!("{dir}: no child wallet here yet (it is created by the first pay run)") });
+    }
+    run_in(bin, cfg, &dir, None, cmd)
+}
+
 /// Durable per-child ledger (`<child dir>/payroll-ledger`) so a rerun or restart of
 /// `pay --two-step` never re-funds or re-pays. Lines: `<state> <period> [txid]`, where
 /// state is `fund-pending`, `funded`, `pay-pending` or `paid`. A `*-pending` line with no

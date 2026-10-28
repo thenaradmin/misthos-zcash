@@ -20,9 +20,11 @@
 //!       amount comes from <file.csv>, so use the roster of that pay period.
 //!   payroll verify-proof <proof-file> <txid> --lwd <url> [--employer-pubkey HEX]
 //!       Third-party check: employer signature, then what this employee's key sees in that tx.
-//!   payroll serve [--addr 127.0.0.1:8787] [--allow-remote]
+//!   payroll serve [--addr 127.0.0.1:8787] [--allow-remote] [--payouts]
 //!       Employer dashboard for the roster in PAYROLL_ROSTER_CSV. Unauthenticated, so a
-//!       non-loopback --addr is refused unless --allow-remote is given.
+//!       non-loopback --addr is refused unless --allow-remote is given. --payouts (loopback
+//!       only) lets the employer run payroll from the browser: the desk starts this binary's
+//!       own `pay --two-step`, `export-proof` and `verify-proof`, nothing else.
 
 use std::process::exit;
 use zec_payroll::{attest, audit, chain, config, csv, delay, disclosure, money, money::Zat, wallet, zip321, CapPolicy, Engine};
@@ -46,7 +48,7 @@ fn main() {
         Some("verify-proof") => verify_proof(&args[1..]),
         Some("keygen-signing") => keygen_signing(&args[1..]),
         Some("serve") => serve(&args[1..]),
-        _ => die("usage: payroll plan|pay <file.csv> [--two-step] [--label L] [--max-total ZEC] [--max-per ZEC] [--max-recipients N] | payroll audit-export <file.csv> [txid] | payroll keygen-signing <key-file> | payroll export-proof <file.csv> --employee <employee_id|name> [--label L] | payroll verify-proof <proof> <txid> --lwd <url> [--employer-pubkey HEX] | payroll serve [--addr HOST:PORT] [--allow-remote] | payroll check-env"),
+        _ => die("usage: payroll plan|pay <file.csv> [--two-step] [--label L] [--max-total ZEC] [--max-per ZEC] [--max-recipients N] | payroll audit-export <file.csv> [txid] | payroll keygen-signing <key-file> | payroll export-proof <file.csv> --employee <employee_id|name> [--label L] | payroll verify-proof <proof> <txid> --lwd <url> [--employer-pubkey HEX] | payroll serve [--addr HOST:PORT] [--allow-remote] [--payouts] | payroll check-env"),
     }
 }
 
@@ -90,18 +92,22 @@ fn audit_export(args: &[String]) {
 }
 
 fn serve(args: &[String]) {
-    let usage = "usage: payroll serve [--addr HOST:PORT] [--allow-remote]";
-    let (mut addr, mut allow_remote) = ("127.0.0.1:8787".to_string(), false);
+    let usage = "usage: payroll serve [--addr HOST:PORT] [--allow-remote] [--payouts]";
+    let (mut addr, mut allow_remote, mut payouts) = ("127.0.0.1:8787".to_string(), false, false);
     let mut it = args.iter();
     while let Some(a) = it.next() {
         match a.as_str() {
             "--addr" => addr = it.next().unwrap_or_else(|| die(usage)).clone(),
             "--allow-remote" => allow_remote = true,
+            "--payouts" => payouts = true,
             _ => die(usage),
         }
     }
     // The desk has no login: the roster and the employer's viewing key go to whoever reaches the port.
     let loopback = zec_payroll::server::is_loopback_addr(&addr).unwrap_or_else(|e| die(e));
+    if payouts && !loopback {
+        die(format!("refusing --payouts on non-loopback {addr}: the desk has no login, so anyone who reached it could run payroll. Payout mode is loopback only."));
+    }
     if !loopback && !allow_remote {
         die(format!("refusing to serve on non-loopback {addr}: the desk is unauthenticated and shows the full roster and the employer's viewing key (ZCASH_AUDITOR_UFVK) to anyone who can reach it. Keep it on 127.0.0.1, or pass --allow-remote if you really mean it."));
     }
@@ -117,7 +123,7 @@ fn serve(args: &[String]) {
         }
         exit(1)
     });
-    zec_payroll::server::serve(&addr, path, roster, CapPolicy::default()).unwrap_or_else(|e| die(format!("{addr}: {e}")));
+    zec_payroll::server::serve(&addr, path, roster, text, CapPolicy::default(), payouts).unwrap_or_else(|e| die(format!("{addr}: {e}")));
 }
 
 fn plan(args: &[String]) {

@@ -1,14 +1,27 @@
-//! Employer dashboard: a dependency-free HTTP server on std::net. Read-only.
+//! Employer dashboard: a dependency-free HTTP server on std::net.
 //!
-//!   GET  /            embedded UI (ui/index.html)
-//!   GET  /api/state   env check, roster, runs
-//!   GET  /api/audit   accountant ledger + UFVK (view-only)
-//!   POST /api/run     410 Gone: payouts run only from the CLI (`payroll pay --two-step`)
-//!   GET  /api/proof   410 Gone: signed proofs come only from the CLI (`payroll export-proof --employee`)
+//!   GET  /                       embedded UI (ui/index.html)
+//!   GET  /api/state              env check, roster, runs, payout mode, recorded periods
+//!   GET  /api/audit              accountant ledger + UFVK (view-only)
+//!   POST /api/roster             replace the roster with an uploaded CSV (validated, not saved)
+//!   POST /api/plan               plan the roster against caps (offline, like `payroll plan`)
+//!   POST /api/payroll/verify     third-party proof check against the chain (`verify-proof --lwd`)
+//!   POST /api/run                410 Gone: a one-shot treasury payout cannot be proven per employee
+//!   GET  /api/proof              410 Gone: proofs are exported with POST /api/payroll/proof
 //!
-//! The dashboard cannot move funds or export employee proofs. A direct treasury payout
-//! here would not be covered by employee proofs, and an unauthenticated proof endpoint
-//! would give every employee's viewing key to anyone who can reach the port.
+//! Only with `payroll serve --payouts` (loopback only), see `crate::desk`:
+//!   POST /api/payroll/run        start `payroll pay <snapshot> --two-step --label L` in the background
+//!   GET  /api/payroll/job        that run's output lines and per-employee progress
+//!   GET  /api/payroll/ledger     the per-child ledger of a period (+ payout block heights)
+//!   POST /api/payroll/check      on-chain check of a child wallet whose payout outcome is unknown
+//!   POST /api/payroll/resolve    record `pay-failed` only if that check shows nothing left the wallet
+//!   POST /api/payroll/proof      one employee's employer-signed proof (`payroll export-proof`)
+//!   GET  /api/payroll/accountant the period's ledger for the accountant, with the employer UFVK
+//!
+//! Without `--payouts` the desk moves no funds and exports no proofs. Every POST must carry
+//! `X-Misthos-Desk: 1` and `Content-Type: application/json`, and a browser `Origin` (if sent)
+//! must be a loopback or bound host: a page on another site cannot send that header without
+//! a CORS preflight this server never approves, so it cannot start a payout (CSRF).
 //!
 //! It is NOT authenticated: `/api/state` shows the full roster and `/api/audit` shows the
 //! employer's viewing key (`ZCASH_AUDITOR_UFVK`) to anyone who can reach the port. So it
@@ -36,8 +49,11 @@ pub const MAX_CONNECTIONS: usize = 64;
 
 const INDEX: &str = include_str!("../ui/index.html");
 
-pub const RUN_GONE: &str = "{\"error\":\"The dashboard no longer pays: a direct treasury payout cannot be proven per employee. Run `payroll pay <roster.csv> --two-step --label <period>` from the CLI.\"}";
-pub const PROOF_GONE: &str = "{\"error\":\"Proof download is disabled (it had no login). Export one employee's signed proof from the CLI: `payroll export-proof <roster.csv> --employee <id> --label <period>`.\"}";
+pub const RUN_GONE: &str = "{\"error\":\"A direct treasury payout cannot be proven per employee, so it is gone. Pay runs are two-step: Run payroll on a desk started with --payouts (POST /api/payroll/run), or `payroll pay <roster.csv> --two-step --label <period>`.\"}";
+pub const PROOF_GONE: &str = "{\"error\":\"Proof download by GET is disabled (no login, no CSRF guard). On a desk started with --payouts, export one employee's signed proof with POST /api/payroll/proof; or `payroll export-proof <roster.csv> --employee <id> --label <period>`.\"}";
+pub const PAYOUTS_OFF: &str = "{\"error\":\"Payouts are off: this desk is read-only. Start it with `payroll serve --payouts` (loopback only) to run payroll from the browser.\"}";
+/// Cap on a request body (a roster CSV or a proof file).
+pub const MAX_BODY_BYTES: usize = 256 * 1024;
 
 pub struct State {
     pub engine: Engine,
@@ -45,9 +61,13 @@ pub struct State {
     pub roster_path: String,
     /// Host part of the bound `--addr` (accepted in `Host` besides the loopback names).
     pub bound_host: String,
+    /// The roster's CSV text, exactly as loaded or uploaded (a pay run snapshots this).
+    pub roster_csv: String,
+    /// Payout mode (`serve --payouts`); `None` = read-only desk.
+    pub payouts: Option<Arc<crate::desk::Desk>>,
 }
 
-type Shared = Arc<Mutex<State>>;
+pub type Shared = Arc<Mutex<State>>;
 
 pub fn json_str(s: &str) -> String {
     let mut o = String::with_capacity(s.len() + 2);
@@ -133,8 +153,33 @@ fn state_json(s: &State) -> String {
         })
         .collect();
     let total = s.roster.iter().filter(|e| e.active).map(|e| e.pay.0).sum::<u64>();
+    let delays = match crate::delay::range_from(env) {
+        Ok(d) => format!("{{\"min\":{},\"max\":{},\"default\":{}}}", d.min, d.max, d == crate::delay::DelayRange::default()),
+        Err(e) => format!("{{\"error\":{}}}", json_str(&e.to_string())),
+    };
+    let periods: Vec<String> = config::load_from_env().map(|c| crate::desk::periods(&c.wallet_db)).unwrap_or_default().iter().map(|p| json_str(p)).collect();
+    let mut payout_missing: Vec<String> = Vec::new();
+    if s.payouts.is_some() {
+        for k in ["PAYROLL_EMPLOYER_SEED", "PAYROLL_CHILD_BIRTHDAY"] {
+            if env(k).is_none_or(|v| v.trim().is_empty()) {
+                payout_missing.push(json_str(k));
+            }
+        }
+        if env("PAYROLL_EMPLOYER_SIGNING_KEY").is_none_or(|v| v.trim().is_empty()) && env("PAYROLL_EMPLOYER_SIGNING_KEY_FILE").is_none_or(|v| v.trim().is_empty()) {
+            payout_missing.push(json_str("PAYROLL_EMPLOYER_SIGNING_KEY_FILE"));
+        }
+    }
+    let extra = format!(
+        ",\"payouts\":{},\"payout_missing\":[{}],\"delays\":{},\"employer_pubkey\":{},\"periods\":[{}],\"explorer_tx\":{}",
+        s.payouts.is_some(),
+        payout_missing.join(","),
+        delays,
+        json_str(&env("PAYROLL_EMPLOYER_PUBKEY").unwrap_or_default()),
+        periods.join(","),
+        json_str(crate::desk::EXPLORER_TX)
+    );
     format!(
-        "{{\"network\":{},\"lwd\":{},\"config_error\":{},\"auditor_error\":{},\"missing\":[{}],\"roster_path\":{},\"roster\":[{}],\"roster_total\":{},\"runs\":[{}]}}",
+        "{{\"network\":{},\"lwd\":{},\"config_error\":{},\"auditor_error\":{},\"missing\":[{}],\"roster_path\":{},\"roster\":[{}],\"roster_total\":{},\"runs\":[{}]{extra}}}",
         json_str(&env("ZCASH_NETWORK").unwrap_or_default()),
         json_str(&env("ZCASH_LWD_URL").unwrap_or_default()),
         cfg_err.map_or("null".into(), |e| json_str(&e)),
@@ -210,12 +255,21 @@ impl Drop for Slot {
     }
 }
 
-/// Request line and `Host`, read within the size, line-count and time caps.
+/// Request line and the headers the desk uses, read within the size, line-count and time caps.
 enum Head {
-    Ok { first: String, host: Option<String> },
+    Ok { first: String, host: Option<String>, hdr: Headers, rest: Vec<u8> },
     TooLarge,
     Bad,
     Gone,
+}
+
+#[derive(Default)]
+struct Headers {
+    content_length: Option<usize>,
+    content_type: String,
+    origin: Option<String>,
+    desk: bool,
+    fetch_site: Option<String>,
 }
 
 fn read_head(stream: &TcpStream) -> Head {
@@ -229,6 +283,7 @@ fn read_head(stream: &TcpStream) -> Head {
         Err(_) => return Head::Gone,
     }
     let mut host = None;
+    let mut hdr = Headers::default();
     let mut lines = 0usize;
     loop {
         let mut line = String::new();
@@ -240,21 +295,90 @@ fn read_head(stream: &TcpStream) -> Head {
             Err(_) => return Head::Gone,
         }
         if line.trim_end_matches(['\r', '\n']).is_empty() {
-            return Head::Ok { first, host };
+            // Bytes of the body the reader already buffered past the blank line.
+            let rest = rd.buffer().to_vec();
+            return Head::Ok { first, host, hdr, rest };
         }
         lines += 1;
         if lines > MAX_HEADER_LINES {
             return Head::TooLarge;
         }
         if let Some((k, v)) = line.split_once(':') {
-            if k.trim().eq_ignore_ascii_case("host") {
-                if host.is_some() {
-                    return Head::Bad;
+            let (k, v) = (k.trim().to_ascii_lowercase(), v.trim().to_string());
+            match k.as_str() {
+                "host" => {
+                    if host.is_some() {
+                        return Head::Bad;
+                    }
+                    host = Some(v);
                 }
-                host = Some(v.trim().to_string());
+                "content-length" => {
+                    let Ok(n) = v.parse::<usize>() else { return Head::Bad };
+                    if hdr.content_length.is_some_and(|m| m != n) {
+                        return Head::Bad;
+                    }
+                    hdr.content_length = Some(n);
+                }
+                "transfer-encoding" => return Head::Bad, // chunked bodies are not accepted
+                "content-type" => hdr.content_type = v.to_ascii_lowercase(),
+                "origin" => hdr.origin = Some(v),
+                "x-misthos-desk" => hdr.desk = v == "1",
+                "sec-fetch-site" => hdr.fetch_site = Some(v.to_ascii_lowercase()),
+                _ => {}
             }
         }
     }
+}
+
+/// CSRF guard for every POST: our header, a JSON body, and (if the browser says where the
+/// request comes from) the same site. Returns the reason it refuses.
+fn post_guard(hdr: &Headers, bound: &str) -> Result<(), &'static str> {
+    if !hdr.desk {
+        return Err("missing X-Misthos-Desk: 1 (requests come from the desk page only)");
+    }
+    if !hdr.content_type.starts_with("application/json") {
+        return Err("Content-Type must be application/json");
+    }
+    if let Some(o) = &hdr.origin {
+        let h = o.strip_prefix("http://").or_else(|| o.strip_prefix("https://"));
+        if !h.is_some_and(|h| host_allowed(Some(h), bound)) {
+            return Err("Origin not allowed: requests must come from the desk page itself");
+        }
+    }
+    if let Some(site) = &hdr.fetch_site {
+        if site != "same-origin" && site != "none" {
+            return Err("cross-site request refused");
+        }
+    }
+    Ok(())
+}
+
+/// Reads exactly Content-Length body bytes (capped), starting from what the head reader buffered.
+fn read_body(stream: &TcpStream, hdr: &Headers, mut rest: Vec<u8>) -> Result<String, (&'static str, &'static str)> {
+    let n = hdr.content_length.ok_or(("411 Length Required", "{\"error\":\"Content-Length required\"}"))?;
+    if n > MAX_BODY_BYTES {
+        return Err(("413 Payload Too Large", "{\"error\":\"body larger than 256 KiB\"}"));
+    }
+    rest.truncate(n);
+    if rest.len() < n {
+        let mut more = vec![0u8; n - rest.len()];
+        let mut s = stream;
+        s.read_exact(&mut more).map_err(|_| ("400 Bad Request", "{\"error\":\"body shorter than Content-Length\"}"))?;
+        rest.extend_from_slice(&more);
+    }
+    String::from_utf8(rest).map_err(|_| ("400 Bad Request", "{\"error\":\"body is not UTF-8\"}"))
+}
+
+fn err_json(e: &str) -> String {
+    format!("{{\"error\":{}}}", json_str(e))
+}
+
+fn query_param(target: &str, key: &str) -> Option<String> {
+    let q = target.split_once('?')?.1;
+    q.split('&').find_map(|kv| {
+        let (k, v) = kv.split_once('=')?;
+        (k == key).then(|| v.to_string())
+    })
 }
 
 fn handle(stream: TcpStream, st: Shared) {
@@ -265,12 +389,13 @@ fn handle_with(stream: TcpStream, st: Shared, timeout: Duration) {
     let _ = stream.set_read_timeout(Some(timeout));
     let _ = stream.set_write_timeout(Some(timeout));
     let json = "application/json";
-    let (first, host) = match read_head(&stream) {
-        Head::Ok { first, host } => (first, host),
+    let (first, host, hdr, rest) = match read_head(&stream) {
+        Head::Ok { first, host, hdr, rest } => (first, host, hdr, rest),
         Head::TooLarge => return respond(stream, "431 Request Header Fields Too Large", json, "{\"error\":\"request line or headers too large\"}"),
         Head::Bad => return respond(stream, "400 Bad Request", json, "{\"error\":\"bad request\"}"),
         Head::Gone => return,
     };
+    let (first, host, hdr, rest) = (first, host, hdr, rest);
     let bound = st.lock().unwrap().bound_host.clone();
     if !host_allowed(host.as_deref(), &bound) {
         return respond(stream, "403 Forbidden", json, "{\"error\":\"Host not allowed: the desk answers only on 127.0.0.1, localhost or [::1] (or the --addr host it was bound to)\"}");
@@ -279,38 +404,75 @@ fn handle_with(stream: TcpStream, st: Shared, timeout: Duration) {
     let (method, target) = (parts.next().unwrap_or(""), parts.next().unwrap_or("/"));
     let path = target.split_once('?').map_or(target, |(p, _)| p);
     match (method, path) {
-        ("GET", "/") => respond(stream, "200 OK", "text/html; charset=utf-8", INDEX),
+        ("GET", "/") => return respond(stream, "200 OK", "text/html; charset=utf-8", INDEX),
         ("GET", "/api/state") => {
             let body = state_json(&st.lock().unwrap());
-            respond(stream, "200 OK", json, &body)
+            return respond(stream, "200 OK", json, &body);
         }
-        ("POST", "/api/run") => respond(stream, "410 Gone", json, RUN_GONE),
+        ("POST", "/api/run") => return respond(stream, "410 Gone", json, RUN_GONE),
         ("GET", "/api/audit") => {
             let ufvk = std::env::var("ZCASH_AUDITOR_UFVK").ok().filter(|v| !v.trim().is_empty());
             let Some(ufvk) = ufvk else {
                 return respond(stream, "400 Bad Request", json, "{\"error\":\"ZCASH_AUDITOR_UFVK not configured\"}");
             };
             let res = audit::export_csv(st.lock().unwrap().engine.runs(), &ufvk);
-            match res {
+            return match res {
                 Ok(csv) => respond(stream, "200 OK", "text/csv; charset=utf-8", &csv),
                 Err(e) => respond(stream, "400 Bad Request", json, &format!("{{\"error\":{}}}", json_str(&e.to_string()))),
-            }
+            };
         }
-        ("GET", "/api/proof") => respond(stream, "410 Gone", json, PROOF_GONE),
-        _ => respond(stream, "404 Not Found", json, "{\"error\":\"not found\"}"),
+        ("GET", "/api/proof") => return respond(stream, "410 Gone", json, PROOF_GONE),
+        _ => {}
     }
+    let desk = st.lock().unwrap().payouts.clone();
+    let known_post = matches!(path, "/api/roster" | "/api/plan" | "/api/payroll/run" | "/api/payroll/check" | "/api/payroll/resolve" | "/api/payroll/proof" | "/api/payroll/verify");
+    let known_get = matches!(path, "/api/payroll/job" | "/api/payroll/ledger" | "/api/payroll/accountant");
+    if !(method == "POST" && known_post || method == "GET" && known_get) {
+        return respond(stream, "404 Not Found", json, "{\"error\":\"not found\"}");
+    }
+    let payout_only = !matches!(path, "/api/plan" | "/api/payroll/verify");
+    if payout_only && desk.is_none() {
+        return respond(stream, "410 Gone", json, PAYOUTS_OFF);
+    }
+    if method == "GET" {
+        let label = query_param(target, "label").unwrap_or_default();
+        let (code, body) = crate::desk_api::get(path, &label, &st, desk.as_deref().expect("payout-only checked"));
+        return respond(stream, code, json, &body);
+    }
+    if let Err(why) = post_guard(&hdr, &bound) {
+        return respond(stream, "403 Forbidden", json, &err_json(why));
+    }
+    let body = match read_body(&stream, &hdr, rest) {
+        Ok(b) => b,
+        Err((code, msg)) => return respond(stream, code, json, msg),
+    };
+    let req = match crate::desk::parse_flat_json(&body) {
+        Ok(m) => m,
+        Err(e) => return respond(stream, "400 Bad Request", json, &err_json(&e)),
+    };
+    let (code, body) = crate::desk_api::post(path, &req, &st, desk.as_deref());
+    respond(stream, code, json, &body)
 }
 
-pub fn serve(addr: &str, roster_path: String, roster: Vec<Employee>, caps: CapPolicy) -> std::io::Result<()> {
+pub fn serve(addr: &str, roster_path: String, roster: Vec<Employee>, roster_csv: String, caps: CapPolicy, payouts: bool) -> std::io::Result<()> {
     let listener = TcpListener::bind(addr)?;
     let bound_host = addr.rsplit_once(':').map_or(addr, |(h, _)| h).to_string();
+    let desk = if payouts { Some(Arc::new(crate::desk::Desk::new(std::env::current_exe()?))) } else { None };
     let st: Shared = Arc::new(Mutex::new(State {
         engine: Engine::new(caps),
         roster,
         roster_path,
         bound_host,
+        roster_csv,
+        payouts: desk,
     }));
-    println!("dashboard on http://{addr}");
+    let local = listener.local_addr().map(|a| a.to_string()).unwrap_or_else(|_| addr.to_string());
+    println!("dashboard on http://{local}");
+    if payouts {
+        println!("payouts ON: Run payroll on this desk sends real testnet transactions (loopback only)");
+    }
+    use std::io::Write as _;
+    let _ = std::io::stdout().flush();
     let active = Arc::new(AtomicUsize::new(0));
     for stream in listener.incoming().flatten() {
         let Some(slot) = Slot::acquire(&active, MAX_CONNECTIONS) else {
@@ -348,6 +510,8 @@ mod tests {
             roster: vec![crate::employee::tests::emp("emp-a", "1")],
             roster_path: "roster.csv".into(),
             bound_host: "127.0.0.1".into(),
+            roster_csv: String::new(),
+            payouts: None,
         }))
     }
 
@@ -387,6 +551,10 @@ mod tests {
         let r = request("POST /api/run HTTP/1.1\r\nHost: 127.0.0.1:8787\r\n\r\n");
         assert!(r.starts_with("HTTP/1.1 410 Gone"), "{r}");
         assert!(r.contains("pay <roster.csv> --two-step"), "{r}");
+        // Read-only desk: the payout endpoints answer 410 and point to --payouts.
+        let r = request("POST /api/payroll/run HTTP/1.1\r\nHost: 127.0.0.1\r\nX-Misthos-Desk: 1\r\nContent-Type: application/json\r\nContent-Length: 2\r\n\r\n{}");
+        assert!(r.starts_with("HTTP/1.1 410 Gone") && r.contains("serve --payouts"), "{r}");
+        assert!(request("GET /api/payroll/job HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n").starts_with("HTTP/1.1 410 Gone"));
         assert!(request("GET /api/state HTTP/1.1\r\nHost: 127.0.0.1:8787\r\n\r\n").starts_with("HTTP/1.1 200 OK"));
     }
 
@@ -405,6 +573,29 @@ mod tests {
             let r = request(&format!("GET /api/state HTTP/1.1\r\nHost: {ok}\r\n\r\n"));
             assert!(r.starts_with("HTTP/1.1 200 OK"), "{ok}: {r}");
         }
+    }
+
+    /// CSRF: a cross-site form or fetch cannot plan, upload or (with --payouts) pay.
+    #[test]
+    fn posts_need_the_desk_header_json_and_a_same_site_origin() {
+        let body = r#"{"label":"oct"}"#;
+        let req = |extra: &str| request(&format!("POST /api/plan HTTP/1.1\r\nHost: 127.0.0.1:8787\r\n{extra}Content-Length: {}\r\n\r\n{body}", body.len()));
+        // A plain HTML form post: no header, form content type.
+        let r = req("Content-Type: application/x-www-form-urlencoded\r\n");
+        assert!(r.starts_with("HTTP/1.1 403") && r.contains("X-Misthos-Desk"), "{r}");
+        let r = req("X-Misthos-Desk: 1\r\nContent-Type: text/plain\r\n");
+        assert!(r.starts_with("HTTP/1.1 403") && r.contains("application/json"), "{r}");
+        let r = req("X-Misthos-Desk: 1\r\nContent-Type: application/json\r\nOrigin: https://attacker.example\r\n");
+        assert!(r.starts_with("HTTP/1.1 403") && r.contains("Origin"), "{r}");
+        let r = req("X-Misthos-Desk: 1\r\nContent-Type: application/json\r\nSec-Fetch-Site: cross-site\r\n");
+        assert!(r.starts_with("HTTP/1.1 403"), "{r}");
+        let r = req("X-Misthos-Desk: 1\r\nContent-Type: application/json\r\nOrigin: http://127.0.0.1:8787\r\nSec-Fetch-Site: same-origin\r\n");
+        assert!(r.starts_with("HTTP/1.1 200 OK") && r.contains("\"total\""), "{r}");
+        // Chunked bodies and oversized bodies are refused.
+        let r = request("POST /api/plan HTTP/1.1\r\nHost: 127.0.0.1\r\nX-Misthos-Desk: 1\r\nContent-Type: application/json\r\nTransfer-Encoding: chunked\r\n\r\n");
+        assert!(r.starts_with("HTTP/1.1 400"), "{r}");
+        let r = request(&format!("POST /api/plan HTTP/1.1\r\nHost: 127.0.0.1\r\nX-Misthos-Desk: 1\r\nContent-Type: application/json\r\nContent-Length: {}\r\n\r\n", MAX_BODY_BYTES + 1));
+        assert!(r.starts_with("HTTP/1.1 413"), "{r}");
     }
 
     #[test]
