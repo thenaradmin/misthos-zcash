@@ -1,16 +1,16 @@
 # Submission form: Misthos
 
-> **Portfolio, not a Zecathon entry.** The team's one Zecathon entry is Shielded x402. Misthos (`zec-private-payroll`) is feature-frozen and kept as a portfolio piece; this file exists so the fields are ready if that ever changes.
+> **Portfolio, not a Zecathon entry.** The team's one Zecathon entry is Shielded x402. Misthos (`zec-private-payroll`) is a portfolio piece (feature-frozen, except the browser payout flow Nick asked for on 2026-10-28); this file exists so the fields are ready if that ever changes.
 
 | Field | Value |
 |---|---|
-| Project name | Misthos (shielded payroll) |
+| Project name | Misthos (private payroll processing) |
 | Repository | https://github.com/nickthelegend/zec-private-payroll |
 | License | MIT, Copyright (c) 2026 Nivesh Gajengi |
 | Network | Zcash testnet only (mainnet refused in code) |
-| Demo | Local: `PAYROLL_ROSTER_CSV=e2e/fixtures/roster.csv cargo run -- serve`, then http://127.0.0.1:8787 and `/#desk`. No hosted demo and no demo video yet. |
-| Live evidence | Funding `e0a93ebc…2cca87` (4521170), Alice `f0e6ce45…0a46dc` (4521181), Bob `287318aa…6fa65a` (4521189), links in the README |
-| Tests | 85 Rust tests passing + 4 ignored live tests; 48 Playwright E2E in Chrome ([TESTING.md](TESTING.md)) |
+| Demo | Local: `PAYROLL_ROSTER_CSV=e2e/fixtures/roster.csv cargo run -- serve`, then http://127.0.0.1:8787 and the payroll desk at `/desk` (`--payouts` to run payroll from the browser). No hosted demo. |
+| Live evidence | From the desk (2026-10-28): funding `82ca8b30…0b6ea3` (4550378), Alice `44686ece…744a2c` (4550386), Bob `3ff05411…40ac7b` (4550389). CLI run (2026-10-20): funding `e0a93ebc…2cca87` (4521170), Alice `f0e6ce45…0a46dc` (4521181), Bob `287318aa…6fa65a` (4521189). Links in the README |
+| Tests | 103 Rust tests passing + 4 ignored live tests; 42 Playwright E2E in Chrome ([TESTING.md](TESTING.md)) |
 
 ## Description (under 2,000 characters)
 

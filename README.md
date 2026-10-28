@@ -1,4 +1,4 @@
-# Misthos · shielded payroll
+# Misthos · private payroll processing
 
 *Everyone's pay on chain. Every line redacted, except your own.*
 
@@ -6,16 +6,18 @@
 
 **Misthos** (Greek μισθός, "wages") is the product name; the repo is `zec-private-payroll`, the Cargo package is `zec-payroll` (library crate `zec_payroll`), and the CLI is `payroll`. It is a portfolio project, not a Zecathon entry.
 
-This is a batch payroll tool for the Zcash **testnet**. An employer loads a CSV roster. `payroll pay` pays the batch in one shielded `quicksend`; `payroll pay --two-step` pays through one child wallet per employee (one funding transaction, then one payout per employee), so the employer can export a signed proof of one employee's pay. An accountant gets a read-only ledger headed by the employer's viewing key.
+This is private payroll processing for the Zcash **testnet**. An employer runs payroll from the **payroll desk** in the browser (`payroll serve --payouts`, then http://127.0.0.1:8787/desk): upload the roster, review it against caps, press Run payroll and watch each employee get funded, scheduled and paid, then issue each employee a signed payslip file, check proofs, and hand the accountant the period ledger. The desk runs the same commands as the CLI. An employer loads a CSV roster. `payroll pay` pays the batch in one shielded `quicksend`; `payroll pay --two-step` pays through one child wallet per employee (one funding transaction, then one payout per employee), so the employer can export a signed proof of one employee's pay. An accountant gets a read-only ledger headed by the employer's viewing key.
 
 ## See it in 60 seconds
 No `.env`, wallet or key needed:
 ```
 PAYROLL_ROSTER_CSV=e2e/fixtures/roster.csv cargo run -- serve
 ```
-The first (cold) build takes about 2.5 minutes. Then open http://127.0.0.1:8787 for the payslip (the recorded testnet run below; the key buttons switch between no key, Alice's key and Bob's key), and http://127.0.0.1:8787/#desk for the employer's desk, which shows a red **Setup required** panel naming every unset chain variable. `curl -X POST 127.0.0.1:8787/api/run` answers `410 Gone`: the desk cannot pay. The roster is two synthetic testnet addresses (`e2e/make-fixtures.py`); nothing is sent.
+The first (cold) build takes about 2.5 minutes. Then open http://127.0.0.1:8787 for the payslip (the recorded testnet run below; the key buttons switch between no key, Alice's key and Bob's key), and http://127.0.0.1:8787/desk for the payroll desk, which shows a red **Setup required** panel naming every unset chain variable; you can still review the roster against caps. Without `--payouts` the desk cannot pay (`POST /api/payroll/run` answers `410 Gone`). The roster is two synthetic testnet addresses (`e2e/make-fixtures.py`); nothing is sent.
 
 ## Proven on testnet
+**From the payroll desk, 2026-10-28** (label `payroll-oct-2026`, run with Run payroll in the browser, payout delays set to 1..=2 blocks for the demo film): funding [`82ca8b30…0b6ea3`](https://testnet.zecblock.com/tx/82ca8b30e90fb8cfc83a5de87a8aab31a781545cfaf559f30b85322aa30b6ea3) mined at 4550378 (40,000 + 30,000 zat to the two child wallets); Alice [`44686ece…744a2c`](https://testnet.zecblock.com/tx/44686ece01d2daebb0dc26a6bfe9a76fbc501e67ed617fa662c25132d3744a2c) at 4550386 (30,000 zat) and Bob [`3ff05411…40ac7b`](https://testnet.zecblock.com/tx/3ff05411f5f83433422f0a065d114ef3c1eb3dbd951dbeb67d52b93d2c40ac7b) at 4550389 (20,000 zat). Running the period again skipped both (nobody funded or paid twice). From the desk, each employee's payslip file opened only that employee's line (`verify-proof --lwd`), and the proof check rejected Alice's file on Bob's payout, a 10× amount, and the funding txid. These used a demo employer key (public key `9dc24a9d…24b7f1`, passed with `PAYROLL_EMPLOYER_PUBKEY`), not the one in `docs/employer-pubkey.txt`.
+
 On 2026-10-20 a funded two-employee run (label `payroll-2026-10-demo`, Ironwood pool, v6 txs) went through [testnet.zec.rocks](https://testnet.zec.rocks):
 - Funding [`e0a93ebc…2cca87`](https://testnet.zecblock.com/tx/e0a93ebccc788ba5d6570478b927ebf1758318c0012f2d95ddda6624ef2cca87), height 4521170: 2 × 2,010,000 zat (0.0402 ZEC) to the two child wallets.
 - Alice [`f0e6ce45…0a46dc`](https://testnet.zecblock.com/tx/f0e6ce4569f9a310b3ab936672331f947c5cadb102c3d5b50bcf2181910a46dc), height 4521181 (+11), and Bob [`287318aa…6fa65a`](https://testnet.zecblock.com/tx/287318aa4e0f0c55ca8b6814cb56b51264ce9dbfd549fcc8ef3db57ea06fa65a), height 4521189 (+19): 2,000,000 zat each.
@@ -25,13 +27,13 @@ On 2026-10-20 a funded two-employee run (label `payroll-2026-10-demo`, Ironwood 
 ## Status (honest)
 | Part | State |
 |---|---|
-| Core engine: employees, schedules, pay runs, per-run caps, run status machine | **Done**, unit tested (`cargo test`: 72 lib tests in total; every count is in [TESTING.md](TESTING.md)) |
+| Core engine: employees, schedules, pay runs, per-run caps, run status machine | **Done**, unit tested (`cargo test`: 82 lib tests in total; every count is in [TESTING.md](TESTING.md)) |
 | CSV import and validation (`payroll plan`) | **Done**, offline only |
 | Env config that fails loudly | **Done** |
 | Recipient address decoding (`zcash_address` 0.14.0-pre.2) | **Done**: full decode (checksum, F4Jumble, typecodes); testnet only; must have a Sapling or Orchard receiver (`utest1…` UA or `ztestsapling1…`). Mainnet and transparent-only are refused |
 | ZIP-321 URI (`src/zip321.rs`) | **Done**, offline-tested. Shown for display/audit only; zingo-cli does not accept ZIP-321 URIs |
 | Building + broadcasting the tx | **Delegated to zingo-cli** (`ZCASH_WALLET_CLI`) via one `quicksend` with a JSON receiver list. Syntax checked against zingolib source (0a5cb69, 2026-10-19) and run live against testnet with an unfunded wallet: it syncs and stops at `Insufficient balance (have 0, need 110000 including fee)`. A funded two-step run has since paid out on testnet (see "Live testnet run"). No in-process `zcash_client_backend` builder |
-| Dashboard UI (`payroll serve`): roster, env banner, auditor UFVK panel. It cannot pay and cannot hand out employee proofs (`POST /api/run` and `GET /api/proof` return `410 Gone`, tested). It is **unauthenticated** and shows the employer's viewing key, so it stays on loopback and checks `Host` | Built; endpoint tests pass, and 48 Playwright E2E in Chrome (desktop + 375px) |
+| Payroll desk (`payroll serve --payouts`, `/desk`): roster upload, caps review, Run payroll with live per-employee progress, check-and-rerun of an unknown payout outcome, payslip files, proof check, accountant view. It runs the CLI's own commands. **Unauthenticated**, so loopback only, `Host` checked, CSRF-guarded POSTs. Without `--payouts` it is read-only and its payout endpoints answer `410 Gone` | Built (2026-10-28, lifting the feature freeze on Nick's instruction for a UI payout flow); unit and HTTP tests pass (TESTING.md) and the Playwright E2E runs in Chrome (desktop + 375px); a live two-employee run from the desk on testnet, see "Proven on testnet" |
 | Per-employee proof of pay: child wallet per employee, employer-signed (ed25519) `export-proof --employee`, `verify-proof` checks the signature against the published employer key | Built. 7 real-key tests on in-process shielded txs pass (Sapling + Ironwood), including forged / changed-amount / changed-period / network-swap rejection. Both steps are wired to zingo-cli (child wallet per employee, pre-broadcast sync check). Funded two-employee testnet run on 2026-10-20 (Ironwood pool), checked on chain with `verify-proof --lwd`; see "Live testnet run" below |
 | Random block delays in `pay --two-step` (funding → payouts, and between employees), polled from lightwalletd's tip | Built; pure scheduling logic unit tested; the gRPC tip query was run live against `testnet.zec.rocks` (2026-10-20). Used in the funded testnet run (see "Live testnet run") |
 
@@ -51,7 +53,7 @@ The tool does not use NEAR Intents, does not use the `zakura-one-time-ivk` crate
 - **The desk has no login.** Anyone who can reach its port can read the roster and the employer's viewing key; see "Employer dashboard".
 
 ## Do X, see Y
-1. Run `cargo test`. You should see `72 passed` (unit), `4 passed` (`cli_label`), `1 passed` (`cli_serve`), `7 passed` (`proof_real_tx`) and `1 passed` (`sig_attacks`), plus 4 ignored live-testnet tests (counted 2026-10-23; see [TESTING.md](TESTING.md)).
+1. Run `cargo test`. You should see `82 passed` (unit), `4 passed` (`cli_label`), `1 passed` (`cli_serve`), `8 passed` (`desk_api`), `7 passed` (`proof_real_tx`) and `1 passed` (`sig_attacks`), plus 4 ignored live-testnet tests (counted 2026-10-28; see [TESTING.md](TESTING.md)).
 2. Run `cargo run -q -- plan examples/bad.csv`. You should see one error per bad row, for example `line 2: address ... is a MAINNET address`, and the command exits with code 1. Nothing is half-imported.
 3. Write a CSV with real testnet Unified Addresses from your own testnet wallets:
    ```
@@ -71,8 +73,8 @@ The tool does not use NEAR Intents, does not use the `zakura-one-time-ivk` crate
 
 ## Layout
 - `src/`: `money.rs` · `date.rs` · `employee.rs` · `schedule.rs` · `engine.rs` · `csv.rs` · `config.rs` · `zip321.rs` · `wallet.rs` (zingo-cli, per-child ledger, wallet-DB lock) · `chain.rs` (lightwalletd gRPC) · `delay.rs` (block delays) · `disclosure.rs` (child wallets, proof files) · `attest.rs` (employer ed25519 signature) · `audit.rs` (accountant CSV) · `server.rs` (the desk) · `lib.rs` · `main.rs` (the CLI).
-- `ui/index.html`: the payslip page and the desk, one dependency-free file compiled into the binary.
-- `tests/`: `cli_label.rs` (CLI guards: `--label`, wallet-DB lock, export-proof usage) · `cli_serve.rs` (loopback-only serve) · `proof_real_tx.rs` (real-key proofs, verify-proof CLI) · `sig_attacks.rs` (signature forgeries) · `testnet.rs` (live, `--ignored`).
+- `ui/index.html`: the landing and recorded payslip. `ui/desk.html`: the payroll desk. Both dependency-free and compiled into the binary.
+- `tests/`: `cli_label.rs` (CLI guards: `--label`, wallet-DB lock, export-proof usage) · `cli_serve.rs` (loopback-only serve) · `desk_api.rs` (the desk in payout mode over real HTTP; the wallet CLI is `false`, so nothing is sent) · `proof_real_tx.rs` (real-key proofs, verify-proof CLI) · `sig_attacks.rs` (signature forgeries) · `testnet.rs` (live, `--ignored`).
 - `e2e/`: Playwright suite in Google Chrome against the real binary (`stack.sh`, `tests/`, `fixtures/`, `make-fixtures.py`).
 - `scripts/testnet-two-employees.sh`: the live two-employee check. `examples/bad.csv`: a roster that fails loudly. `docs/employer-pubkey.txt`: the published demo employer key.
 
@@ -87,32 +89,32 @@ The tool does not use NEAR Intents, does not use the `zakura-one-time-ivk` crate
 ## Rules
 The tool uses only the real Zcash testnet, with no mocks and no fake chain data. Unit tests use correctly encoded but synthetic testnet addresses that are never broadcast. Secrets go only in `.env` (see `.env.example`). Mainnet is refused in code.
 
-## Employer dashboard
+## Employer dashboard: the payroll desk
 
-Do: `set -a; . ./.env; set +a; cargo run -- serve` (default `--addr 127.0.0.1:8787`), then open http://127.0.0.1:8787. Without a `.env`, use the 60-second command at the top.
+Read-only: `set -a; . ./.env; set +a; cargo run -- serve` (default `--addr 127.0.0.1:8787`). Payout mode: `cargo run -- serve --payouts`, which also needs `PAYROLL_EMPLOYER_SEED`, `PAYROLL_CHILD_BIRTHDAY` and the signing key. Open http://127.0.0.1:8787/desk. Without a `.env`, use the 60-second command at the top.
 
-**The desk has no login.** `/api/state` returns the full roster and `/api/audit` returns the employer's viewing key (`ZCASH_AUDITOR_UFVK`) to anyone who can reach the port. So: `serve` refuses a non-loopback `--addr` (e.g. `0.0.0.0:8787`) unless you pass `--allow-remote`, and then prints a warning; every request whose `Host` is not `127.0.0.1`, `localhost`, `[::1]` or the bound host gets `403` (this blocks DNS rebinding from a web page); each connection has 5 s read/write timeouts, a 16 KiB cap on the request line plus headers (`431`), at most 64 header lines, and at most 64 connections are served at once (`503`). It cannot pay.
+**What the desk does with `--payouts`** (it adds no payment logic: every chain action is this binary's own command, started as a child process, so the ledger, locks, checks, delays and signatures are the CLI's):
+- **Run payroll**: upload a roster CSV (every bad line is listed and nothing loads), review it against caps (every violation listed at once), then **Run payroll** starts `payroll pay <snapshot> --two-step --label <period>`. The desk saves the roster each period was run with (`<ZCASH_WALLET_DB>/desk/<period>.csv`) and refuses a rerun of that period with a different roster. While it runs, the page shows the block timeline (funding block, each payout target, the tip), each employee's steps (wallet ready, funded, scheduled, paid, with explorer links) and a plain-language activity feed of the run's output.
+- **Failure, check and rerun**: a stopped run shows the CLI's reason. A payout whose outcome is unknown (`pay-pending`) gets **Check on chain** (zingo-cli `balance` and `value_transfers` on that child wallet). **Record as not sent** writes `pay-failed` only if the wallet still holds the payout plus its fee and shows no send that did not fail; otherwise the desk refuses and leaves it for a manual check. Running the period again skips anyone already funded or paid.
+- **Payslips**: the period register with redaction bars. **Issue <name>'s payslip** runs `export-proof` for that one employee; opening a line with that key runs `verify-proof --lwd` and lifts only that line.
+- **Proof check**: verify a payslip file against the chain, plus three live cheat attempts (another employee's payout, a 10× amount, the funding txid), each refused by the real check.
+- **Accountant**: the period ledger (pay, memo, funding and payout txids, payout block, status) with the employer's viewing key, and a CSV download.
 
-The page opens on the **Misthos payslip**: the recorded 2026-10-20 testnet run (the txids, heights and amounts under "Live testnet run" below) drawn as a payslip register. With no key, names, memos and amounts are black redaction bars and only txids and block heights show. Alice's viewing key lifts the bars on her line once; the buttons switch between no key, Alice's key and Bob's key. This part is static, recorded data, not a live query. The live employer dashboard is the **desk** at http://127.0.0.1:8787/#desk.
+**The desk has no login.** `/api/state` returns the full roster and `/api/audit` returns the employer's viewing key (`ZCASH_AUDITOR_UFVK`) to anyone who can reach the port. So: `serve` refuses a non-loopback `--addr` (e.g. `0.0.0.0:8787`) unless you pass `--allow-remote`, and then prints a warning; `--payouts` is refused on any non-loopback address, even with `--allow-remote`; every request whose `Host` is not `127.0.0.1`, `localhost`, `[::1]` or the bound host gets `403` (this blocks DNS rebinding from a web page); every POST needs `X-Misthos-Desk: 1`, a JSON body and (if the browser sends one) a same-site `Origin`, so a page on another site cannot start a payout (CSRF); bodies are capped at 256 KiB; each connection has 5 s read/write timeouts, a 16 KiB cap on the request line plus headers (`431`), at most 64 header lines, and at most 64 connections are served at once (`503`).
 
-See on the desk, within a few seconds of opening it:
-- a red **Setup required** panel listing every unset var by name (e.g. `ZCASH_LWD_URL`), or a green "Chain config loaded" panel if `.env` is complete;
-- the roster from `PAYROLL_ROSTER_CSV` with the run total and each employee's id;
-- a **disabled** Run payroll button with the reason: a one-click payout straight from the treasury could not be proven per employee, so payouts run only from the CLI (`payroll pay <roster.csv> --two-step --label <period>`). `curl -X POST localhost:8787/api/run` returns `410 Gone` with the same pointer;
-- a **Pay & prove · CLI only** panel with the three commands (pay, export one employee's signed proof, verify). There is no proof download: `curl localhost:8787/api/proof?employee=1` returns `410 Gone` pointing to `payroll export-proof`;
-- **Open the accountant's view**, which shows the UFVK (view-only; spending keys are refused). The dashboard itself makes no runs; use `payroll audit-export` for a CLI run's ledger.
+**Without `--payouts`** the desk is read-only: it shows the roster, plans against caps and checks proofs, and its payout endpoints answer `410 Gone` pointing to `--payouts`. `POST /api/run` (the old one-shot treasury payout, which could not be proven per employee) and `GET /api/proof` answer `410 Gone` in both modes.
 
-The UI is one dependency-free HTML file (`ui/index.html`), compiled into the binary. It loads Schibsted Grotesk and Sometype Mono from Google Fonts and falls back to system fonts offline.
+The landing page at http://127.0.0.1:8787 is the **Misthos payslip** of the recorded 2026-10-20 testnet run (static, recorded data, not a live query). The UI is two dependency-free HTML files (`ui/index.html`, `ui/desk.html`), compiled into the binary. They load Schibsted Grotesk and Sometype Mono from Google Fonts and fall back to system fonts offline.
 
 ### Browser E2E (`e2e/`)
 Playwright in the installed Google Chrome, desktop 1280×800 and mobile 375×812, with video and traces. It runs against the real `payroll serve` binary (no mocks), started with a clean environment so no `.env`, seed or signing key is loaded:
 ```
 CARGO_BUILD_JOBS=2 cargo build && cd e2e && npm install
-npm run stack          # 3 desk servers on 127.0.0.1:8791-8793; PIDs in e2e/.run/pids
-npm run test:e2e       # 24 tests x 2 viewports
+npm run stack          # 4 desk servers on 127.0.0.1:8791-8794; PIDs in e2e/.run/pids
+npm run test:e2e       # 21 tests x 2 viewports
 npm run stack:stop     # kills those PIDs
 ```
-8791 has no chain vars (Setup required), 8792 has all five (the auditor UFVK is a synthetic, correctly encoded fixture key from `e2e/make-fixtures.py`, owned by no wallet), and 8793 sets `ZCASH_NETWORK=mainnet` (refused). The roster is two synthetic testnet UAs built the same way as the unit tests' `ua('p')`; nothing is ever sent on chain. Counted 2026-10-23: 48 passed (24 desktop, 24 mobile).
+8791 has no chain vars (Setup required), 8792 has all five (the auditor UFVK is a synthetic, correctly encoded fixture key from `e2e/make-fixtures.py`, owned by no wallet), 8793 sets `ZCASH_NETWORK=mainnet` (refused), and 8794 runs `--payouts` with `ZCASH_WALLET_CLI=false`, the public BIP 39 test-vector seed and a throwaway signing key, so every pay run stops at the CLI's own pre-broadcast check. The roster is two synthetic testnet UAs built the same way as the unit tests' `ua('p')`; nothing is ever sent on chain. Counted 2026-10-28: 42 passed (21 desktop, 21 mobile).
 
 ## Per-employee proof of pay
 
