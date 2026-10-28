@@ -1,279 +1,169 @@
-import { spawn, spawnSync, type ChildProcess } from 'node:child_process';
-import { resolve } from 'node:path';
-import { test, expect, URLS, E2E_DIR, REPO_ROOT, ROSTER_CSV, FIXTURE_UFVK, expectInViewport, expectNoHorizontalScroll, isMobile, logButtons, rosterRows } from './fixtures.ts';
+import { writeFileSync } from 'node:fs';
+import { test, expect, URLS, FIXTURE_UFVK, ROSTER_CSV, expectNoHorizontalScroll, isMobile, logButtons, rosterRows } from './fixtures.ts';
 
-const BIN = resolve(REPO_ROOT, 'target/debug/payroll');
-const VARS = ['ZCASH_NETWORK', 'ZCASH_LWD_URL', 'ZCASH_WALLET_DB', 'ZCASH_WALLET_CLI', 'ZCASH_AUDITOR_UFVK'];
+// The payroll desk at /desk, against four real `payroll serve` binaries (stack.sh). Only 8794 runs with
+// --payouts, and its wallet CLI is `false`, so every pay run stops at the CLI's own pre-broadcast check:
+// nothing is ever sent from these tests.
+const nav = (page, name: string) => page.getByRole('navigation', { name: 'Desk' }).getByRole('link', { name, exact: true });
 
-test.describe('desk (read-only employer dashboard at /#desk)', () => {
-  test('Setup required: every unset var by name, the roster from the CSV, focus on the heading', async ({ page }, ti) => {
-    await page.goto(URLS.setup + '/#desk');
-    await expect(page.locator('#landing')).toBeHidden();
-    await expect(page.locator('#desk-h')).toBeFocused();
-    // A direct load of /#desk stays at the top: the nav is not scrolled away (bug 1).
-    await page.waitForLoadState('load');
-    await page.waitForTimeout(300);
-    expect(await page.evaluate(() => scrollY)).toBeLessThan(5);
-    await expect(page.locator('#desk-h')).toBeFocused();
-    await expect(page.locator('.nav')).toBeInViewport();
-    const env = page.locator('#env');
-    await expect(env).toHaveClass(/env bad/);
-    await expect(env.locator('h3')).toHaveText('Setup required');
-    await expect(env.locator('.vars code')).toHaveText(VARS);
-    await expect(page.locator('#net')).toHaveClass(/bad/);
-    await expect(page.locator('#net')).toHaveText('Setup required');
-    // Without an auditor key this desk has no viewing key to show (a public demo desk says so).
-    await expect(page.locator('#desk-lede')).toHaveText(
-      "The employer's copy of the roster, with nothing redacted. It cannot pay. It has no login. No employer viewing key is set here, so it shows none; a desk that has one shows it to anyone who can reach its port, so keep that one on 127.0.0.1.",
-    );
-
+test.describe('desk (/desk, the payroll desk)', () => {
+  test('Setup required: every unset var by name; the roster from the CSV; Run payroll stays off', async ({ page }, ti) => {
+    await page.goto(URLS.setup + '/desk');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Run payroll');
+    await expect(page.locator('.eyebrow').first()).toHaveText('Private payroll processing');
+    const setup = page.locator('#setup');
+    await expect(setup).toContainText('Setup required');
+    for (const v of ['ZCASH_NETWORK', 'ZCASH_LWD_URL', 'ZCASH_WALLET_DB', 'ZCASH_WALLET_CLI', 'ZCASH_AUDITOR_UFVK']) await expect(setup).toContainText(`${v} not configured`);
+    await expect(page.locator('#status')).toHaveText('Setup required');
     const rows = rosterRows();
-    await expect(page.locator('#rpath')).toHaveText(`${rows.length} employees · roster.csv`);
-    await expect(page.locator('#rpath')).toHaveAttribute('title', ROSTER_CSV);
-    const tr = page.locator('#rosterbox tbody tr');
-    await expect(tr).toHaveCount(rows.length);
-    for (const [i, r] of rows.entries()) {
-      const row = tr.nth(i);
-      await expect(row.locator('td').nth(0)).toHaveText(`${String(i + 1).padStart(2, '0')}row${i + 2}`);
-      await expect(row.locator('td').nth(1)).toContainText(r.name);
-      await expect(row.locator('td').nth(1)).toContainText(r.memo);
-      await expect(row.locator('td').nth(3)).toHaveText(`${r.zec} ZEC`);
-      await expect(row.locator('td').nth(2)).toHaveAttribute('title', r.ua);
-      if (isMobile(ti.project.name)) await expect(row.locator('td').nth(2)).toBeHidden();
-      else await expect(row.locator('td').nth(2)).toHaveText(`${r.ua.slice(0, 14)}…${r.ua.slice(-6)}`);
-    }
-    await expect(page.locator('#rosterbox tfoot')).toContainText('0.04 ZEC');
-    // The CLI commands name the real roster path, shell-quoted: it contains a space (bug 2).
-    expect(ROSTER_CSV).toContain(' ');
-    await expect(page.locator('.rp')).toHaveText([`'${ROSTER_CSV}'`, `'${ROSTER_CSV}'`]);
-    await expect(page.locator('#desk-view pre.cmd').first()).toHaveText(`payroll pay '${ROSTER_CSV}' --two-step --label oct-2026`);
+    await expect(page.locator('#roster tbody tr')).toHaveCount(rows.length);
+    for (const r of rows) await expect(page.locator('#roster')).toContainText(r.name);
+    await expect(page.locator('#k-n')).toHaveText(String(rows.length));
+    await expect(page.locator('#k-pay')).toContainText('4,000,000');
+    // Planning is offline and works here; running does not.
+    await page.getByRole('button', { name: 'Review against caps' }).click();
+    await page.getByRole('button', { name: 'Check the plan' }).click();
+    await expect(page.locator('#plan')).toContainText('Within the caps');
+    await expect(page.locator('#runbtn')).toBeDisabled();
     await expectNoHorizontalScroll(page);
-    await page.screenshot({ path: ti.outputPath(`desk-setup-required-${ti.project.name}.png`), fullPage: true });
+    await page.screenshot({ path: ti.outputPath(`desk-setup-${ti.project.name}.png`), fullPage: true });
   });
 
-  test('the desk says it exposes the employer key; a foreign Host (DNS rebinding) gets 403, loopback gets 200', async ({ page, request }) => {
-    await page.goto(URLS.configured + '/#desk');
-    await expect(page.locator('#desk-lede')).toHaveText(
-      "The employer's copy of the roster, with nothing redacted. It cannot pay. It has no login. It shows the employer's viewing key to anyone who can reach this port, so keep it on 127.0.0.1.",
-    );
-    const port = new URL(URLS.configured).port;
-    for (const path of ['/api/audit', '/api/state', '/']) {
-      const r = await request.get(URLS.configured + path, { headers: { Host: `attacker.example:${port}` } });
-      expect(r.status(), path).toBe(403);
-      const body = await r.text();
-      expect(body).not.toContain(FIXTURE_UFVK);
-      expect(body).not.toContain('Alice');
-    }
-    const ok = await request.get(URLS.configured + '/api/audit');
-    expect(ok.status()).toBe(200);
-    expect(await ok.text()).toContain(`# ufvk=${FIXTURE_UFVK}`);
-  });
-
-  test('accountant view parses the audit CSV per RFC 4180 (quoted commas, "" escapes, line breaks)', async ({ page }) => {
-    await page.goto(URLS.configured + '/#desk');
-    const rows = await page.evaluate(() =>
-      // Exactly what audit.rs emits for a quoted name, a quoted memo with a line break and a neutralised formula.
-      (window as unknown as { parseCsv: (t: string) => string[][] }).parseCsv(
-        '# network=testnet\n# ufvk=uviewtest1x\nrun_id,name,memo\n1,"Doe, Jane","Oct ""bonus""\nline 2"\r\n2,"\'=HYPERLINK(""http://x"",""pay"")",\n',
-      ),
-    );
-    expect(rows).toEqual([
-      ['# network=testnet'],
-      ['# ufvk=uviewtest1x'],
-      ['run_id', 'name', 'memo'],
-      ['1', 'Doe, Jane', 'Oct "bonus"\nline 2'],
-      ['2', `'=HYPERLINK("http://x","pay")`, ''],
-    ]);
-    // The real server's CSV (no runs) still renders the UFVK and the empty state.
-    await page.getByRole('button', { name: "Open the accountant's view" }).click();
-    await expect(page.locator('#audit .ufvk')).toHaveText(FIXTURE_UFVK);
-    await expect(page.locator('#audit')).toContainText('No pay runs in this session (the desk does not pay)');
-  });
-
-  test('Run payroll is disabled with its reason; the server answers POST /api/run with 410', async ({ page, request }) => {
-    await page.goto(URLS.setup + '/#desk');
-    const run = page.locator('#run');
-    await expect(run).toBeDisabled();
-    await expect(run).toHaveText('Run payroll · disabled here');
-    await expect(run).toHaveAttribute('aria-describedby', 'run-why');
-    await expect(page.locator('#run-why')).toContainText('pay --two-step');
-    let posted = false;
-    page.on('request', (r) => r.url().endsWith('/api/run') && (posted = true));
-    await run.click({ force: true });
-    await page.waitForTimeout(300);
-    expect(posted, 'a disabled button sent a request').toBe(false);
-    const r = await request.post(URLS.setup + '/api/run');
+  test('read-only desk: says so, and the server answers the payout endpoints with 410', async ({ page, request }) => {
+    await page.goto(URLS.configured + '/desk');
+    await expect(page.locator('#setup')).toContainText('Read-only desk');
+    await expect(page.locator('#status')).toHaveText('Read-only');
+    await page.getByRole('button', { name: 'Review against caps' }).click();
+    await page.getByRole('button', { name: 'Check the plan' }).click();
+    await expect(page.locator('#plan')).toContainText('Within the caps');
+    await expect(page.locator('#runbtn')).toBeDisabled();
+    const r = await request.post(URLS.configured + '/api/payroll/run', { headers: { 'X-Misthos-Desk': '1', 'Content-Type': 'application/json' }, data: { label: 'x' } });
     expect(r.status()).toBe(410);
-    expect((await r.json()).error).toContain('payroll pay <roster.csv> --two-step');
-    const p = await request.get(URLS.setup + '/api/proof?employee=row2');
-    expect(p.status()).toBe(410);
-    expect(await p.text()).not.toContain('uviewtest');
+    expect((await r.json()).error).toContain('--payouts');
+    expect((await request.post(URLS.configured + '/api/run')).status()).toBe(410);
   });
 
-  test('Accountant\'s view without ZCASH_AUDITOR_UFVK shows Setup required from /api/state, with no failing request', async ({ page, request }, ti) => {
-    // /api/state already lists ZCASH_AUDITOR_UFVK as missing, so the page does not ask /api/audit for an
-    // answer it knows is a 400 (Chrome logs every failed fetch as a console error). The server still says so.
-    const direct = await request.get(URLS.setup + '/api/audit');
-    expect(direct.status()).toBe(400);
-    expect((await direct.json()).error).toBe('ZCASH_AUDITOR_UFVK not configured');
-    await page.goto(URLS.setup + '/#desk');
-    await expect(page.locator('#env h3')).toHaveText('Setup required');
-    const btn = page.getByRole('button', { name: "Open the accountant's view" });
-    let asked = false;
-    page.on('request', (r) => r.url().endsWith('/api/audit') && (asked = true));
-    await btn.click();
-    const alert = page.locator('#audit .alert');
-    await expect(alert).toContainText('Setup required');
-    await expect(alert).toContainText('ZCASH_AUDITOR_UFVK not configured');
-    await expect(btn).toBeEnabled();
-    await expect(btn).toHaveText("Open the accountant's view");
-    expect(asked, 'GET /api/audit was sent although /api/state says the key is missing').toBe(false);
-    await page.locator('.audit').screenshot({ path: ti.outputPath(`desk-audit-setup-${ti.project.name}.png`) });
+  test('a foreign Host (DNS rebinding) gets 403 for the desk and its API; a cross-site POST is refused', async ({ request }) => {
+    for (const path of ['/desk', '/api/state']) {
+      const r = await request.get(URLS.payouts + path, { headers: { Host: 'attacker.example:8794' } });
+      expect(r.status(), path).toBe(403);
+    }
+    const r = await request.post(URLS.payouts + '/api/payroll/run', { headers: { 'Content-Type': 'application/json', 'X-Misthos-Desk': '1', Origin: 'https://attacker.example' }, data: { label: 'x' } });
+    expect(r.status()).toBe(403);
+    const f = await request.post(URLS.payouts + '/api/payroll/run', { form: { label: 'x' } });
+    expect(f.status()).toBe(403);
   });
 
-  test('configured desk: Chain config loaded; the accountant view shows the UFVK and the empty run list', async ({ page }, ti) => {
-    await page.goto(URLS.configured + '/#desk');
-    const env = page.locator('#env');
-    await expect(env).toHaveClass(/env good/);
-    await expect(env.locator('h3')).toHaveText('Chain config loaded');
-    await expect(env).toContainText('testnet');
-    await expect(env).toContainText('https://testnet.zec.rocks:443');
-    await expect(page.locator('#net')).toHaveText('testnet · testnet.zec.rocks'); // URL.host drops the default :443
-    await page.getByRole('button', { name: "Open the accountant's view" }).click();
-    await expect(page.locator('#audit .ufvk')).toHaveText(FIXTURE_UFVK);
-    // Empty state: the desk never pays, so this session has no runs.
-    await expect(page.locator('#audit')).toContainText('No pay runs in this session (the desk does not pay)');
-    await expect(page.locator('#audit table')).toHaveCount(0);
+  test('mainnet is refused and a spending-key-looking auditor value is never shown', async ({ page }) => {
+    await page.goto(URLS.mainnet + '/desk');
+    await expect(page.locator('#setup')).toContainText('Setup required');
+    await expect(page.locator('#setup')).toContainText(/mainnet/i);
+    await expect(page.locator('body')).not.toContainText('secret-extended-key');
+  });
+
+  test('caps: every violation is listed; fixing them unlocks Run payroll with the funding total', async ({ page, watch }) => {
+    watch.allow(/\/api\/plan$/, 422);
+    await page.goto(URLS.payouts + '/desk');
+    await expect(page.locator('#status')).toHaveText('Payouts on');
+    await page.getByRole('button', { name: 'Review against caps' }).click();
+    await page.locator('#maxtotal').fill('0.03');
+    await page.locator('#maxper').fill('0.01');
+    await page.getByRole('button', { name: 'Check the plan' }).click();
+    const plan = page.locator('#plan');
+    await expect(plan).toContainText('over the caps');
+    await expect(plan.locator('li')).toHaveCount(3); // two employees over the per-employee cap, and the run total
+    await expect(page.locator('#runbtn')).toBeDisabled();
+    await page.locator('#maxtotal').fill('0.05');
+    await page.locator('#maxper').fill('0.02');
+    await page.getByRole('button', { name: 'Check the plan' }).click();
+    await expect(plan).toContainText('Within the caps');
+    await expect(page.locator('#s-pay')).toHaveText('4,000,000 zat');
+    await expect(page.locator('#s-fee')).toHaveText('20,000 zat');
+    await expect(page.locator('#s-tot')).toHaveText('4,020,000 zat');
+    await expect(page.locator('#runbtn')).toBeEnabled();
+    await expect(page.locator('#runbtn')).toHaveText('Run payroll · 0.04 ZEC');
+  });
+
+  test('roster upload: errors are listed per line and nothing loads; a good CSV replaces the roster', async ({ page, watch }, ti) => {
+    watch.allow(/\/api\/roster$/, 422);
+    await page.goto(URLS.payouts + '/desk');
+    const bad = ti.outputPath('bad.csv');
+    writeFileSync(bad, 'name,ua,amountZEC\nEve,u1mainnetaddress,0.1\nMallory,utest1nope,0\n');
+    await page.locator('#csvfile').setInputFiles(bad);
+    await expect(page.locator('#rerr')).toContainText('nothing was loaded');
+    await expect(page.locator('#rerr li')).toHaveCount(2);
+    await expect(page.locator('#roster')).toContainText('Alice');
+    await page.locator('#csvfile').setInputFiles(ROSTER_CSV);
+    await expect(page.locator('.toast')).toContainText('Loaded roster.csv');
+    await expect(page.locator('#rsrc')).toHaveText('roster.csv (uploaded in the desk)');
+    await expect(page.locator('#rerr')).toBeHidden();
+  });
+
+  test('run: a wallet that is not ready stops the run before anything is sent, and the desk says so', async ({ page }, ti) => {
+    const label = `e2e-${ti.project.name}-${Date.now()}`;
+    await page.goto(URLS.payouts + '/desk');
+    await page.getByRole('button', { name: 'Review against caps' }).click();
+    await page.locator('#label').fill(label);
+    await page.getByRole('button', { name: 'Check the plan' }).click();
+    await page.locator('#runbtn').click();
+    await expect(page.locator('#live-title')).toHaveText(`Run stopped · ${label}`, { timeout: 30_000 });
+    await expect(page.locator('#live-sub')).toHaveText('Stopped before anything was sent: no funds moved.');
+    await expect(page.locator('#outcome')).toContainText('step 1 NOT sent');
+    await expect(page.locator('#feed li').first()).toContainText('Run stopped');
+    await expect(page.locator('#periods')).toContainText(label);
     await expectNoHorizontalScroll(page);
-    await page.screenshot({ path: ti.outputPath(`desk-configured-${ti.project.name}.png`), fullPage: true });
+    await page.screenshot({ path: ti.outputPath(`desk-stopped-${ti.project.name}.png`), fullPage: true });
+
+    // Payslips: the period's register, nobody paid, so no payslip can be issued.
+    await nav(page, 'Payslips').click();
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Payslips');
+    await expect(page.locator('#reg-sub')).toContainText(label);
+    await expect(page.locator('#register tbody tr')).toHaveCount(2);
+    await expect(page.locator('#register')).toContainText('not-started');
+    for (const b of await page.locator('#keys [data-issue]').all()) await expect(b).toBeDisabled();
+
+    // Accountant: the employer viewing key and the period's rows.
+    await nav(page, 'Accountant').click();
+    await expect(page.locator('#ac-key')).toContainText(FIXTURE_UFVK.slice(0, 28));
+    await expect(page.locator('#actable')).toContainText('Alice');
+    await expect(page.locator('#actable')).toContainText('4,000,000 zat');
+    const dl = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download CSV' }).click();
+    expect((await dl).suggestedFilename()).toBe(`misthos-${label}.csv`);
+    await expectNoHorizontalScroll(page);
   });
 
-  test('mainnet is refused; a spending-key-looking auditor value is refused and never shown', async ({ page }, ti) => {
-    let auditRequests = 0;
-    page.on('request', (r) => { if (r.url().endsWith('/api/audit')) auditRequests++; });
-    await page.goto(URLS.mainnet + '/#desk');
-    const env = page.locator('#env');
-    await expect(env.locator('h3')).toHaveText('Setup required');
-    await expect(env).toContainText('ZCASH_NETWORK invalid: `mainnet`; only `testnet` is allowed');
-    await expect(env.locator('.vars')).toHaveCount(0);
-    await page.getByRole('button', { name: "Open the accountant's view" }).click();
-    await expect(page.locator('#audit .alert')).toContainText('looks like a spending key; refusing to export it');
-    expect(auditRequests, 'invalid auditor key must be refused without a failing fetch').toBe(0);
-    await expect(page.locator('#loadAudit')).toBeEnabled();
-    expect(await page.content()).not.toContain('secret-extended-key');
-    await page.locator('.audit').screenshot({ path: ti.outputPath(`desk-audit-refused-${ti.project.name}.png`) });
+  test('proof check: a file that is not a signed payslip is rejected by the real check', async ({ page }, ti) => {
+    await page.goto(URLS.payouts + '/desk#verify');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Proof check');
+    await expect(page.locator('#vbtn')).toBeDisabled();
+    const f = ti.outputPath('not-a-proof.txt');
+    writeFileSync(f, 'name=Alice\namount_zat=30000\n');
+    await page.locator('#pffile').setInputFiles(f);
+    await page.locator('#vtxid').fill('cd'.repeat(32));
+    await page.locator('#vbtn').click();
+    await expect(page.locator('#vres .result.bad')).toContainText('Rejected', { timeout: 30_000 });
+    await expect(page.locator('#vres')).toContainText('not a zec-payroll proof file');
   });
 
-  test('loading state: skeleton rows and "Checking setup…" until /api/state answers', async ({ page }, ti) => {
-    let release!: () => void;
-    const held = new Promise<void>((r) => (release = r));
-    // Hold the real request (no fake answer): it goes to the real server once released.
-    await page.route('**/api/state', async (route) => {
-      await held;
-      await route.continue();
-    });
-    await page.goto(URLS.setup + '/#desk');
-    await expect(page.locator('#env h3')).toHaveText('Checking setup…');
-    await expect(page.locator('#rosterbox .skel')).toHaveCount(3);
-    await expect(page.locator('#net')).toHaveText('checking setup…');
-    expect(await page.locator('#rosterbox .skel').first().evaluate((s) => getComputedStyle(s).animationName)).toBe('sk');
-    await page.screenshot({ path: ti.outputPath(`desk-loading-${ti.project.name}.png`) });
-    release();
-    await expect(page.locator('#env h3')).toHaveText('Setup required');
-    await expect(page.locator('#rosterbox .skel')).toHaveCount(0);
-  });
-
-  test('reduced motion: the loading skeleton does not shimmer', async ({ page }) => {
-    await page.emulateMedia({ reducedMotion: 'reduce' });
-    let release!: () => void;
-    const held = new Promise<void>((r) => (release = r));
-    await page.route('**/api/state', async (route) => {
-      await held;
-      await route.continue();
-    });
-    await page.goto(URLS.setup + '/#desk');
-    expect(await page.locator('#rosterbox .skel').first().evaluate((s) => getComputedStyle(s).animationName)).toBe('none');
-    release();
-    await expect(page.locator('#env h3')).toHaveText('Setup required');
-  });
-
-  test('unreachable: the server stops before /api/state; the desk says so and the accountant button too', async ({ page, watch }, ti) => {
-    // A server of our own on 8794; this test stops it (by its PID) while the page is loading.
-    const port = 8794;
-    const srv: ChildProcess = spawn(BIN, ['serve', '--addr', `127.0.0.1:${port}`], {
-      env: { PATH: process.env.PATH!, PAYROLL_ROSTER_CSV: ROSTER_CSV },
-      stdio: 'ignore',
-    });
-    try {
-      await expect.poll(async () => (await fetch(`http://127.0.0.1:${port}/api/state`).catch(() => null))?.status ?? 0).toBe(200);
-      watch.allowFailure(/\/api\/(state|audit)$/);
-      await page.route('**/api/state', async (route) => {
-        srv.kill('SIGTERM');
-        await new Promise((r) => srv.once('exit', r));
-        await route.continue(); // the real request now meets a closed port
-      });
-      await page.goto(`http://127.0.0.1:${port}/#desk`);
-      const env = page.locator('#env');
-      await expect(env.locator('h3')).toHaveText("Can't reach the desk API");
-      await expect(env).toContainText('Is payroll serve still running?');
-      await expect(page.locator('#net')).toHaveText('desk API unreachable');
-      await expect(page.locator('#rosterbox')).toHaveText('No roster: the server did not answer.');
-      await page.getByRole('button', { name: "Open the accountant's view" }).click();
-      await expect(page.locator('#audit .alert')).toContainText("Can't reach the desk API");
-      await expect(page.getByRole('button', { name: "Open the accountant's view" })).toBeEnabled();
+  test('hash routes switch pages and focus each heading; back and forward work', async ({ page }, ti) => {
+    await page.goto(URLS.payouts + '/desk');
+    for (const [name, h] of [['Payslips', 'Payslips'], ['Proof check', 'Proof check'], ['Accountant', 'Accountant'], ['Run payroll', 'Run payroll']]) {
+      await nav(page, name).click();
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText(h);
+      await expect(page.locator('h1:visible')).toBeFocused();
+      await expect(nav(page, name)).toHaveAttribute('aria-current', 'page');
       await expectNoHorizontalScroll(page);
-      await page.screenshot({ path: ti.outputPath(`desk-unreachable-${ti.project.name}.png`), fullPage: true });
-    } finally {
-      if (srv.exitCode === null && srv.signalCode === null) srv.kill('SIGTERM');
     }
-  });
-
-  test('empty roster: the server refuses to start rather than show an empty desk', async () => {
-    const r = spawnSync(BIN, ['serve', '--addr', '127.0.0.1:8795'], {
-      env: { PATH: process.env.PATH!, PAYROLL_ROSTER_CSV: resolve(E2E_DIR, 'fixtures/empty-roster.csv') },
-      encoding: 'utf8',
-      timeout: 10_000,
-    });
-    expect(r.status).toBe(1);
-    expect(r.stderr).toContain('CSV has a header but no rows');
-    const none = spawnSync(BIN, ['serve', '--addr', '127.0.0.1:8795'], { env: { PATH: process.env.PATH! }, encoding: 'utf8', timeout: 10_000 });
-    expect(none.status).toBe(1);
-    expect(none.stderr).toContain('PAYROLL_ROSTER_CSV not configured');
-  });
-
-  test('hash switches boards: back link, nav anchors, browser back/forward', async ({ page }, ti) => {
-    await page.goto(URLS.setup + '/');
-    await expect(page.locator('#desk-view')).toBeHidden();
-    await page.locator('.nav').getByRole('link', { name: 'Open the desk' }).click();
-    await expect(page.locator('#desk-view')).toBeVisible();
-    await expect(page.locator('#desk-h')).toBeFocused();
-    await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(5);
-    await page.getByRole('link', { name: '← The payslip' }).click();
-    await expect(page.locator('#landing')).toBeVisible();
-    await expect(page.locator('#desk-view')).toBeHidden();
     await page.goBack();
-    await expect(page.locator('#desk-view')).toBeVisible();
-    await page.goBack();
-    await expect(page.locator('#landing')).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Accountant');
     await page.goForward();
-    await expect(page.locator('#desk-view')).toBeVisible();
-    // From the desk, a section link goes back to the payslip at that section.
-    if (!isMobile(ti.project.name)) {
-      await page.locator('.nav ul').getByRole('link', { name: 'Proof', exact: true }).click();
-      await expect(page.locator('#landing')).toBeVisible();
-      await expectInViewport(page, '#proof-h');
-    }
-    // The chip links to the desk too (shown above 480 px).
-    if (!isMobile(ti.project.name)) {
-      await page.locator('#net').click();
-      await expect(page.locator('#desk-view')).toBeVisible();
-    }
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Run payroll');
+    if (isMobile(ti.project.name)) await page.screenshot({ path: ti.outputPath('desk-mobile.png'), fullPage: true });
   });
 
-  test('no button labelled "log" exists on the desk; every desk button was exercised', async ({ page }) => {
-    await page.goto(URLS.setup + '/#desk');
-    await expect(page.locator('#env h3')).toHaveText('Setup required');
+  test('no button labelled "log" exists on the desk', async ({ page }) => {
+    await page.goto(URLS.payouts + '/desk');
     expect(await logButtons(page)).toHaveLength(0);
-    await expect(page.getByRole('button')).toHaveText(['Run payroll · disabled here', "Open the accountant's view"]);
   });
 });

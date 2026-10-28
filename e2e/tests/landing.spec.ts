@@ -15,10 +15,10 @@ const BOB = ['alice:shut', 'alice:shut', 'alice:shut', 'bob:open', 'bob:open', '
 test.describe('landing (the redacted payslip)', () => {
   test('loads the payslip; no horizontal scroll; the desk chip reads Setup required', async ({ page }, ti) => {
     await page.goto(BASE + '/');
-    await expect(page).toHaveTitle('Misthos · shielded payroll');
+    await expect(page).toHaveTitle('Misthos · private payroll processing');
     await expect(page.getByRole('heading', { level: 1 })).toContainText("Everyone's pay on chain");
     await expect(page.locator('#slip-title')).toHaveText('payroll-2026-10-demo');
-    await expect(page.locator('#desk-view')).toBeHidden();
+    await expect(page.locator('.hero .lede')).toContainText('Private payroll processing on Zcash');
     // The chip asks the real server; this one has no chain vars.
     if (isMobile(ti.project.name)) await expect(page.locator('#net')).toBeHidden(); // hidden under 480 px by design
     else await expect(page.locator('#net')).toHaveText('Setup required');
@@ -175,7 +175,7 @@ test.describe('landing (the redacted payslip)', () => {
     await expectNoHorizontalScroll(page);
   });
 
-  test('deductions list the limits, including the 410 on the desk', async ({ page }) => {
+  test('deductions list the limits, including the desk with no login', async ({ page }) => {
     await page.goto(BASE + '/#limits');
     await expectInViewport(page, '#limits-h');
     await expect(page.locator('.ded li')).toHaveCount(9);
@@ -183,6 +183,7 @@ test.describe('landing (the redacted payslip)', () => {
     await expect(page.locator('.ded > ul > li')).toHaveCount(3);
     await expect(page.locator('.ded > ul > li').nth(0)).toContainText('Testnet only.');
     await expect(page.locator('.ded > ul > li').nth(1)).toContainText('Timing.');
+    await expect(page.locator('.ded > ul > li').nth(2)).toContainText('The desk has no login.');
     await expect(page.locator('.ded > ul > li').nth(2)).toContainText('410 Gone');
     const more = page.locator('.ded details');
     await expect(more.locator('li').first()).toBeHidden();
@@ -209,14 +210,15 @@ test.describe('landing (the redacted payslip)', () => {
     await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(5);
     await page.locator('.hero-cta').getByRole('link', { name: 'Read the recorded run' }).click();
     await expectInViewport(page, '#payslip');
-    // Both "Open the desk" links switch to the desk.
-    for (const where of ['.nav', '.hero-cta']) {
+    // "Run payroll" (nav) and "Open the payroll desk" (hero) go to the desk at /desk; an old #desk link lands there too.
+    for (const [where, name] of [['.nav', 'Run payroll'], ['.hero-cta', 'Open the payroll desk']]) {
       await page.goto(BASE + '/');
-      await page.locator(where).getByRole('link', { name: 'Open the desk' }).click();
-      await expect(page).toHaveURL(/#desk$/);
-      await expect(page.locator('#desk-view')).toBeVisible();
-      await expect(page.locator('#landing')).toBeHidden();
+      await page.locator(where).getByRole('link', { name, exact: true }).click();
+      await expect(page).toHaveURL(/\/desk$/);
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText('Run payroll');
     }
+    await page.goto(BASE + '/#desk');
+    await expect(page).toHaveURL(/\/desk$/);
   });
 
   test('no button labelled "log" exists on the payslip', async ({ page }) => {

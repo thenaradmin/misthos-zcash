@@ -220,7 +220,7 @@ tr.mine td:first-child{box-shadow:inset 3px 0 0 var(--violet)}
 .tx a{font:400 13px var(--mono);text-decoration:none;border-bottom:1px solid var(--line-2);white-space:nowrap}
 .tx a:hover{color:var(--violet-ink);border-color:var(--violet)}
 .blk{font:400 13px var(--mono);color:var(--ink-2)}
-.opened{margin:0 22px 20px;padding:16px 18px;border-radius:14px;background:var(--violet-tint);border:1px solid #d9d0ff}
+.opened{margin:4px 22px 20px;padding:16px 18px;border-radius:14px;background:var(--violet-tint);border:1px solid #d9d0ff}
 .opened h3{color:var(--violet-ink)}
 .opened dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 16px;margin:12px 0 0;font-size:14px}
 .opened dt{color:var(--mute)}.opened dd{margin:0;font-family:var(--mono);font-size:13px;overflow-wrap:anywhere}
@@ -276,8 +276,8 @@ details.raw pre{margin:8px 0 0;max-height:280px;overflow:auto;font:400 12px/1.6 
   .side{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;gap:10px;padding:14px 16px;border-right:0;border-bottom:1px solid var(--line)}
   .side .group{margin:0;width:100%}
   .group-l,.side-foot,.periods{display:none}
-  .nav{display:flex;gap:4px;overflow-x:auto}
-  .nav a{height:40px;padding:0 11px;font-size:13px;white-space:nowrap;gap:8px}
+  .nav{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .nav a{height:44px;padding:0 12px;font-size:13.5px;white-space:nowrap;gap:8px;border-color:var(--line);background:var(--panel)}
   .nav a svg{display:none}
   .top{height:auto;padding:14px 16px;flex-wrap:wrap}
   .page{padding:22px 16px 56px}
@@ -421,7 +421,7 @@ details.raw pre{margin:8px 0 0;max-height:280px;overflow:auto;font:400 12px/1.6 
           <section class="panel" aria-labelledby="feed-h">
             <div class="panel-h"><div><h2 id="feed-h">Activity</h2><div class="sub">Every step of this run, as it happened</div></div><span class="tag plain" id="feed-count"></span></div>
             <ul class="feed" id="feed"></ul>
-            <details class="raw"><summary>Technical log</summary><pre id="rawlog"></pre></details>
+            <details class="raw"><summary>Technical output</summary><pre id="rawlog"></pre></details>
           </section>
         </div>
       </section>
@@ -433,8 +433,8 @@ details.raw pre{margin:8px 0 0;max-height:280px;overflow:auto;font:400 12px/1.6 
       <section class="panel" style="margin-top:24px" aria-labelledby="reg-h">
         <div class="panel-h"><div><h2 id="reg-h">Payslip register</h2><div class="sub" id="reg-sub">Choose a pay period</div></div></div>
         <div class="keys" id="keys"><span class="lbl">Reading as</span></div>
-        <div id="opened"></div>
         <table class="tbl" id="register"><thead><tr><th>No.</th><th>Employee</th><th>Memo</th><th>Net pay</th><th>Payout transaction</th><th>Block</th></tr></thead><tbody></tbody></table>
+        <div id="opened"></div>
       </section>
       <div class="notice" style="margin-top:16px"><span class="ic"><svg class="i" viewBox="0 0 24 24"><circle cx="8" cy="12" r="3.5"/><path d="M11.5 12H21m-3 0v3m3-3v2"/></svg></span><div><b>Where an employee's key comes from</b>The employer issues each employee a signed payslip file holding a viewing key for that employee's payout wallet only. Opening a line checks the file against the chain, live.</div></div>
     </main>
@@ -522,7 +522,7 @@ function route(focus) {
   PAGES.forEach((x) => { $('#p-' + x).hidden = x !== p; });
   $$('.nav a[data-page]').forEach((a) => { if (a.dataset.page === p) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
   $('#crumb').textContent = $('#p-' + p).dataset.title;
-  if (focus) $('#' + p + '-h').focus({ preventScroll: true });
+  if (focus) { scrollTo(0, 0); $('#' + p + '-h').focus({ preventScroll: true }); }
   if (p === 'payslips') renderPayslips();
   if (p === 'accountant') loadAccountant();
   if (p === 'verify') renderVerify();
@@ -615,7 +615,7 @@ async function checkPlan() {
   const r = await api('/api/plan', body);
   if (!r.ok) {
     S.plan = null;
-    $('#plan').innerHTML = `<div class="notice err" style="margin:0 22px 22px"><span class="ic">${ICON.x}</span><div><b>${esc(r.j.error)}</b>${r.j.violations ? `<ul>${r.j.violations.map((v) => `<li>${esc(v.replace(/`/g, ''))}</li>`).join('')}</ul>` : ''}</div></div>`;
+    $('#plan').innerHTML = `<div class="notice err" style="margin:0 22px 22px"><span class="ic">${ICON.x}</span><div><b>${esc(r.j.error)}</b>${r.j.violations ? `<ul>${r.j.violations.map((v) => `<li>${esc(withNames(v.replace(/`/g, '')))}</li>`).join('')}</ul>` : ''}</div></div>`;
     renderSummary(); return;
   }
   S.plan = { ...r.j, label: body.label, caps: body };
@@ -627,6 +627,8 @@ async function checkPlan() {
   $('#t-review').classList.add('done');
   renderSummary();
 }
+// The engine names a line by its roster id (row<N>); show the employee's name with it.
+function withNames(text) { const r = (S.state && S.state.roster) || []; return text.replace(/\brow(\d+)\b/g, (m) => { const e = r.find((x) => x.id === m); return e ? `${e.name} (${m})` : m; }); }
 function ledgerTag(s) {
   const m = { 'not-started': ['', 'Not paid yet'], 'fund-pending': ['err', 'Funding unknown'], funded: ['live', 'Funded'], 'pay-pending': ['err', 'Outcome unknown'], paid: ['ok', 'Paid'], '': ['', '–'] };
   const [k, t] = m[s] || ['', s]; return `<span class="tag ${k}">${t}</span>`;
@@ -722,7 +724,8 @@ function renderLive(j) {
     }
     let marks = `<span class="mark" style="left:${pos(P.funding_height)}%">Funding</span>`;
     emps.forEach((e) => { if (e.target && e.target >= from) marks += `<span class="mark p" style="left:${pos(e.target)}%">${esc(e.name || e.id)}</span>`; });
-    if (P.tip && !targets.includes(P.tip) && P.tip !== P.funding_height) marks += `<span class="mark tip" style="left:${pos(P.tip)}%">Tip</span>`;
+    // The tip marker only where it does not collide with another label (within two blocks).
+    if (P.tip && [P.funding_height, ...targets].every((h) => Math.abs(h - P.tip) > 2)) marks += `<span class="mark tip" style="left:${pos(P.tip)}%">Tip</span>`;
     const labels = `<span class="blk-l" style="left:${pos(P.funding_height)}%">${P.funding_height.toLocaleString('en-US')}</span>` + (P.tip && P.tip !== P.funding_height ? `<span class="blk-l" style="left:${pos(P.tip)}%">${P.tip.toLocaleString('en-US')}</span>` : '');
     $('#chain').innerHTML = `<div class="ticks">${ticks}</div>${marks}${labels}`;
   } else {
@@ -854,7 +857,7 @@ async function openWith(name, quiet) {
   $('#opened').innerHTML = `<div class="opened"><h3>Opening ${esc(name)}'s line with ${esc(name)}'s key…</h3><p class="help" style="margin-top:6px">Checking the employer's signature and decrypting the payout from the chain.</p></div>`;
   const r = await api('/api/payroll/verify', { proof: f.proof, txid: f.txid });
   const v = parseVerify(r.j.stdout || '');
-  if (!r.ok || !r.j.ok) { $('#opened').innerHTML = `<div class="notice err" style="margin:0 22px 20px"><span class="ic">${ICON.x}</span><div><b>Could not open ${esc(name)}'s line</b>${esc(r.j.error)}</div></div>`; return; }
+  if (!r.ok || !r.j.ok) { $('#opened').innerHTML = `<div class="notice err" style="margin:4px 22px 20px"><span class="ic">${ICON.x}</span><div><b>Could not open ${esc(name)}'s line</b>${esc(r.j.error)}</div></div>`; return; }
   const out = v.outputs.find((o) => o.dir === 'PayoutOut') || {};
   drawRegister(L, { name, memo: out.memo || '', paid: v.paid });
   $('#opened').innerHTML = `<div class="opened"><h3>${ICON.key} ${esc(name)}'s line, opened with ${esc(name)}'s key</h3><dl>

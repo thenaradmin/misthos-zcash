@@ -1,6 +1,6 @@
 // The desk servers are started separately (./stack.sh) so their PIDs are known and killed by PID
 // afterwards. Fail loudly if they aren't up instead of testing nothing.
-export const URLS = { setup: 'http://127.0.0.1:8791', configured: 'http://127.0.0.1:8792', mainnet: 'http://127.0.0.1:8793' };
+export const URLS = { setup: 'http://127.0.0.1:8791', configured: 'http://127.0.0.1:8792', mainnet: 'http://127.0.0.1:8793', payouts: 'http://127.0.0.1:8794' };
 
 export default async function globalSetup() {
   for (const base of Object.values(URLS)) {
