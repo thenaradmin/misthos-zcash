@@ -666,7 +666,7 @@ async function pollJob(scroll) {
   const j = r.j.job;
   S.job = j;
   if (!j) return;
-  renderLive(j);
+  renderLive(j); renderSummary();
   if (scroll) $('#livewrap').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
   if (j.running) jobTimer = setTimeout(pollJob, 1500);
   else { renderSummary(); await loadLedger(j.label); renderLive(j); loadState(); }
