@@ -1,6 +1,7 @@
 //! Employer dashboard: a dependency-free HTTP server on std::net.
 //!
-//!   GET  /                       embedded UI (ui/index.html)
+//!   GET  /                       the landing and payslip (ui/index.html)
+//!   GET  /desk                   the payroll desk (ui/desk.html)
 //!   GET  /api/state              env check, roster, runs, payout mode, recorded periods
 //!   GET  /api/audit              accountant ledger + UFVK (view-only)
 //!   POST /api/roster             replace the roster with an uploaded CSV (validated, not saved)
@@ -48,6 +49,7 @@ pub const MAX_HEADER_LINES: usize = 64;
 pub const MAX_CONNECTIONS: usize = 64;
 
 const INDEX: &str = include_str!("../ui/index.html");
+const DESK: &str = include_str!("../ui/desk.html");
 
 pub const RUN_GONE: &str = "{\"error\":\"A direct treasury payout cannot be proven per employee, so it is gone. Pay runs are two-step: Run payroll on a desk started with --payouts (POST /api/payroll/run), or `payroll pay <roster.csv> --two-step --label <period>`.\"}";
 pub const PROOF_GONE: &str = "{\"error\":\"Proof download by GET is disabled (no login, no CSRF guard). On a desk started with --payouts, export one employee's signed proof with POST /api/payroll/proof; or `payroll export-proof <roster.csv> --employee <id> --label <period>`.\"}";
@@ -405,6 +407,7 @@ fn handle_with(stream: TcpStream, st: Shared, timeout: Duration) {
     let path = target.split_once('?').map_or(target, |(p, _)| p);
     match (method, path) {
         ("GET", "/") => return respond(stream, "200 OK", "text/html; charset=utf-8", INDEX),
+        ("GET", "/desk") => return respond(stream, "200 OK", "text/html; charset=utf-8", DESK),
         ("GET", "/api/state") => {
             let body = state_json(&st.lock().unwrap());
             return respond(stream, "200 OK", json, &body);

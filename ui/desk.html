@@ -1,0 +1,959 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Misthos · private payroll processing</title>
+<meta name="description" content="Misthos runs payroll on Zcash's shielded pool: one run pays every employee privately, and each employee opens only their own payslip line with their own key.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2315141a'/%3E%3Crect x='7' y='10' width='18' height='4' rx='1' fill='%23f4f3ef'/%3E%3Crect x='7' y='18' width='11' height='4' rx='1' fill='%236b4dff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Sometype+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4f3ef;--panel:#fff;--side:#fbfaf7;--line:#e7e5de;--line-2:#d8d5cc;
+  --ink:#15141a;--ink-2:#3b3a43;--mute:#6b6973;--faint:#9a98a0;
+  --violet:#6b4dff;--violet-ink:#4b2fe6;--violet-tint:#efebff;
+  --ok:#13804a;--ok-tint:#e5f4eb;--err:#c2261b;--err-tint:#fdeceb;--amber:#9a5800;--amber-tint:#fff3dd;
+  --night:#131219;--night-2:#1d1c25;--night-line:#2f2d3a;
+  --sans:"Schibsted Grotesk",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"Sometype Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--sans);overflow-x:hidden}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--violet);outline-offset:2px;border-radius:6px}
+[hidden]{display:none!important}
+.mono{font-family:var(--mono)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+svg.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* app frame */
+.app{display:grid;grid-template-columns:268px minmax(0,1fr);min-height:100vh}
+.side{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;background:var(--side);border-right:1px solid var(--line);padding:26px 16px 18px;overflow-y:auto}
+.brand{display:flex;align-items:center;gap:11px;padding:0 10px;font-weight:600;font-size:22px;letter-spacing:-.045em;text-decoration:none}
+.brand i{display:grid;gap:3px;width:24px}.brand i b{display:block;height:6px;border-radius:1.5px;background:var(--ink)}.brand i b+b{width:62%;background:var(--violet)}
+.brand small{display:block;font:500 11px/1 var(--mono);letter-spacing:0;color:var(--mute);margin-top:4px}
+.group{margin-top:34px}
+.group-l{font-size:12.5px;color:var(--faint);padding:0 12px 10px}
+.nav a{display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border-radius:12px;text-decoration:none;color:var(--ink-2);font-weight:500;font-size:14.5px;border:1px solid transparent}
+.nav a:hover{background:#f1efe9}
+.nav a[aria-current="page"]{background:var(--panel);border-color:var(--line);box-shadow:0 1px 2px #15141a0d;color:var(--ink)}
+.nav a .count{margin-left:auto;font:500 11.5px/1 var(--mono);color:var(--violet-ink);background:var(--violet-tint);padding:5px 7px;border-radius:7px}
+.periods a{height:38px;font:500 13px var(--mono);color:var(--mute)}
+.periods a[aria-current="true"]{color:var(--ink);background:#f1efe9}
+.periods .none{font-size:13px;color:var(--faint);padding:4px 12px}
+.side-foot{margin-top:auto;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);font-size:12.5px;color:var(--mute);display:grid;gap:7px}
+.side-foot b{color:var(--ink);font-weight:600}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--faint);margin-right:7px;vertical-align:1px}
+.dot.ok{background:var(--ok)}.dot.err{background:var(--err)}.dot.live{background:var(--violet);box-shadow:0 0 0 4px #6b4dff26}
+
+.main{min-width:0}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;height:76px;padding:0 36px;border-bottom:1px solid var(--line)}
+.crumb{font-size:14px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.crumb b{color:var(--ink);font-weight:600}
+.top-r{display:flex;align-items:center;gap:10px;min-width:0}
+.pill{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 13px;border:1px solid var(--line-2);border-radius:999px;background:var(--panel);font:500 12.5px/1 var(--sans);color:var(--ink-2);white-space:nowrap}
+.pill.ok{border-color:#b7dfc8;background:var(--ok-tint);color:var(--ok)}
+.pill.err{border-color:#f0b9b4;background:var(--err-tint);color:var(--err)}
+.pill.live{border-color:#cfc4ff;background:var(--violet-tint);color:var(--violet-ink)}
+.page{padding:32px 36px 72px;max-width:1440px}
+.eyebrow{font:500 12px/1.2 var(--mono);color:var(--violet-ink);text-transform:uppercase;letter-spacing:.1em}
+h1{font-size:clamp(30px,3vw,42px);font-weight:600;letter-spacing:-.04em;line-height:1.05;margin:10px 0 0}
+h2{font-size:19px;font-weight:600;letter-spacing:-.02em;margin:0;line-height:1.25}
+h3{font-size:15px;font-weight:600;margin:0;letter-spacing:-.01em}
+p{margin:0}
+.lede{margin-top:10px;color:var(--mute);font-size:15.5px;max-width:74ch}
+.head{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap}
+
+/* panels with hairline cells (the reference's sectioned frame) */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;min-width:0}
+.panel-h{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 22px;border-bottom:1px solid var(--line)}
+.panel-h .sub{font-size:12.5px;color:var(--mute)}
+.panel-b{padding:20px 22px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:26px}
+.kpi{padding:20px 22px;min-width:0}
+.kpi+.kpi{border-left:1px solid var(--line)}
+.kpi-l{font-size:13px;color:var(--mute);display:flex;align-items:center;gap:8px}
+.kpi-v{display:block;margin-top:14px;font:500 34px/1.05 var(--sans);letter-spacing:-.04em;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi-v small{font:400 13px var(--mono);letter-spacing:0;color:var(--mute);margin-left:6px}
+.kpi-c{margin-top:6px;font:400 12px var(--mono);color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(320px,1fr);gap:20px;margin-top:20px;align-items:start}
+
+/* stepper tabs (checkout reference) */
+.tabs{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line)}
+.tab{display:flex;align-items:center;gap:10px;height:58px;padding:0 22px;background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;font-weight:600;font-size:14.5px;color:var(--faint);cursor:pointer;text-align:left}
+.tab .n{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;border:1.5px solid currentColor;font:600 11.5px/1 var(--mono)}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+.tab.done .n{background:var(--ink);border-color:var(--ink);color:#fff}
+.tab:disabled{cursor:not-allowed}
+
+table{width:100%;border-collapse:collapse}
+.tbl th{font:500 12px/1.2 var(--sans);color:var(--mute);text-align:left;padding:12px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl td{padding:14px 10px;border-bottom:1px solid var(--line);vertical-align:middle;font-size:14.5px}
+.tbl tr:last-child td{border-bottom:0}
+.tbl th:first-child,.tbl td:first-child{padding-left:22px}.tbl th:last-child,.tbl td:last-child{padding-right:22px}
+.tbl .r{text-align:right}
+.who{display:flex;align-items:center;gap:11px;min-width:0}
+.av{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;flex:none;background:var(--violet-tint);color:var(--violet-ink);font:600 13px/1 var(--sans)}
+.av.b{background:#e6f1ff;color:#1d5fc4}.av.c{background:#fff0e0;color:#a2530a}
+.who b{display:block;font-weight:600}
+.who div>span{display:block;font:400 12px var(--mono);color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:26ch}
+.amt{font:500 14px var(--mono);white-space:nowrap}
+.amt small{display:block;font-size:11.5px;color:var(--mute);font-weight:400}
+.memo{color:var(--ink-2);font-size:13.5px}
+.tag{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:999px;font:600 11.5px/1 var(--sans);white-space:nowrap;background:#f0eee8;color:var(--ink-2)}
+.tag::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.85}
+.tag.ok{background:var(--ok-tint);color:var(--ok)}.tag.err{background:var(--err-tint);color:var(--err)}.tag.amber{background:var(--amber-tint);color:var(--amber)}.tag.live{background:var(--violet-tint);color:var(--violet-ink)}
+.tag.plain::before{display:none}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:44px;padding:0 18px;border-radius:12px;border:1px solid var(--ink);background:var(--ink);color:#fff;font:600 14px/1 var(--sans);cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn:hover{background:#000}
+.btn.line{background:var(--panel);color:var(--ink);border-color:var(--line-2)}
+.btn.line:hover{border-color:var(--ink)}
+.btn.violet{background:var(--violet);border-color:var(--violet)}
+.btn.violet:hover{background:var(--violet-ink)}
+.btn.danger{background:var(--err);border-color:var(--err)}
+.btn:disabled{background:#efede7;border-color:var(--line);color:var(--faint);cursor:not-allowed}
+.btn.big{width:100%;min-height:60px;border-radius:999px;font-size:17px;letter-spacing:-.01em}
+.btn.sm{min-height:36px;padding:0 13px;font-size:13px;border-radius:10px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+.field{display:block;border:1px solid var(--line-2);border-radius:12px;padding:10px 14px;background:var(--panel)}
+.field:focus-within{border-color:var(--ink);box-shadow:0 0 0 3px #15141a12}
+.field span{display:block;font-size:12px;color:var(--mute)}
+.field input{width:100%;border:0;outline:0;padding:3px 0 0;background:none;font:500 15px var(--mono)}
+.fields{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:12px}
+.help{font-size:13px;color:var(--mute);margin-top:10px}
+
+.notice{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:#faf9f6;font-size:14px;color:var(--ink-2)}
+.notice .ic{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:#efede7;color:var(--ink-2)}
+.notice b{color:var(--ink);display:block;margin-bottom:2px}
+.notice.ok{background:var(--ok-tint);border-color:#b7dfc8}.notice.ok .ic{background:#cfeedd;color:var(--ok)}.notice.ok b{color:var(--ok)}
+.notice.err{background:var(--err-tint);border-color:#f0b9b4}.notice.err .ic{background:#f9d3cf;color:var(--err)}.notice.err b{color:var(--err)}
+.notice.amber{background:var(--amber-tint);border-color:#f0d29d}.notice.amber .ic{background:#fbe2b4;color:var(--amber)}.notice.amber b{color:var(--amber)}
+.notice code{font:500 12.5px var(--mono);overflow-wrap:anywhere}
+.notice ul{margin:6px 0 0;padding-left:18px}
+
+/* summary card (checkout "Current order") */
+.sum{background:#f8f7f3}
+.sum .panel-b{display:grid;gap:14px}
+#sum-people{display:grid;gap:8px}#sum-people:empty{display:none}
+.sum-line{display:flex;justify-content:space-between;gap:12px;font-size:14.5px;color:var(--ink-2)}
+.sum-line b{font:500 14px var(--mono);color:var(--ink);white-space:nowrap}
+.sum-line.tot{padding-top:14px;border-top:1px solid var(--line-2);font-size:17px;font-weight:600;color:var(--ink)}
+.sum-line.tot b{font-size:17px}
+.sum-person{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+.sum-person .amt{margin-left:auto;text-align:right}
+
+/* live run: dark band (block timeline) */
+.live{margin-top:20px;border-radius:20px;background:var(--night);color:#ecebf2;overflow:hidden}
+.live-h{display:flex;justify-content:space-between;align-items:start;gap:20px;padding:24px 26px 6px;flex-wrap:wrap}
+.live-h h2{color:#fff;font-size:24px;letter-spacing:-.03em}
+.live-h p{color:#a9a7b6;font-size:14px;margin-top:6px}
+.live-stats{display:flex;gap:30px}
+.live-stats div{min-width:0}
+.live-stats span{display:block;font-size:12px;color:#8f8d9c}
+.live-stats b{display:block;font:500 28px/1.1 var(--sans);letter-spacing:-.03em;color:#fff;margin-top:6px;font-variant-numeric:tabular-nums}
+.live-stats b small{font:400 12px var(--mono);color:#8f8d9c;margin-left:4px;letter-spacing:0}
+.chain{position:relative;margin:18px 26px 0;height:118px}
+.ticks{position:absolute;left:0;right:0;bottom:30px;height:46px;display:flex;gap:5px;align-items:flex-end}
+.ticks i{flex:1;height:100%;border-radius:2px;background:#2b2936}
+.ticks i.past{background:#4a4760}
+.ticks i.f{background:#c9c4d9}
+.ticks i.p{background:var(--violet)}
+.ticks i.p.done{background:#8f7bff}
+.ticks i.tip{background:#fff;box-shadow:0 0 12px #ffffff80}
+.blk-l{position:absolute;bottom:0;font:500 11.5px/1 var(--mono);color:#8f8d9c;transform:translateX(-50%);white-space:nowrap}
+.mark{position:absolute;top:0;transform:translateX(-50%);font:600 12px/1 var(--sans);color:#fff;background:#2b2936;border:1px solid #403d52;border-radius:8px;padding:6px 8px;white-space:nowrap}
+.mark.p{background:var(--violet);border-color:var(--violet)}
+.mark.tip{background:#fff;color:var(--night);border-color:#fff}
+.mark::after{content:"";position:absolute;left:50%;top:100%;width:1px;height:12px;background:currentColor;opacity:.5}
+.chain-empty{position:absolute;inset:0 0 30px;display:grid;place-items:center;color:#8f8d9c;font-size:14px}
+.people{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;padding:22px 26px 26px}
+.person{background:var(--night-2);border:1px solid var(--night-line);border-radius:16px;padding:16px}
+.person-h{display:flex;align-items:center;gap:11px}
+.person-h .av{background:#2c2840;color:#c9bfff}
+.person-h b{color:#fff;display:block}
+.person-h div>span{display:block;font:400 12px var(--mono);color:#8f8d9c}
+.person-h .amt{margin-left:auto;color:#fff;text-align:right}
+.person-h .amt small{color:#8f8d9c}
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:16px}
+.step{font-size:11.5px;color:#7d7a8c}
+.step i{display:block;height:4px;border-radius:4px;background:#2f2d3a;margin-bottom:8px}
+.step.done{color:#d9d6e6}.step.done i{background:#8f7bff}
+.step.now{color:#fff}.step.now i{background:linear-gradient(90deg,#8f7bff 0 40%,#2f2d3a 40%);background-size:200% 100%;animation:run 1.4s linear infinite}
+.step.bad{color:#ff9d94}.step.bad i{background:#e5484d}
+@keyframes run{from{background-position:100% 0}to{background-position:0 0}}
+.person-f{margin-top:14px;font-size:13px;color:#b6b3c4;min-height:20px;overflow-wrap:anywhere}
+.person-f a{color:#c9bfff;text-decoration:none;font-family:var(--mono);font-size:12.5px;border-bottom:1px solid #4b4570}
+.person-f a:hover{color:#fff}
+
+/* activity feed */
+.feed{list-style:none;margin:0;padding:6px 22px 14px;max-height:520px;overflow:auto}
+.feed li{display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.feed li:last-child{border-bottom:0}
+.feed .ic{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#f1efe9;color:var(--ink-2)}
+.feed .ic.ok{background:var(--ok-tint);color:var(--ok)}.feed .ic.err{background:var(--err-tint);color:var(--err)}.feed .ic.live{background:var(--violet-tint);color:var(--violet-ink)}
+.feed .t{font-size:14px;font-weight:500;color:var(--ink)}
+.feed .m{font:400 12px var(--mono);color:var(--mute);margin-top:3px;overflow-wrap:anywhere}
+.feed .m a{color:var(--violet-ink);text-decoration:none}
+.feed .m a:hover{text-decoration:underline}
+.feed-empty{padding:30px 22px;color:var(--mute);font-size:14px}
+
+/* payslip register: redaction bars */
+.x{position:relative;display:inline-block;min-width:var(--w,9ch);padding:2px 6px;margin:0 -6px;border-radius:5px}
+.x::after{content:"";position:absolute;inset:2px 0;background:var(--ink);border-radius:4px;transform-origin:100% 50%;transition:transform .6s cubic-bezier(.22,.8,.24,1) var(--d,0ms)}
+.x.open{background:var(--violet-tint)}
+.x.open::after{transform:scaleX(0)}
+.x .v{visibility:hidden}.x.open .v{visibility:visible}
+tr.mine td:first-child{box-shadow:inset 3px 0 0 var(--violet)}
+.keys{display:flex;flex-wrap:wrap;gap:8px;padding:14px 22px;border-bottom:1px solid var(--line);background:#faf9f6;align-items:center}
+.keys .lbl{font:500 12px var(--mono);color:var(--mute);margin-right:4px}
+.seg{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 14px;border-radius:11px;border:1px solid var(--line-2);background:var(--panel);font-weight:500;font-size:13.5px;cursor:pointer}
+.seg:hover{border-color:var(--ink)}
+.seg[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.seg.k[aria-pressed="true"]{background:var(--violet);border-color:var(--violet)}
+.seg:disabled{opacity:.5;cursor:not-allowed}
+.tx a{font:400 13px var(--mono);text-decoration:none;border-bottom:1px solid var(--line-2);white-space:nowrap}
+.tx a:hover{color:var(--violet-ink);border-color:var(--violet)}
+.blk{font:400 13px var(--mono);color:var(--ink-2)}
+.opened{margin:0 22px 20px;padding:16px 18px;border-radius:14px;background:var(--violet-tint);border:1px solid #d9d0ff}
+.opened h3{color:var(--violet-ink)}
+.opened dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 16px;margin:12px 0 0;font-size:14px}
+.opened dt{color:var(--mute)}.opened dd{margin:0;font-family:var(--mono);font-size:13px;overflow-wrap:anywhere}
+
+/* proof check */
+.proof-card{font:400 12.5px/1.7 var(--mono);background:var(--night);color:#dedcea;border-radius:14px;padding:16px 18px;overflow-wrap:anywhere}
+.proof-card .k{color:#8f8d9c}
+.proof-card .v{color:#c9bfff}
+.proof-card .v.hot{color:#fff;background:#e5484d33;border-radius:4px;padding:0 4px}
+.result{border-radius:14px;padding:16px 18px;border:1px solid var(--line)}
+.result.ok{background:var(--ok-tint);border-color:#b7dfc8}
+.result.bad{background:var(--err-tint);border-color:#f0b9b4}
+.verdict{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-.02em}
+.result.ok .verdict{color:var(--ok)}.result.bad .verdict{color:var(--err)}
+.result p{margin-top:8px;font-size:14px;color:var(--ink-2)}
+.result .why{margin-top:8px;font:400 12.5px var(--mono);color:var(--ink-2);overflow-wrap:anywhere}
+.result dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:5px 14px;margin:12px 0 0;font-size:13.5px}
+.result dt{color:var(--mute)}.result dd{margin:0;font-family:var(--mono);font-size:12.5px;overflow-wrap:anywhere}
+.tests{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.test{border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--panel)}
+.test p{font-size:13.5px;color:var(--mute)}
+.test .btn{margin-top:auto}
+
+/* accountant (dark card) */
+.acct{background:var(--night);color:#e7e5ef;border-color:var(--night)}
+.acct .panel-h{border-color:var(--night-line)}
+.acct h2{color:#fff}
+.acct .sub{color:#a9a7b6}
+.ufvk{display:flex;gap:10px;align-items:center;font:400 12.5px var(--mono);color:#d8d2ff;background:var(--night-2);border:1px solid var(--night-line);border-radius:12px;padding:12px 14px;overflow-wrap:anywhere}
+.acct .tbl th{color:#9b98aa;border-color:var(--night-line)}
+.acct .tbl td{border-color:var(--night-line);color:#e7e5ef}
+.acct .tx a{color:#c9bfff;border-color:#4b4570}
+.acct .memo{color:#b6b3c4}
+.acct .amt small{color:#8f8d9c}
+.acct .btn.line{background:transparent;color:#fff;border-color:#4b4570}
+.acct .btn.line:hover{border-color:#fff}
+
+.skel{display:block;height:14px;border-radius:4px;background:linear-gradient(90deg,#ebe9e3,#f6f5f1,#ebe9e3);background-size:200% 100%;animation:sk 1.4s linear infinite}
+@keyframes sk{to{background-position:-200% 0}}
+.empty{padding:34px 22px;color:var(--mute);font-size:14.5px}
+.empty b{display:block;color:var(--ink);font-size:16px;margin-bottom:4px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 16px;border-radius:12px;font-size:14px;box-shadow:0 12px 30px -10px #0006;z-index:20}
+details.raw{margin:0 22px 18px}
+details.raw summary{cursor:pointer;font:500 12.5px var(--mono);color:var(--mute);padding:6px 0}
+details.raw pre{margin:8px 0 0;max-height:280px;overflow:auto;font:400 12px/1.6 var(--mono);background:#faf9f6;border:1px solid var(--line);border-radius:10px;padding:12px;white-space:pre-wrap;overflow-wrap:anywhere}
+
+@media (max-width:1180px){
+  .grid{grid-template-columns:minmax(0,1fr)}
+  .tests{grid-template-columns:1fr}
+}
+@media (max-width:900px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .side{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;gap:10px;padding:14px 16px;border-right:0;border-bottom:1px solid var(--line)}
+  .side .group{margin:0;width:100%}
+  .group-l,.side-foot,.periods{display:none}
+  .nav{display:flex;gap:4px;overflow-x:auto}
+  .nav a{height:40px;padding:0 11px;font-size:13px;white-space:nowrap;gap:8px}
+  .nav a svg{display:none}
+  .top{height:auto;padding:14px 16px;flex-wrap:wrap}
+  .page{padding:22px 16px 56px}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kpi:nth-child(3){border-left:0}
+  .kpi:nth-child(n+3){border-top:1px solid var(--line)}
+}
+@media (max-width:640px){
+  .kpi{padding:16px}
+  .kpi-v{font-size:22px}
+  .kpi-v small{display:block;margin:4px 0 0}
+  .kpi-c{white-space:normal}
+  .fields{grid-template-columns:1fr}
+  .tbl thead{display:none}
+  .tbl tr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 12px;padding:14px 16px;border-bottom:1px solid var(--line)}
+  .tbl td,.tbl td:first-child,.tbl td:last-child{padding:0;border:0}
+  .tbl td.wide{grid-column:1/-1}
+  .tbl td.hide-sm{display:none}
+  .tbl td[data-l]::before{content:attr(data-l);display:block;font:500 11px/1.3 var(--mono);color:var(--mute);margin-bottom:3px}
+  .panel-h,.panel-b{padding-left:16px;padding-right:16px}
+  .keys,.feed{padding-left:16px;padding-right:16px}
+  .live-h,.people{padding-left:16px;padding-right:16px}
+  .chain{margin:16px 16px 0}
+  .live-stats{gap:18px}
+  .live-stats b{font-size:22px}
+  .tab{padding:0 14px;font-size:13px}
+  .top-r .pill.hide-sm{display:none}
+  .opened{margin:0 16px 16px}
+}
+@media (prefers-reduced-motion:reduce){
+  .x::after,.skel,.step.now i{transition:none;animation:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side" aria-label="Misthos">
+    <a class="brand" href="/" aria-label="Misthos home"><i aria-hidden="true"><b></b><b></b></i><span>Misthos<small>private payroll</small></span></a>
+    <div class="group">
+      <div class="group-l">Payroll</div>
+      <nav class="nav" aria-label="Desk">
+        <a href="#run" data-page="run"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>Run payroll</a>
+        <a href="#payslips" data-page="payslips"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Payslips</a>
+        <a href="#verify" data-page="verify"><svg class="i" viewBox="0 0 24 24"><path d="M12 2.5 20 6v5.5c0 5-3.3 8.3-8 10-4.7-1.7-8-5-8-10V6l8-3.5Z"/><path d="m8.5 12 2.3 2.3 4.7-4.8"/></svg>Proof check</a>
+        <a href="#accountant" data-page="accountant"><svg class="i" viewBox="0 0 24 24"><path d="M4 19V5m0 14h16M8 15v-4m4 4V8m4 7v-6"/></svg>Accountant</a>
+      </nav>
+    </div>
+    <div class="group periods">
+      <div class="group-l">Pay periods on this desk</div>
+      <nav class="nav" id="periods" aria-label="Pay periods"><span class="none">None yet</span></nav>
+    </div>
+    <div class="side-foot" id="sidefoot">
+      <div><span class="dot" id="netdot"></span><b id="netname">Checking setup…</b></div>
+      <div id="netlwd" class="mono"></div>
+      <div id="netmode"></div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="top">
+      <div class="crumb">Misthos <span aria-hidden="true">/</span> <b id="crumb">Run payroll</b></div>
+      <div class="top-r"><span class="pill hide-sm" id="periodpill" hidden></span><span class="pill" id="status">Checking setup…</span></div>
+    </header>
+
+    <!-- ===== RUN PAYROLL ===== -->
+    <main class="page" id="p-run" data-title="Run payroll">
+      <div class="head">
+        <div>
+          <div class="eyebrow">Private payroll processing</div>
+          <h1 id="run-h" tabindex="-1">Run payroll</h1>
+          <p class="lede">Pay everyone on Zcash's shielded pool. The chain records encrypted transactions; each employee opens only their own line, with their own key.</p>
+        </div>
+      </div>
+      <div id="setup" class="notice err" style="margin-top:22px" hidden></div>
+
+      <section class="panel kpis" aria-label="This roster">
+        <div class="kpi"><div class="kpi-l">Employees</div><span class="kpi-v" id="k-n"><span class="skel" style="width:40%;height:30px"></span></span><div class="kpi-c" id="k-n-c">from the roster</div></div>
+        <div class="kpi"><div class="kpi-l">Net pay</div><span class="kpi-v" id="k-pay"><span class="skel" style="width:70%;height:30px"></span></span><div class="kpi-c" id="k-pay-c">to employees</div></div>
+        <div class="kpi"><div class="kpi-l">Payout fees</div><span class="kpi-v" id="k-fee">–</span><div class="kpi-c">10,000 zat per employee</div></div>
+        <div class="kpi"><div class="kpi-l">Payout delay</div><span class="kpi-v" id="k-delay">–</span><div class="kpi-c" id="k-delay-c">blocks between payouts</div></div>
+      </section>
+
+      <div class="grid">
+        <section class="panel" aria-labelledby="flow-h">
+          <h2 class="sr" id="flow-h">Roster and review</h2>
+          <div class="tabs" role="tablist">
+            <button class="tab" role="tab" id="t-roster" aria-selected="true" aria-controls="s-roster"><span class="n">1</span>Roster</button>
+            <button class="tab" role="tab" id="t-review" aria-selected="false" aria-controls="s-review"><span class="n">2</span>Review against caps</button>
+          </div>
+          <div id="s-roster" role="tabpanel" aria-labelledby="t-roster">
+            <div class="panel-h"><div><h2>Employees</h2><div class="sub" id="rsrc">Reading roster…</div></div>
+              <div class="row"><label class="btn line sm" for="csvfile"><svg class="i" viewBox="0 0 24 24"><path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>Upload CSV</label><input type="file" id="csvfile" accept=".csv,text/csv" class="sr"></div>
+            </div>
+            <div id="rerr" class="notice err" style="margin:16px 22px 0" hidden></div>
+            <table class="tbl" id="roster"><thead><tr><th>Employee</th><th>Memo</th><th class="r">Net pay</th></tr></thead><tbody><tr><td colspan="3"><span class="skel"></span></td></tr></tbody></table>
+            <div class="panel-b" style="border-top:1px solid var(--line)"><div class="row" style="justify-content:space-between"><p class="help" style="margin:0">Columns: <span class="mono">name, ua, amountZEC, memo</span>. Testnet shielded addresses only.</p><button class="btn" id="to-review">Review against caps</button></div></div>
+          </div>
+          <div id="s-review" role="tabpanel" aria-labelledby="t-review" hidden>
+            <div class="panel-b">
+              <div class="fields">
+                <label class="field"><span>Pay period</span><input id="label" autocomplete="off" spellcheck="false"></label>
+                <label class="field"><span>Cap · whole run (ZEC)</span><input id="maxtotal" inputmode="decimal" autocomplete="off"></label>
+                <label class="field"><span>Cap · per employee (ZEC)</span><input id="maxper" inputmode="decimal" autocomplete="off"></label>
+              </div>
+              <p class="help">A pay period is paid once: a rerun of the same period never funds or pays anyone twice.</p>
+              <div class="row" style="margin-top:16px"><button class="btn" id="check">Check the plan</button><button class="btn line" id="back-roster">Back to roster</button></div>
+            </div>
+            <div id="plan"></div>
+          </div>
+        </section>
+
+        <aside class="panel sum" aria-labelledby="sum-h">
+          <div class="panel-h"><div><h2 id="sum-h">This run</h2><div class="sub" id="sum-sub">Check the plan to unlock the run</div></div></div>
+          <div class="panel-b">
+            <div id="sum-people"></div>
+            <div class="sum-line"><span>Net pay</span><b id="s-pay">–</b></div>
+            <div class="sum-line"><span>Payout fees</span><b id="s-fee">–</b></div>
+            <div class="sum-line"><span>Funding fee</span><b>set by the wallet</b></div>
+            <div class="sum-line tot"><span>Funding total</span><b id="s-tot">–</b></div>
+            <button class="btn big" id="runbtn" disabled>Run payroll</button>
+            <p class="help" id="runhelp" style="margin:0">Real testnet transactions. Funding goes in one shielded transaction to a payout wallet per employee; each is paid from their own wallet a few blocks later.</p>
+          </div>
+        </aside>
+      </div>
+
+      <section id="livewrap" hidden>
+        <div class="live" aria-live="polite">
+          <div class="live-h">
+            <div><div class="eyebrow" style="color:#b9a9ff" id="live-ey">Live on Zcash testnet</div><h2 id="live-title">Payroll running</h2><p id="live-sub"></p></div>
+            <div class="live-stats">
+              <div><span>Chain tip</span><b id="ls-tip">–</b></div>
+              <div><span>Paid</span><b id="ls-paid">–</b></div>
+              <div><span>Elapsed</span><b id="ls-time">–</b></div>
+            </div>
+          </div>
+          <div class="chain" id="chain"><div class="chain-empty">Waiting for the funding block</div></div>
+          <div class="people" id="people"></div>
+        </div>
+        <div id="outcome"></div>
+        <div class="grid" style="grid-template-columns:minmax(0,1fr)">
+          <section class="panel" aria-labelledby="feed-h">
+            <div class="panel-h"><div><h2 id="feed-h">Activity</h2><div class="sub">Every step of this run, as it happened</div></div><span class="tag plain" id="feed-count"></span></div>
+            <ul class="feed" id="feed"></ul>
+            <details class="raw"><summary>Technical log</summary><pre id="rawlog"></pre></details>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <!-- ===== PAYSLIPS ===== -->
+    <main class="page" id="p-payslips" data-title="Payslips" hidden>
+      <div class="head"><div><div class="eyebrow">What each person can read</div><h1 id="payslips-h" tabindex="-1">Payslips</h1><p class="lede">The public chain shows the payout transactions and their blocks. Names, amounts and memos are encrypted: an employee's own key opens their own line, and nothing else.</p></div></div>
+      <section class="panel" style="margin-top:24px" aria-labelledby="reg-h">
+        <div class="panel-h"><div><h2 id="reg-h">Payslip register</h2><div class="sub" id="reg-sub">Choose a pay period</div></div></div>
+        <div class="keys" id="keys"><span class="lbl">Reading as</span></div>
+        <div id="opened"></div>
+        <table class="tbl" id="register"><thead><tr><th>No.</th><th>Employee</th><th>Memo</th><th>Net pay</th><th>Payout transaction</th><th>Block</th></tr></thead><tbody></tbody></table>
+      </section>
+      <div class="notice" style="margin-top:16px"><span class="ic"><svg class="i" viewBox="0 0 24 24"><circle cx="8" cy="12" r="3.5"/><path d="M11.5 12H21m-3 0v3m3-3v2"/></svg></span><div><b>Where an employee's key comes from</b>The employer issues each employee a signed payslip file holding a viewing key for that employee's payout wallet only. Opening a line checks the file against the chain, live.</div></div>
+    </main>
+
+    <!-- ===== PROOF CHECK ===== -->
+    <main class="page" id="p-verify" data-title="Proof check" hidden>
+      <div class="head"><div><div class="eyebrow">For a lender, a landlord or a tax office</div><h1 id="verify-h" tabindex="-1">Proof check</h1><p class="lede">An employee shows one payslip, not the whole payroll. The check confirms the employer's signature and reads that one payout from the chain.</p></div></div>
+      <div class="grid">
+        <section class="panel" aria-labelledby="pf-h">
+          <div class="panel-h"><div><h2 id="pf-h">Payslip file</h2><div class="sub" id="pf-sub">Issue one from the Payslips page, or load a file</div></div>
+            <div class="row"><select class="pill" id="pfpick" aria-label="Payslip file"><option value="">Choose a payslip file</option></select><label class="btn line sm" for="pffile">Load file</label><input type="file" id="pffile" class="sr"></div></div>
+          <div class="panel-b"><div id="pfcard" class="empty" style="padding:8px 0"><b>No payslip file yet</b>Issue one on the Payslips page.</div></div>
+        </section>
+        <aside class="panel" aria-labelledby="vr-h">
+          <div class="panel-h"><div><h2 id="vr-h">Check against the chain</h2><div class="sub">Signature, then the transaction from lightwalletd</div></div></div>
+          <div class="panel-b" style="display:grid;gap:14px">
+            <label class="field"><span>Payout transaction to check</span><input id="vtxid" spellcheck="false" autocomplete="off"></label>
+            <button class="btn violet" id="vbtn" disabled>Verify on chain</button>
+            <div id="vres"></div>
+          </div>
+        </aside>
+      </div>
+      <section class="panel" style="margin-top:20px" aria-labelledby="tt-h">
+        <div class="panel-h"><div><h2 id="tt-h">Try to cheat it</h2><div class="sub">Each attempt runs the same check, live</div></div></div>
+        <div class="panel-b tests">
+          <div class="test"><h3>Someone else's payout</h3><p>Point this payslip at another employee's payout transaction.</p><button class="btn line" id="tt-other" disabled>Check it</button><div id="tt-other-r"></div></div>
+          <div class="test"><h3>A 10× raise</h3><p>Edit the signed amount in the file to ten times the real pay.</p><button class="btn line" id="tt-raise" disabled>Check it</button><div id="tt-raise-r"></div></div>
+          <div class="test"><h3>The funding transaction</h3><p>Point it at the employer's funding transaction instead of a payout.</p><button class="btn line" id="tt-fund" disabled>Check it</button><div id="tt-fund-r"></div></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ===== ACCOUNTANT ===== -->
+    <main class="page" id="p-accountant" data-title="Accountant" hidden>
+      <div class="head"><div><div class="eyebrow">Read-only, for the company's books</div><h1 id="accountant-h" tabindex="-1">Accountant</h1><p class="lede">The accountant gets the whole period and the employer's viewing key, which can read but never spend. Employees never see this.</p></div></div>
+      <section class="panel acct" style="margin-top:24px" aria-labelledby="ac-h">
+        <div class="panel-h"><div><h2 id="ac-h">Period ledger</h2><div class="sub" id="ac-sub">Choose a pay period</div></div><button class="btn line sm" id="csvdl" disabled>Download CSV</button></div>
+        <div class="panel-b"><div id="ac-key"></div></div>
+        <table class="tbl" id="actable"><thead><tr><th>Employee</th><th>Memo</th><th>Net pay</th><th>Funding</th><th>Payout</th><th>Block</th><th>Status</th></tr></thead><tbody></tbody></table>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script>
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const short = (t) => (t && t.length > 20 ? t.slice(0, 8) + '…' + t.slice(-6) : t || '');
+const zat = (n) => Number(n).toLocaleString('en-US') + ' zat';
+const zec = (n) => (Number(n) / 1e8).toFixed(8).replace(/0+$/, '').replace(/\.$/, '') + ' ZEC';
+const initials = (n) => (n || '?').trim().slice(0, 1).toUpperCase();
+const avc = (i) => ['', ' b', ' c'][i % 3];
+const fmtT = (ms) => { const s = Math.floor(ms / 1000); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
+const ICON = {
+  wallet: '<svg class="i" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M16 12.5h2M3 9h18"/></svg>',
+  chain: '<svg class="i" viewBox="0 0 24 24"><rect x="3" y="9" width="7" height="6" rx="1.5"/><rect x="14" y="9" width="7" height="6" rx="1.5"/><path d="M10 12h4"/></svg>',
+  send: '<svg class="i" viewBox="0 0 24 24"><path d="M4 12h14m-5-6 6 6-6 6"/></svg>',
+  clock: '<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>',
+  check: '<svg class="i" viewBox="0 0 24 24"><path d="m5 12.5 4.2 4.2L19 7"/></svg>',
+  x: '<svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+  skip: '<svg class="i" viewBox="0 0 24 24"><path d="M5 12h10m-4-4 4 4-4 4M19 6v12"/></svg>',
+  warn: '<svg class="i" viewBox="0 0 24 24"><path d="M12 4 2.8 19h18.4L12 4Z"/><path d="M12 10v4m0 3h.01"/></svg>',
+  key: '<svg class="i" viewBox="0 0 24 24"><circle cx="8" cy="12" r="3.5"/><path d="M11.5 12H21m-3 0v3m3-3v2"/></svg>',
+};
+
+const S = { state: null, plan: null, period: null, job: null, ledger: {}, issued: {}, pf: null, last: '' };
+try { S.issued = JSON.parse(sessionStorage.getItem('misthos-issued') || '{}'); } catch { S.issued = {}; }
+const saveIssued = () => { try { sessionStorage.setItem('misthos-issued', JSON.stringify(S.issued)); } catch {} };
+
+async function api(path, body) {
+  const opt = body === undefined ? {} : { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Misthos-Desk': '1' }, body: JSON.stringify(body) };
+  const r = await fetch(path, opt);
+  let j = null;
+  try { j = await r.json(); } catch { j = { error: `HTTP ${r.status}` }; }
+  return { ok: r.ok, status: r.status, j };
+}
+function toast(msg) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; document.body.append(t); setTimeout(() => t.remove(), 3200); }
+const txLink = (t, label) => t ? `<a href="${esc((S.state && S.state.explorer_tx) || 'https://testnet.zecblock.com/tx/')}${esc(t)}" target="_blank" rel="noopener" title="${esc(t)}">${esc(label || short(t))} ↗</a>` : '';
+
+/* ---------- routing ---------- */
+const PAGES = ['run', 'payslips', 'verify', 'accountant'];
+function route(focus) {
+  const p = PAGES.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'run';
+  PAGES.forEach((x) => { $('#p-' + x).hidden = x !== p; });
+  $$('.nav a[data-page]').forEach((a) => { if (a.dataset.page === p) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+  $('#crumb').textContent = $('#p-' + p).dataset.title;
+  if (focus) $('#' + p + '-h').focus({ preventScroll: true });
+  if (p === 'payslips') renderPayslips();
+  if (p === 'accountant') loadAccountant();
+  if (p === 'verify') renderVerify();
+}
+addEventListener('hashchange', () => route(true));
+
+/* ---------- state ---------- */
+async function loadState() {
+  let r;
+  try { r = await api('/api/state'); } catch { setStatus('err', 'Desk unreachable'); return; }
+  S.state = r.j;
+  const s = S.state;
+  const errs = [];
+  if (s.config_error) errs.push(...s.config_error.split('; '));
+  (s.payout_missing || []).forEach((v) => errs.push(`${v} not configured`));
+  if (errs.length) {
+    $('#setup').hidden = false;
+    $('#setup').innerHTML = `<span class="ic">${ICON.warn}</span><div><b>Setup required</b>Payroll cannot run until these are set on the machine running the desk:<ul>${errs.map((e) => `<li><code>${esc(e)}</code></li>`).join('')}</ul></div>`;
+    setStatus('err', 'Setup required');
+  } else if (!s.payouts) {
+    $('#setup').hidden = false; $('#setup').className = 'notice amber';
+    $('#setup').innerHTML = `<span class="ic">${ICON.warn}</span><div><b>Read-only desk</b>This desk was started without payouts, so Run payroll is off. Plans, payslips and proof checks still work.</div>`;
+    setStatus('', 'Read-only');
+  } else { $('#setup').hidden = true; setStatus('ok', 'Payouts on'); }
+  $('#netname').textContent = s.network === 'testnet' ? 'Zcash testnet' : (s.network || 'No network set');
+  $('#netdot').className = 'dot ' + (s.config_error ? 'err' : 'ok');
+  $('#netlwd').textContent = (s.lwd || '').replace('https://', '').replace(':443', '');
+  $('#netmode').textContent = s.payouts ? 'Payouts on · this machine only' : 'Read-only desk';
+  const d = s.delays || {};
+  $('#k-delay').innerHTML = d.error ? '!' : `${d.min}–${d.max}<small>blocks</small>`;
+  $('#k-delay-c').textContent = d.error ? d.error : d.default ? 'default range' : 'demo range (default 2–6)';
+  renderPeriods();
+  renderRoster();
+}
+function setStatus(kind, text) { const el = $('#status'); el.className = 'pill ' + kind; el.textContent = text; }
+function renderPeriods() {
+  const ps = S.state.periods || [];
+  if (!S.period && ps.length) S.period = ps[0];
+  $('#periods').innerHTML = ps.length ? ps.map((p) => `<a href="#" data-period="${esc(p)}" ${p === S.period ? 'aria-current="true"' : ''}>${esc(p)}</a>`).join('') : '<span class="none">None yet</span>';
+  $$('#periods a').forEach((a) => a.onclick = (e) => { e.preventDefault(); S.period = a.dataset.period; renderPeriods(); route(false); });
+  const pp = $('#periodpill');
+  pp.hidden = !S.period; pp.textContent = S.period ? 'Period ' + S.period : '';
+}
+
+/* ---------- roster ---------- */
+function renderRoster() {
+  const s = S.state;
+  const rows = s.roster || [];
+  $('#rsrc').textContent = s.roster_path || '';
+  const total = rows.reduce((a, e) => a + Math.round(parseFloat(e.amount) * 1e8), 0);
+  $('#k-n').textContent = rows.length;
+  $('#k-pay').innerHTML = `${(total).toLocaleString('en-US')}<small>zat</small>`;
+  $('#k-pay-c').textContent = zec(total) + ' to employees';
+  $('#k-fee').innerHTML = `${(rows.length * 10000).toLocaleString('en-US')}<small>zat</small>`;
+  $('#roster tbody').innerHTML = rows.length ? rows.map((e, i) => `<tr>
+    <td class="wide"><div class="who"><span class="av${avc(i)}">${esc(initials(e.name))}</span><div><b>${esc(e.name)}</b><span title="${esc(e.address)}">${esc(short(e.address))}</span></div></div></td>
+    <td data-l="Memo" class="memo">${esc(e.memo) || '<span style="color:var(--faint)">none</span>'}</td>
+    <td data-l="Net pay" class="r amt">${zat(Math.round(parseFloat(e.amount) * 1e8))}<small>${esc(e.amount)}</small></td></tr>`).join('')
+    : `<tr><td colspan="3"><div class="empty"><b>No employees</b>Upload a roster CSV to start.</div></td></tr>`;
+  if (!$('#label').value) $('#label').value = 'payroll-' + new Date().toISOString().slice(0, 10);
+}
+$('#csvfile').onchange = async (ev) => {
+  const f = ev.target.files[0]; if (!f) return;
+  const text = await f.text();
+  const r = await api('/api/roster', { name: f.name, csv: text });
+  ev.target.value = '';
+  if (!r.ok) {
+    $('#rerr').hidden = false;
+    $('#rerr').innerHTML = `<span class="ic">${ICON.x}</span><div><b>${esc(r.j.error)}</b>${r.j.errors ? `<ul>${r.j.errors.map((e) => `<li><code>${esc(e)}</code></li>`).join('')}</ul>` : ''}</div>`;
+    return;
+  }
+  $('#rerr').hidden = true; S.plan = null; renderSummary(); toast(`Loaded ${f.name}`); loadState();
+};
+
+/* ---------- review / plan ---------- */
+function tab(which) {
+  const rev = which === 'review';
+  $('#t-roster').setAttribute('aria-selected', String(!rev)); $('#t-review').setAttribute('aria-selected', String(rev));
+  $('#s-roster').hidden = rev; $('#s-review').hidden = !rev;
+  $('#t-roster').classList.toggle('done', rev);
+}
+$('#t-roster').onclick = () => tab('roster'); $('#t-review').onclick = () => tab('review');
+$('#to-review').onclick = () => { tab('review'); $('#maxtotal').focus(); };
+$('#back-roster').onclick = () => tab('roster');
+['#label', '#maxtotal', '#maxper'].forEach((s) => $(s).addEventListener('input', () => { S.plan = null; renderSummary(); $('#plan').innerHTML = ''; }));
+$('#check').onclick = () => checkPlan();
+async function runAgain(label) { $('#label').value = label; tab('review'); await checkPlan(); if (S.plan) $('#runbtn').click(); }
+async function checkPlan() {
+  const body = { label: $('#label').value.trim(), max_total: $('#maxtotal').value.trim(), max_per: $('#maxper').value.trim() };
+  const r = await api('/api/plan', body);
+  if (!r.ok) {
+    S.plan = null;
+    $('#plan').innerHTML = `<div class="notice err" style="margin:0 22px 22px"><span class="ic">${ICON.x}</span><div><b>${esc(r.j.error)}</b>${r.j.violations ? `<ul>${r.j.violations.map((v) => `<li>${esc(v.replace(/`/g, ''))}</li>`).join('')}</ul>` : ''}</div></div>`;
+    renderSummary(); return;
+  }
+  S.plan = { ...r.j, label: body.label, caps: body };
+  const paidBefore = r.j.lines.filter((l) => l.ledger === 'paid');
+  const capTxt = [body.max_total && `whole run ≤ ${body.max_total} ZEC`, body.max_per && `each ≤ ${body.max_per} ZEC`].filter(Boolean).join(', ') || 'no caps set';
+  $('#plan').innerHTML = `<div class="notice ok" style="margin:0 22px 16px"><span class="ic">${ICON.check}</span><div><b>Within the caps</b>${esc(capTxt)} · ${r.j.lines.length} employees · ${zat(r.j.total_zat)}</div></div>
+    ${paidBefore.length ? `<div class="notice amber" style="margin:0 22px 16px"><span class="ic">${ICON.skip}</span><div><b>Already paid in ${esc(body.label)}</b>${paidBefore.map((l) => esc(l.name)).join(', ')} will be skipped: nobody is paid twice for a period.</div></div>` : ''}
+    <table class="tbl"><thead><tr><th>Employee</th><th>Ledger</th><th class="r">Net pay</th></tr></thead><tbody>${r.j.lines.map((l, i) => `<tr><td class="wide"><div class="who"><span class="av${avc(i)}">${esc(initials(l.name))}</span><div><b>${esc(l.name)}</b><span>${esc(l.memo)}</span></div></div></td><td data-l="Ledger">${ledgerTag(l.ledger)}</td><td class="r amt">${zat(l.zat)}</td></tr>`).join('')}</tbody></table>`;
+  $('#t-review').classList.add('done');
+  renderSummary();
+}
+function ledgerTag(s) {
+  const m = { 'not-started': ['', 'Not paid yet'], 'fund-pending': ['err', 'Funding unknown'], funded: ['live', 'Funded'], 'pay-pending': ['err', 'Outcome unknown'], paid: ['ok', 'Paid'], '': ['', '–'] };
+  const [k, t] = m[s] || ['', s]; return `<span class="tag ${k}">${t}</span>`;
+}
+function renderSummary() {
+  const p = S.plan;
+  const running = S.job && S.job.running;
+  if (!p) {
+    $('#sum-sub').textContent = 'Check the plan to unlock the run';
+    $('#sum-people').innerHTML = ''; ['#s-pay', '#s-fee', '#s-tot'].forEach((s) => $(s).textContent = '–');
+  } else {
+    $('#sum-sub').textContent = 'Period ' + p.label;
+    $('#sum-people').innerHTML = p.lines.map((l, i) => `<div class="sum-person"><span class="av${avc(i)}">${esc(initials(l.name))}</span><div><b>${esc(l.name)}</b><div class="help" style="margin:0;font-size:12px">${esc(short(l.address))}</div></div><span class="amt">${zat(l.zat)}<small>+ 10,000 fee</small></span></div>`).join('');
+    $('#s-pay').textContent = zat(p.total_zat); $('#s-fee').textContent = zat(p.payout_fees_zat); $('#s-tot').textContent = zat(p.funding_zat);
+  }
+  const can = !!p && S.state && S.state.payouts && !S.state.config_error && !(S.state.payout_missing || []).length && !running;
+  const b = $('#runbtn'); b.disabled = !can;
+  b.textContent = running ? 'Payroll running…' : p ? `Run payroll · ${zec(p.total_zat)}` : 'Run payroll';
+}
+$('#runbtn').onclick = async () => {
+  const p = S.plan; if (!p) return;
+  $('#runbtn').disabled = true;
+  const r = await api('/api/payroll/run', { label: p.label, max_total: p.caps.max_total, max_per: p.caps.max_per });
+  if (!r.ok) { toast(r.j.error); $('#outcome').innerHTML = ''; renderSummary(); return; }
+  S.period = p.label; S.ledger[p.label] = null;
+  await loadState(); pollJob(true);
+};
+
+/* ---------- live run ---------- */
+let jobTimer = null;
+async function pollJob(scroll) {
+  clearTimeout(jobTimer);
+  const r = await api('/api/payroll/job');
+  if (!r.ok) { if (r.status === 410) return; jobTimer = setTimeout(pollJob, 3000); return; }
+  const j = r.j.job;
+  S.job = j;
+  if (!j) return;
+  renderLive(j);
+  if (scroll) $('#livewrap').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+  if (j.running) jobTimer = setTimeout(pollJob, 1500);
+  else { renderSummary(); await loadLedger(j.label); renderLive(j); loadState(); }
+}
+function nameOf(id, prog) { const e = (prog.employees || []).find((x) => x.id === id); return (e && e.name) || id; }
+function feedFrom(j) {
+  const P = j.progress; const out = []; let lastWait = '';
+  for (const l of j.lines) {
+    const t = l.text.trim(); let m; const at = fmtT(l.ms);
+    const add = (ic, kind, title, meta) => out.push({ ic, kind, title, meta: meta ? `${at} · ${meta}` : at });
+    if ((m = /^READY child wallet (\S+)/.exec(t))) add(ICON.wallet, '', `${nameOf(m[1], P)}'s payout wallet is ready`, 'synced to the chain');
+    else if ((m = /^READY lightwalletd tip (\d+); payout delays (\S+) blocks/.exec(t))) add(ICON.chain, '', `Connected at block ${Number(m[1]).toLocaleString('en-US')}`, `payouts wait ${m[2].replace('..=', '–')} blocks`);
+    else if ((m = /^FUND (\S+) (.+) -> (\S+)/.exec(t))) add(ICON.wallet, '', `Funding ${nameOf(m[1], P)}'s payout wallet`, `${m[2]} · ${short(m[3])}`);
+    else if ((m = /^FUNDING BROADCAST txid=(\w+)/.exec(t))) add(ICON.send, 'live', 'Funding sent: one shielded transaction', txLink(m[1]));
+    else if (/^WAIT funding/.test(t)) { if (lastWait !== 'f') add(ICON.clock, '', 'Waiting for the funding transaction to be mined'); lastWait = 'f'; continue; }
+    else if ((m = /^FUNDING MINED at height (\d+); payouts begin after height (\d+)/.exec(t))) add(ICON.check, 'ok', `Funding mined in block ${Number(m[1]).toLocaleString('en-US')}`, `payouts start after block ${Number(m[2]).toLocaleString('en-US')}`);
+    else if ((m = /^PAYOUT SCHEDULED (\S+) at height (\d+)/.exec(t))) add(ICON.clock, '', `${nameOf(m[1], P)} scheduled for block ${Number(m[2]).toLocaleString('en-US')}`, 'a random delay, so payouts do not line up with the funding');
+    else if ((m = /^DELAY OVER (\S+)/.exec(t))) add(ICON.send, 'live', `${nameOf(m[1], P)}'s block reached: sending`);
+    else if ((m = /^step 2 (\S+) not yet spendable/.exec(t))) { if (lastWait !== m[1]) add(ICON.clock, '', `${nameOf(m[1], P)}: funding not spendable yet`, 'retrying every 30 s'); lastWait = m[1]; continue; }
+    else if ((m = /^PAYOUT BROADCAST (\S+) txid=(\w+)/.exec(t))) add(ICON.check, 'ok', `${nameOf(m[1], P)} paid`, txLink(m[2]));
+    else if ((m = /^SKIP FUNDING (\S+)/.exec(t))) add(ICON.skip, '', `${nameOf(m[1], P)} already funded in this period: not funded again`);
+    else if ((m = /^SKIP PAYOUT (\S+)/.exec(t))) add(ICON.skip, 'ok', `${nameOf(m[1], P)} already paid in this period: skipped`);
+    else if ((m = /^step 2 (\S+?):? outcome unknown/.exec(t))) add(ICON.warn, 'err', `${nameOf(m[1], P)}: payout outcome unknown`, 'the wallet errored after a possible send');
+    else if ((m = /^ERROR: (.+)/.exec(t))) add(ICON.x, 'err', 'Run stopped', esc(m[1]));
+    else continue;
+    lastWait = '';
+  }
+  return out;
+}
+function renderLive(j) {
+  $('#livewrap').hidden = false;
+  const P = j.progress; const emps = P.employees || [];
+  const ledger = S.ledger[j.label];
+  const paidN = emps.filter((e) => e.payout === 'paid' || e.payout === 'paid-before').length;
+  const ok = !j.running && j.exit === 0;
+  $('#live-ey').textContent = j.running ? 'Live on Zcash testnet' : ok ? 'Completed on Zcash testnet' : 'Stopped';
+  $('#live-title').textContent = j.running ? `Payroll running · ${j.label}` : ok ? `Payroll paid · ${j.label}` : `Run stopped · ${j.label}`;
+  const nothingSent = !j.running && !P.funding_txids.length && !emps.some((e) => e.payout === 'paid' || e.payout === 'paid-before');
+  $('#chain').hidden = nothingSent; $('#people').hidden = nothingSent && !emps.length;
+  $('#live-sub').textContent = nothingSent ? 'Stopped before anything was sent: no funds moved.' : P.funding_height ? `Funding mined in block ${P.funding_height.toLocaleString('en-US')}. Each employee is paid from their own wallet at a random later block.` : P.funding_txids.length ? 'Funding sent. Waiting for it to be mined.' : 'Checking every payout wallet before anything is sent.';
+  $('#ls-tip').innerHTML = P.tip ? P.tip.toLocaleString('en-US') : '–';
+  $('#ls-paid').innerHTML = emps.length ? `${paidN}<small>of ${emps.length}</small>` : '–';
+  $('#ls-time').textContent = fmtT(j.elapsed_ms);
+  // block timeline
+  const targets = emps.map((e) => e.target).filter(Boolean);
+  if (P.funding_height) {
+    const lo = P.funding_height - 3, hi = Math.max(P.tip || 0, ...targets, lo + 27) + 2;
+    const n = Math.min(hi - lo + 1, 60);
+    const from = hi - n + 1;
+    const pos = (h) => ((h - from + 0.5) / n) * 100;
+    let ticks = '';
+    for (let h = from; h <= hi; h++) {
+      const isP = targets.includes(h); const done = emps.some((e) => e.target === h && (e.payout === 'paid'));
+      ticks += `<i class="${h === P.funding_height ? 'f' : isP ? 'p' + (done ? ' done' : '') : h === P.tip ? 'tip' : h < (P.tip || 0) ? 'past' : ''}"></i>`;
+    }
+    let marks = `<span class="mark" style="left:${pos(P.funding_height)}%">Funding</span>`;
+    emps.forEach((e) => { if (e.target && e.target >= from) marks += `<span class="mark p" style="left:${pos(e.target)}%">${esc(e.name || e.id)}</span>`; });
+    if (P.tip && !targets.includes(P.tip) && P.tip !== P.funding_height) marks += `<span class="mark tip" style="left:${pos(P.tip)}%">Tip</span>`;
+    const labels = `<span class="blk-l" style="left:${pos(P.funding_height)}%">${P.funding_height.toLocaleString('en-US')}</span>` + (P.tip && P.tip !== P.funding_height ? `<span class="blk-l" style="left:${pos(P.tip)}%">${P.tip.toLocaleString('en-US')}</span>` : '');
+    $('#chain').innerHTML = `<div class="ticks">${ticks}</div>${marks}${labels}`;
+  } else {
+    $('#chain').innerHTML = `<div class="chain-empty">${P.funding_txids.length ? 'Funding sent · waiting for its block' : P.error ? 'Nothing was sent' : 'Waiting for the funding transaction'}</div>`;
+  }
+  // people
+  const roster = (S.plan && S.plan.lines) || [];
+  $('#people').innerHTML = emps.map((e, i) => {
+    const r = roster.find((x) => x.id === e.id) || {};
+    const led = ledger && ledger.rows.find((x) => x.employee.id === e.id);
+    const funded = e.funding === 'skip' || (e.funding === 'fund' && P.funding_txids.length > 0);
+    const mined = !!P.funding_height || e.funding === 'skip';
+    const paid = e.payout === 'paid' || e.payout === 'paid-before';
+    const bad = e.payout === 'unknown' || (led && led.state === 'pay-pending');
+    const st = (done, now, b) => b ? 'bad' : done ? 'done' : now ? 'now' : '';
+    const running = j.running;
+    const steps = [
+      ['Wallet ready', st(e.ready || funded, running && !e.ready)],
+      ['Funded', st(mined, running && e.ready && !mined)],
+      [e.target ? `Block ${e.target.toLocaleString('en-US')}` : 'Scheduled', st(paid || (e.blocks_left === 0), running && mined && !paid)],
+      ['Paid', st(paid, running && e.payout === 'sending', bad)],
+    ];
+    let foot = '';
+    if (paid) foot = `Paid · ${txLink(e.txid || (led && led.paid_txids[0]))}${led && led.paid_height ? ` · block ${led.paid_height.toLocaleString('en-US')}` : ''}`;
+    else if (bad) foot = 'Outcome unknown: check on chain before a rerun';
+    else if (e.payout === 'retrying') foot = 'Funding note not spendable yet · retrying';
+    else if (e.payout === 'sending') foot = 'Sending from their own wallet…';
+    else if (e.blocks_left != null) foot = `${e.blocks_left} block${e.blocks_left === 1 ? '' : 's'} to go`;
+    else if (e.ready) foot = 'Ready';
+    return `<div class="person"><div class="person-h"><span class="av">${esc(initials(e.name))}</span><div><b>${esc(e.name || e.id)}</b><span>${esc(short(r.address || ''))}</span></div><span class="amt">${r.zat ? zat(r.zat) : ''}</span></div>
+      <div class="steps">${steps.map(([t, c]) => `<div class="step ${c}"><i></i>${esc(t)}</div>`).join('')}</div><div class="person-f">${foot}</div></div>`;
+  }).join('') || (j.running ? `<div style="color:#8f8d9c;font-size:14px">Starting…</div>` : '');
+  // feed
+  const f = feedFrom(j).reverse();
+  $('#feed').innerHTML = f.length ? f.map((x) => `<li><span class="ic ${x.kind}">${x.ic}</span><div><div class="t">${esc(x.title)}</div><div class="m">${x.meta}</div></div></li>`).join('') : '<li class="feed-empty">Starting the run…</li>';
+  $('#feed-count').textContent = `${f.length} events`;
+  $('#rawlog').textContent = j.lines.map((l) => `${fmtT(l.ms)}  ${l.text}`).join('\n');
+  renderOutcome(j);
+}
+function renderOutcome(j) {
+  const P = j.progress; const el = $('#outcome');
+  if (j.running) { el.innerHTML = ''; return; }
+  if (j.exit === 0) {
+    el.innerHTML = `<div class="notice ok" style="margin-top:20px"><span class="ic">${ICON.check}</span><div><b>Everyone in ${esc(j.label)} is paid</b>Each payout came from that employee's own wallet. Open the payslips to see what each person can read, or run the period again: nobody is funded or paid twice.<div class="row" style="margin-top:12px"><a class="btn sm" href="#payslips">Open payslips</a><button class="btn line sm" id="again">Run ${esc(j.label)} again</button></div></div></div>`;
+    $('#again').onclick = () => runAgain(j.label);
+    return;
+  }
+  const led = S.ledger[j.label];
+  const pending = led ? led.rows.filter((r) => r.state === 'pay-pending' || r.state === 'fund-pending') : [];
+  el.innerHTML = `<div class="notice err" style="margin-top:20px"><span class="ic">${ICON.x}</span><div><b>The run stopped</b>${esc(P.error || 'The pay run exited with an error.')}
+    ${pending.length ? `<div style="margin-top:12px;display:grid;gap:10px">${pending.map((r) => `<div class="row"><span>${esc(r.employee.name)}: <b style="display:inline">${r.state === 'pay-pending' ? 'payout outcome unknown' : 'funding outcome unknown'}</b></span><button class="btn sm" data-check="${esc(r.employee.name)}">Check ${esc(r.employee.name)}'s wallet on chain</button></div><div id="chk-${esc(r.employee.id)}"></div>`).join('')}</div>` : ''}</div></div>`;
+  $$('[data-check]').forEach((b) => b.onclick = () => checkChild(j.label, b.dataset.check, b));
+}
+async function checkChild(label, name, btn) {
+  const row = S.ledger[label].rows.find((r) => r.employee.name === name);
+  const out = $('#chk-' + row.employee.id);
+  btn.disabled = true; btn.textContent = 'Checking on chain…';
+  const r = await api('/api/payroll/check', { label, employee: name });
+  btn.textContent = `Check ${name}'s wallet on chain`; btn.disabled = false;
+  if (!r.ok) { out.innerHTML = `<div class="notice err"><span class="ic">${ICON.x}</span><div><b>Check failed</b>${esc(r.j.error)}</div></div>`; return; }
+  const c = r.j; const sent = c.transfers.filter((t) => t.kind === 'sent');
+  out.innerHTML = `<div class="notice ${c.nothing_left ? 'ok' : 'amber'}"><span class="ic">${c.nothing_left ? ICON.check : ICON.warn}</span><div><b>${c.nothing_left ? 'Nothing left the wallet' : 'Money may have left the wallet'}</b>${esc(name)}'s payout wallet holds ${zat(c.holds_zat)} (the payout needs ${zat(c.needs_zat)}).${sent.length ? ` Last send: <span class="mono">${esc(short(sent[0].txid))}</span>, status <b style="display:inline">${esc(sent[0].status)}</b>.` : ' No sends.'}
+    ${c.nothing_left ? `<div class="row" style="margin-top:10px"><button class="btn sm" id="resolve-${esc(row.employee.id)}">Record as not sent</button></div>` : '<div style="margin-top:6px">Leave it for a manual check: the desk will not clear it.</div>'}</div></div>`;
+  const rb = $('#resolve-' + row.employee.id);
+  if (rb) rb.onclick = async () => {
+    rb.disabled = true;
+    const x = await api('/api/payroll/resolve', { label, employee: name });
+    if (!x.ok) { toast(x.j.error); rb.disabled = false; return; }
+    toast(`Recorded: ${name}'s payout was not sent`);
+    await loadLedger(label); out.innerHTML = `<div class="notice ok"><span class="ic">${ICON.check}</span><div><b>Recorded as not sent</b>Run ${esc(label)} again: anyone already paid is skipped, nobody is funded twice.<div class="row" style="margin-top:10px"><button class="btn sm" id="rerun-${esc(row.employee.id)}">Run ${esc(label)} again</button></div></div></div>`;
+    $('#rerun-' + row.employee.id).onclick = () => runAgain(label);
+  };
+}
+
+/* ---------- ledger ---------- */
+async function loadLedger(label) {
+  if (!label) return null;
+  const r = await api('/api/payroll/ledger?label=' + encodeURIComponent(label));
+  if (r.ok) S.ledger[label] = r.j;
+  return r;
+}
+
+/* ---------- payslips ---------- */
+let keyView = 'public';
+async function renderPayslips() {
+  const label = S.period;
+  const tb = $('#register tbody');
+  if (!label) { $('#reg-sub').textContent = 'No pay period yet'; tb.innerHTML = `<tr><td colspan="6"><div class="empty"><b>No payroll run yet</b>Run payroll first; its payslips appear here.</div></td></tr>`; $('#keys').innerHTML = ''; return; }
+  $('#reg-sub').textContent = `Period ${label} · Zcash testnet`;
+  const r = await loadLedger(label);
+  if (!r || !r.ok) { tb.innerHTML = `<tr><td colspan="6"><div class="empty"><b>Could not read ${esc(label)}</b>${esc(r && r.j.error)}</div></td></tr>`; return; }
+  const L = S.ledger[label];
+  const issued = S.issued[label] || {};
+  $('#keys').innerHTML = `<span class="lbl">Reading as</span><button class="seg" data-key="public" aria-pressed="${keyView === 'public'}">Public chain · no key</button>` +
+    L.rows.map((row) => { const n = row.employee.name; const has = !!issued[n]; return has
+      ? `<button class="seg k" data-key="${esc(n)}" aria-pressed="${keyView === n}">${ICON.key}${esc(n)}'s key</button>`
+      : `<button class="seg" data-issue="${esc(n)}" ${row.state !== 'paid' ? 'disabled' : ''}>Issue ${esc(n)}'s payslip</button>`; }).join('');
+  $$('#keys [data-key]').forEach((b) => b.onclick = () => openWith(b.dataset.key));
+  $$('#keys [data-issue]').forEach((b) => b.onclick = () => issue(label, b.dataset.issue, b));
+  drawRegister(L, null);
+  if (keyView !== 'public' && issued[keyView]) openWith(keyView, true);
+}
+function drawRegister(L, open) {
+  $('#register tbody').innerHTML = L.rows.map((row, i) => {
+    const e = row.employee; const mine = open && open.name === e.name;
+    const o = mine ? ' open' : '';
+    return `<tr class="${mine ? 'mine' : ''}"><td class="no mono" data-l="No.">${String(i + 1).padStart(2, '0')}</td>
+      <td data-l="Employee"><span class="x${o}" style="--w:7ch"><span class="v">${mine ? esc(e.name) : 'hidden'}</span></span></td>
+      <td data-l="Memo"><span class="x${o}" style="--w:15ch;--d:90ms"><span class="v">${mine ? esc(open.memo) : 'hidden'}</span></span></td>
+      <td data-l="Net pay"><span class="x${o}" style="--w:11ch;--d:180ms"><span class="v amt">${mine ? esc(open.paid) : 'hidden'}</span></span></td>
+      <td data-l="Payout transaction" class="tx wide">${row.paid_txids.length ? txLink(row.paid_txids[0]) : '<span class="tag">' + esc(row.state) + '</span>'}</td>
+      <td data-l="Block" class="blk">${row.paid_height ? row.paid_height.toLocaleString('en-US') : '–'}</td></tr>`;
+  }).join('');
+}
+async function issue(label, name, btn) {
+  btn.disabled = true; btn.textContent = `Issuing ${name}'s payslip…`;
+  const r = await api('/api/payroll/proof', { label, employee: name });
+  if (!r.ok) { toast(r.j.error); btn.disabled = false; btn.textContent = `Issue ${name}'s payslip`; return; }
+  (S.issued[label] ||= {})[name] = { proof: r.j.proof, txid: r.j.txid, at: new Date().toISOString() };
+  saveIssued(); toast(`${name}'s signed payslip file issued`);
+  renderPayslips(); renderVerify();
+}
+async function openWith(name, quiet) {
+  keyView = name;
+  $$('#keys .seg').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.key === name)));
+  const L = S.ledger[S.period];
+  if (name === 'public') { $('#opened').innerHTML = ''; drawRegister(L, null); return; }
+  const f = S.issued[S.period][name];
+  $('#opened').innerHTML = `<div class="opened"><h3>Opening ${esc(name)}'s line with ${esc(name)}'s key…</h3><p class="help" style="margin-top:6px">Checking the employer's signature and decrypting the payout from the chain.</p></div>`;
+  const r = await api('/api/payroll/verify', { proof: f.proof, txid: f.txid });
+  const v = parseVerify(r.j.stdout || '');
+  if (!r.ok || !r.j.ok) { $('#opened').innerHTML = `<div class="notice err" style="margin:0 22px 20px"><span class="ic">${ICON.x}</span><div><b>Could not open ${esc(name)}'s line</b>${esc(r.j.error)}</div></div>`; return; }
+  const out = v.outputs.find((o) => o.dir === 'PayoutOut') || {};
+  drawRegister(L, { name, memo: out.memo || '', paid: v.paid });
+  $('#opened').innerHTML = `<div class="opened"><h3>${ICON.key} ${esc(name)}'s line, opened with ${esc(name)}'s key</h3><dl>
+    <dt>Paid out</dt><dd>${esc(v.paid)}</dd><dt>Memo</dt><dd>${esc(out.memo || '')}</dd><dt>Block</dt><dd>${esc(v.height)} · verified on chain</dd><dt>Signed by</dt><dd>employer key ${esc(short(v.key))}</dd></dl>
+    <p class="help" style="margin-top:10px">The other lines stay hidden: this key cannot read them.</p></div>`;
+}
+function parseVerify(out) {
+  const g = (re) => (re.exec(out) || [])[1] || '';
+  const outputs = [...out.matchAll(/^\s+(PayoutOut|FundingIn|Change) (\w+) (.+?) recipient=(\w+) memo=(.*)$/gm)].map((m) => ({ dir: m[1], pool: m[2], amount: m[3], recipient: m[4], memo: m[5].replace(/^"|"$/g, '').replace(/^Some\("|"\)$/g, '') }));
+  return { key: g(/EMPLOYER SIGNATURE OK: key (\w+)/), signed: g(/signed (\d+) zat/), period: g(/period (\S+),/), height: g(/mined at height (\d+)/), txid: g(/VERIFIED ON CHAIN via \S+ txid=(\w+)/), paid: g(/^PAID OUT (.+)$/m), outputs };
+}
+
+/* ---------- proof check ---------- */
+function proofFields(text) { const f = {}; text.split('\n').forEach((l) => { const m = /^([a-z_]+)=(.*)$/.exec(l); if (m) f[m[1]] = m[2]; }); return f; }
+function renderVerify() {
+  const sel = $('#pfpick'); const cur = sel.value;
+  const opts = [];
+  for (const [label, by] of Object.entries(S.issued)) for (const [name, f] of Object.entries(by)) opts.push({ v: `${label}|${name}`, t: `${name} · ${label}` });
+  sel.innerHTML = '<option value="">Choose a payslip file</option>' + opts.map((o) => `<option value="${esc(o.v)}">${esc(o.t)}</option>`).join('');
+  if (cur) sel.value = cur; else if (opts.length && !S.pf) { sel.value = opts[0].v; }
+  if (sel.value && (!S.pf || S.pf.src !== sel.value)) pickProof(sel.value);
+  else drawProof();
+}
+$('#pfpick').onchange = (e) => pickProof(e.target.value);
+$('#pffile').onchange = async (e) => { const f = e.target.files[0]; if (!f) return; const text = await f.text(); S.pf = { src: 'file', name: f.name, proof: text, f: proofFields(text) }; e.target.value = ''; afterPick(); };
+function pickProof(v) {
+  if (!v) { S.pf = null; afterPick(); return; }
+  const [label, name] = v.split('|'); const it = S.issued[label][name];
+  S.pf = { src: v, label, name, proof: it.proof, f: proofFields(it.proof) }; afterPick();
+}
+function afterPick() { $('#vtxid').value = S.pf ? S.pf.f.txid || '' : ''; $('#vres').innerHTML = ''; ['other', 'raise', 'fund'].forEach((k) => $('#tt-' + k + '-r').innerHTML = ''); drawProof(); }
+function drawProof(hot) {
+  const has = !!S.pf;
+  $('#vbtn').disabled = !has; $('#tt-raise').disabled = !has;
+  const L = has && S.pf.label && S.ledger[S.pf.label];
+  const others = L ? L.rows.filter((r) => r.employee.name !== S.pf.name && r.paid_txids.length) : [];
+  $('#tt-other').disabled = !others.length; $('#tt-fund').disabled = !(L && L.rows.some((r) => r.funding_txids.length));
+  if (!has) { $('#pfcard').className = 'empty'; $('#pfcard').innerHTML = '<b>No payslip file yet</b>Issue one on the Payslips page.'; $('#pf-sub').textContent = 'Issue one from the Payslips page, or load a file'; return; }
+  const f = S.pf.f;
+  $('#pf-sub').textContent = S.pf.name ? `${S.pf.name}'s payslip file` : 'Loaded file';
+  $('#pfcard').className = 'proof-card';
+  const row = (k, v, cls) => `<div><span class="k">${k}=</span><span class="v ${cls || ''}">${esc(v)}</span></div>`;
+  $('#pfcard').innerHTML = row('name', f.name) + row('pay_period', f.pay_period) + row('amount_zat', hot === 'amount' ? String(Number(f.amount_zat) * 10) : f.amount_zat, hot === 'amount' ? 'hot' : '') + row('txid', short(f.txid)) + row('child_address', short(f.child_address)) + row('ufvk', short(f.ufvk) + ' (viewing key, this employee only)') + row('employer_pubkey', short(f.employer_pubkey)) + row('employer_sig', short(f.employer_sig));
+}
+function verdict(el, r, expectOk) {
+  const v = parseVerify(r.j.stdout || '');
+  if (r.ok && r.j.ok) {
+    el.innerHTML = `<div class="result ok"><div class="verdict">${ICON.check} Verified on chain</div><dl><dt>Paid out</dt><dd>${esc(v.paid)}</dd><dt>Block</dt><dd>${esc(v.height)}</dd><dt>Employer key</dt><dd>${esc(short(v.key))} (matches the published key)</dd><dt>Period</dt><dd>${esc(v.period)}</dd></dl></div>`;
+  } else {
+    const why = r.j.error || 'refused';
+    const plain = /not the payout the employer signed/.test(why) ? 'This file was signed for a different payout.' : /signature does not match/.test(why) ? 'The file was edited after the employer signed it.' : /sees nothing/.test(why) ? 'This key sees nothing it was signed for in that transaction.' : /signed by/.test(why) ? 'Signed by a key that is not the employer\'s.' : 'The check refused it.';
+    el.innerHTML = `<div class="result bad"><div class="verdict">${ICON.x} Rejected</div><p>${esc(plain)}</p><div class="why">${esc(why)}</div></div>`;
+  }
+}
+async function runVerify(el, proof, txid, btn) {
+  const t = btn.textContent; btn.disabled = true; btn.textContent = 'Checking on chain…';
+  el.innerHTML = '';
+  const r = await api('/api/payroll/verify', { proof, txid });
+  btn.disabled = false; btn.textContent = t;
+  verdict(el, r);
+}
+$('#vbtn').onclick = (e) => { drawProof(); runVerify($('#vres'), S.pf.proof, $('#vtxid').value.trim(), e.currentTarget); };
+$('#tt-other').onclick = (e) => { const L = S.ledger[S.pf.label]; const o = L.rows.find((r) => r.employee.name !== S.pf.name && r.paid_txids.length); drawProof(); $('#vtxid').value = o.paid_txids[0]; runVerify($('#tt-other-r'), S.pf.proof, o.paid_txids[0], e.currentTarget); };
+$('#tt-raise').onclick = (e) => { const forged = S.pf.proof.replace(/^amount_zat=(\d+)$/m, (_, n) => 'amount_zat=' + Number(n) * 10); drawProof('amount'); $('#vtxid').value = S.pf.f.txid; runVerify($('#tt-raise-r'), forged, S.pf.f.txid, e.currentTarget); };
+$('#tt-fund').onclick = (e) => { const L = S.ledger[S.pf.label]; const t = L.rows.find((r) => r.funding_txids.length).funding_txids[0]; drawProof(); $('#vtxid').value = t; runVerify($('#tt-fund-r'), S.pf.proof, t, e.currentTarget); };
+
+/* ---------- accountant ---------- */
+let acRows = null;
+async function loadAccountant() {
+  const label = S.period; const tb = $('#actable tbody');
+  if (!label) { $('#ac-sub').textContent = 'No pay period yet'; tb.innerHTML = `<tr><td colspan="7"><div class="empty" style="color:#a9a7b6"><b style="color:#fff">No payroll run yet</b>Run payroll first.</div></td></tr>`; return; }
+  $('#ac-sub').textContent = `Period ${label}`;
+  const r = await api('/api/payroll/accountant?label=' + encodeURIComponent(label));
+  if (!r.ok) { $('#ac-key').innerHTML = `<div class="notice err"><span class="ic">${ICON.warn}</span><div><b>Setup required</b><code>${esc(r.j.error)}</code></div></div>`; tb.innerHTML = ''; $('#csvdl').disabled = true; return; }
+  const A = r.j; acRows = A;
+  $('#ac-key').innerHTML = `<div style="font-size:12.5px;color:#a9a7b6;margin-bottom:8px">Employer viewing key · read-only, cannot spend</div><div class="ufvk"><span style="flex:1">${esc(A.ufvk.slice(0, 28))}…${esc(A.ufvk.slice(-16))}</span><button class="btn line sm" id="copyk">Copy</button></div>`;
+  $('#copyk').onclick = async () => { try { await navigator.clipboard.writeText(A.ufvk); toast('Viewing key copied'); } catch { toast('Copy failed: select it by hand'); } };
+  tb.innerHTML = A.rows.map((row, i) => { const e = row.employee; return `<tr><td class="wide"><div class="who"><span class="av${avc(i)}">${esc(initials(e.name))}</span><div><b style="color:#fff">${esc(e.name)}</b><span>${esc(short(e.address))}</span></div></div></td>
+    <td data-l="Memo" class="memo">${esc(e.memo)}</td><td data-l="Net pay" class="amt">${zat(e.zat)}</td>
+    <td data-l="Funding" class="tx">${row.funding_txids[0] ? txLink(row.funding_txids[0]) : '–'}</td><td data-l="Payout" class="tx">${row.paid_txids[0] ? txLink(row.paid_txids[0]) : '–'}</td>
+    <td data-l="Block" class="blk" style="color:#e7e5ef">${row.paid_height ? row.paid_height.toLocaleString('en-US') : '–'}</td><td data-l="Status">${ledgerTag(row.state)}</td></tr>`; }).join('') +
+    `<tr><td class="wide"><b style="color:#fff">Total</b></td><td class="hide-sm"></td><td class="amt" style="color:#fff">${zat(A.total_zat)}</td><td class="hide-sm" colspan="4"></td></tr>`;
+  $('#csvdl').disabled = false;
+}
+$('#csvdl').onclick = () => {
+  const A = acRows; if (!A) return;
+  const q = (s) => { s = String(s ?? ''); if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; return /[",\n\r']/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+  const lines = [`# network=testnet`, `# ufvk=${A.ufvk}`, 'period,employee,address,amount_zat,memo,funding_txid,payout_txid,payout_height,status'];
+  A.rows.forEach((r) => lines.push([A.period, r.employee.name, r.employee.address, r.employee.zat, r.employee.memo, r.funding_txids[0] || '', r.paid_txids[0] || '', r.paid_height || '', r.state].map(q).join(',')));
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([lines.join('\n') + '\n'], { type: 'text/csv' })); a.download = `misthos-${A.label}.csv`; a.click(); URL.revokeObjectURL(a.href);
+};
+
+/* ---------- boot ---------- */
+(async () => {
+  route(false);
+  await loadState();
+  if (S.state && S.state.payouts) pollJob(false);
+  route(false);
+})();
+</script>
+</body>
+</html>

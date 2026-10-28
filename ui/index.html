@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Misthos · shielded payroll</title>
+<title>Misthos · private payroll processing</title>
 <meta name="description" content="Misthos pays a payroll from shielded Zcash testnet wallets. The public sees transactions; each employee's viewing key lifts the redaction on their own line only.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2314161a'/%3E%3Crect x='7' y='10' width='18' height='4' rx='1' fill='%23eef0f3'/%3E%3Crect x='7' y='18' width='11' height='4' rx='1' fill='%236b4dff'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -347,27 +347,12 @@ footer{background:var(--ink);color:#aeb4be;border:0;padding:38px 0}
 footer b,footer .wrap b{color:#fff!important}
 
 /* The desk shares the top nav element, which becomes its app sidebar. */
-body:has(#desk-view:not([hidden])) .nav{position:fixed;inset:0 auto 0 0;width:248px;height:100vh;border-right:1px solid var(--rule);border-bottom:0;background:#fff}
-body:has(#desk-view:not([hidden])) .nav .wrap{display:flex;flex-direction:column;align-items:stretch;gap:0;height:100%;max-width:none;padding:30px 16px 22px}
-body:has(#desk-view:not([hidden])) .nav .mark{margin:0 12px 46px;font-size:24px}
-body:has(#desk-view:not([hidden])) .nav .btn{display:none}
-body:has(#desk-view:not([hidden])) .nav ul{order:1;display:flex;flex-direction:column;gap:2px;margin:22px 0 0;padding:16px 0 0;border-top:1px solid var(--rule);font-size:13px}
-body:has(#desk-view:not([hidden])) .nav ul::before{content:"Payslip";font:600 11px/1 var(--sans);text-transform:uppercase;letter-spacing:.12em;color:#9299a5;padding:0 12px 10px}
-body:has(#desk-view:not([hidden])) .nav ul a{display:flex;align-items:center;height:32px;padding:0 14px;border-radius:10px;color:#6b7280}
-body:has(#desk-view:not([hidden])) .nav ul a:hover{background:#f6f5ff;color:var(--violet-ink)}
 .desk-nav{display:none}
-body:has(#desk-view:not([hidden])) .desk-nav{display:flex;flex-direction:column;gap:4px}
 .desk-nav-label{font:600 11px/1 var(--sans);text-transform:uppercase;letter-spacing:.12em;color:#9299a5;padding:0 12px 16px}
 .desk-nav a{position:relative;display:flex;align-items:center;height:40px;padding:0 14px;border-radius:10px;font-size:14px;font-weight:500;text-decoration:none;color:#565d69}
 .desk-nav a:hover{background:#f6f5ff;color:var(--violet-ink)}
 .desk-nav a.active{background:#efecff;color:var(--violet-ink);font-weight:600}
 .desk-nav a.active::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;background:var(--violet);border-radius:4px}
-body:has(#desk-view:not([hidden])) .nav #net{order:3;margin-top:auto;width:100%;font-size:11px}
-body:has(#desk-view:not([hidden])) .desk-back{order:2;display:block;margin:16px 10px 0;color:var(--mute);font-size:13px;font-weight:500;text-decoration:none}
-body:has(#desk-view:not([hidden])) .desk-back:hover{color:var(--violet-ink)}
-body:has(#desk-view:not([hidden])) #desk-view,
-body:has(#desk-view:not([hidden])) footer{margin-left:248px}
-body:has(#desk-view:not([hidden])) footer{display:none}
 .desk .wrap{max-width:none;padding:36px clamp(22px,3vw,48px) 80px}
 .desk-head{align-items:start;border:0;padding:0;gap:20px}
 .desk-head .back{display:inline-block;margin:0 0 10px;font-size:12px}
@@ -442,17 +427,9 @@ body:has(#desk-view:not([hidden])) footer{display:none}
   .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:900px){
-  body:has(#desk-view:not([hidden])) .nav{position:relative;width:auto;height:auto;border-right:0;border-bottom:1px solid var(--rule)}
-  body:has(#desk-view:not([hidden])) .nav .wrap{height:auto;padding:16px var(--gut);display:flex;flex-direction:row;align-items:center;flex-wrap:wrap;gap:12px}
-  body:has(#desk-view:not([hidden])) .nav .mark{margin:0 auto 0 0}
-  body:has(#desk-view:not([hidden])) .nav ul{display:none}
-  body:has(#desk-view:not([hidden])) .desk-nav{order:4;flex-direction:row;flex-wrap:wrap;width:100%;gap:4px}
   .desk-nav-label{display:none}
   .desk-nav a{height:34px;padding:0 10px;font-size:12px}
   .desk-nav a.active::before{top:8px;bottom:8px}
-  body:has(#desk-view:not([hidden])) .nav #net{margin:0;width:auto}
-  body:has(#desk-view:not([hidden])) .desk-back{margin:0;font-size:12px}
-  body:has(#desk-view:not([hidden])) #desk-view{margin-left:0}
   .desk-head .back{display:inline-block}
 }
 @media(max-width:760px){
@@ -504,8 +481,6 @@ body:has(#desk-view:not([hidden])) footer{display:none}
   .note-grid p{padding:20px}
   .ruler .ticks{font-size:10px}
   .roster .status-pill{padding:5px 8px}
-  body:has(#desk-view:not([hidden])) .nav .wrap{height:auto}
-  body:has(#desk-view:not([hidden])) .nav #net{display:none}
 }
 
 /* Final surface refinement: airy landing, compact operations desk. */
@@ -534,20 +509,11 @@ body:has(#desk-view:not([hidden])) footer{display:none}
 .feature-band h3{font-size:20px;line-height:1.2;letter-spacing:-.025em}
 .feature-band p{font-size:14px;line-height:1.65;color:#cbc6d3;margin-top:12px;max-width:30ch}
 
-body:has(#desk-view:not([hidden])){background:#f3f4f6}
-body:has(#desk-view:not([hidden])) .nav{width:250px;border-right:1px solid #e5e7eb;overflow-y:auto}
-body:has(#desk-view:not([hidden])) .nav .wrap{padding:28px 16px 22px}
-body:has(#desk-view:not([hidden])) .nav .mark{margin:0 14px 46px}
 .desk-nav-label{font-size:12px;text-transform:none;letter-spacing:0;color:#727987;padding:0 14px 13px}
 .desk-nav a{height:44px;gap:13px;padding:0 15px;border-radius:12px;font-size:14px;color:#424854}
 .desk-nav a.active{background:var(--violet);color:#fff;font-weight:600;box-shadow:0 5px 13px -8px rgba(70,43,195,.75)}
 .desk-nav a.active::before{display:none}
 .desk-nav a.active:hover{background:#5c3ff0;color:#fff}
-body:has(#desk-view:not([hidden])) .nav ul{margin-top:26px;padding-top:22px;gap:3px}
-body:has(#desk-view:not([hidden])) .nav ul::before{content:"Payslip";font-size:12px;letter-spacing:0;text-transform:none;color:#727987;padding:0 14px 11px}
-body:has(#desk-view:not([hidden])) .nav ul a{height:44px;padding:0 15px;gap:13px}
-body:has(#desk-view:not([hidden])) .nav ul svg{display:block}
-body:has(#desk-view:not([hidden])) #desk-view{margin-left:250px}
 .desk .wrap{padding-top:22px}
 .desk-topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:66px;padding:0 0 22px;border-bottom:1px solid #e2e5ea}
 .roster-path{display:flex;align-items:center;gap:11px;min-width:0;width:min(460px,55%);height:42px;padding:0 15px;border:1px solid #e5e7eb;border-radius:999px;background:#fff;color:#747b88;font-size:13px}
@@ -590,7 +556,6 @@ body:has(#desk-view:not([hidden])) #desk-view{margin-left:250px}
 .audit .panel-h{border-color:#31323b}
 .audit .btn.line{border-radius:9px}
 @media(max-width:1180px){.hero .wrap{column-gap:34px}.hero h1{font-size:clamp(57px,6vw,76px)}.desk-grid{grid-template-columns:1fr}}
-@media(max-width:900px){body:has(#desk-view:not([hidden])) .nav{width:auto}body:has(#desk-view:not([hidden])) #desk-view{margin-left:0}.desk-nav a{height:40px}.desk-topbar{padding-top:6px}}
 @media(max-width:760px){
   .hero{padding:24px 0 52px}.hero .wrap{display:block}.hero-head{padding:38px 0 42px}.hero h1{font-size:clamp(49px,10vw,70px);max-width:11ch}.hero .lede{font-size:17px;margin-top:26px}
   .hero .slip::before{transform:translate(7px,9px)}.hero .slip::after{transform:translate(13px,15px)}
@@ -621,17 +586,8 @@ body:has(#desk-view:not([hidden])) #desk-view{margin-left:250px}
       <li><a href="#proof"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 20 6v5.5c0 5-3.3 8.3-8 10-4.7-1.7-8-5-8-10V6l8-3.5Z"/><path d="m8.5 12 2.3 2.3 4.7-4.8"/></svg>Proof</a></li>
       <li><a href="#limits"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5m0 4h.01"/></svg>Limits</a></li>
     </ul>
-    <div class="desk-nav" aria-label="Desk sections">
-      <span class="desk-nav-label">Menu</span>
-      <a class="active" href="#desk" data-scroll-target="desk-h"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Overview</a>
-      <a href="#desk" data-scroll-target="roster-h"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="8" r="3"/><path d="M2.5 19v-1.2A5.8 5.8 0 0 1 8.3 12h.4a5.8 5.8 0 0 1 5.8 5.8V19M16 6h5M16 10h5M17 15h4M17 19h4"/></svg>Roster</a>
-      <a href="#desk" data-scroll-target="run-h"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4M7 3v3M17 3v3"/></svg>Pay run</a>
-      <a href="#desk" data-scroll-target="cli-h"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="4" width="19" height="16" rx="2"/><path d="m7 9 3 3-3 3m6 0h4"/></svg>Pay &amp; prove</a>
-      <a href="#desk" data-scroll-target="audit-h"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 20 6v5.5c0 5-3.3 8.3-8 10-4.7-1.7-8-5-8-10V6l8-3.5Z"/><path d="m8.5 12 2.3 2.3 4.7-4.8"/></svg>Accountant</a>
-    </div>
-    <a class="desk-back" href="#top">Back to the payslip</a>
-    <a class="chip" id="net" href="#desk">checking setup…</a>
-    <a class="btn" href="#desk">Open the desk</a>
+    <a class="chip" id="net" href="/desk">checking setup…</a>
+    <a class="btn" href="/desk">Run payroll</a>
   </div>
 </nav>
 
@@ -639,12 +595,12 @@ body:has(#desk-view:not([hidden])) #desk-view{margin-left:250px}
 <main id="landing">
   <header class="hero">
     <div class="wrap">
-      <div class="formline"><span>μισθός (misthós) · Greek for wages</span><span>Zcash testnet · shielded payroll · read-only desk</span></div>
+      <div class="formline"><span>μισθός (misthós) · Greek for wages</span><span>Zcash testnet · private payroll processing</span></div>
       <div class="hero-head">
         <h1>Everyone's pay on chain. Every line <span class="bar" role="img" aria-label="redacted"></span></h1>
         <div>
-          <p class="lede">Pay a whole payroll in shielded Zcash. Each employee's viewing key lifts only their own line.</p>
-          <div class="hero-cta"><a class="btn" href="#payslip">Read the recorded run</a><a class="btn line" href="#desk">Open the desk</a></div>
+          <p class="lede">Private payroll processing on Zcash. Run a whole payroll from the desk; each employee's key lifts only their own line.</p>
+          <div class="hero-cta"><a class="btn" href="#payslip">Read the recorded run</a><a class="btn line" href="/desk">Open the payroll desk</a></div>
         </div>
       </div>
 
@@ -819,7 +775,7 @@ body:has(#desk-view:not([hidden])) #desk-view{margin-left:250px}
         <div class="ded"><ul>
           <li><span><b>Testnet only.</b> Mainnet addresses and a mainnet network setting are refused in code.</span></li>
           <li><span><b>Timing.</b> Funding and payouts can still be linked by when they land, as above.</span></li>
-          <li><span><b>The desk can't pay.</b> Payouts and proofs run only from the CLI; the dashboard's pay and proof endpoints answer <code>410 Gone</code>.</span></li>
+          <li><span><b>The desk has no login.</b> Payouts run only on a desk bound to this machine (<code>127.0.0.1</code>); started read-only, its pay and proof endpoints answer <code>410 Gone</code>.</span></li>
         </ul>
         <details class="ded-more"><summary>Six more deductions</summary><ul>
           <li><span><b>Headcount shows.</b> The funding transaction's public action count (3 for 2 employees) roughly reveals how many people were paid.</span></li>
@@ -834,69 +790,6 @@ body:has(#desk-view:not([hidden])) #desk-view{margin-left:250px}
   </section>
 </main>
 
-<!-- ============ DESK (live employer dashboard) ============ -->
-<!-- No element has id="desk": the #desk route is handled in route(), so the browser never
-     scrolls to a #desk fragment on load (that hid the nav and dropped the heading's focus). -->
-<main id="desk-view" class="desk" hidden>
-  <div class="wrap">
-    <div class="desk-topbar">
-      <div class="roster-path" aria-label="Roster path"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.3"/><path d="m15.5 15.5 5 5"/></svg><span id="rpath"></span></div>
-      <div class="desk-topbar-right"><span class="topbar-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3a7 7 0 0 0-7 7v3l-2 3h18l-2-3v-3a7 7 0 0 0-7-7ZM9 20h6"/></svg></span><span class="topbar-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span class="chip" id="envstatus">Checking setup…</span></div>
-    </div>
-    <div class="desk-head">
-      <div>
-        <a class="back" href="#top">← The payslip</a>
-        <h1 id="desk-h" tabindex="-1">The desk</h1>
-        <p id="desk-lede">The employer's copy of the roster, with nothing redacted. It cannot pay. It has no login. It shows the employer's viewing key to anyone who can reach this port, so keep it on 127.0.0.1.</p>
-      </div>
-      <div class="desk-head-badges"><span class="outline-badge">CLI only</span></div>
-    </div>
-
-    <section class="quick-stats" aria-label="Desk summary"><div class="quick-stats-head"><h2>Quick stats</h2><span aria-hidden="true">···</span></div>
-      <div class="kpis">
-        <div class="kpi"><span class="kpi-label">Employees</span><span class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M17 6a3 3 0 0 1 0 6m1 3a5 5 0 0 1 3 5"/></svg></span><strong id="kpi-employees" class="kpi-value skel-value"><span class="skel"></span></strong><span class="kpi-caption">In the current roster</span></div>
-        <div class="kpi"><span class="kpi-label">Run total</span><span class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/></svg></span><strong id="kpi-total" class="kpi-value skel-value"><span class="skel"></span></strong><span class="kpi-caption">Active employees</span></div>
-        <div class="kpi"><span class="kpi-label">Network</span><span class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c-3 3-3 15 0 18m0-18c3 3 3 15 0 18"/></svg></span><strong id="kpi-network" class="kpi-value kpi-text skel-value"><span class="skel"></span></strong><span class="kpi-caption">Lightwalletd endpoint</span></div>
-        <div class="kpi"><span class="kpi-label">Auditor key</span><span class="kpi-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="8" cy="11" r="3"/><path d="M11 11h10m-4 0v3m4-3v2M3 19h18"/></svg></span><strong id="kpi-auditor" class="kpi-value kpi-text skel-value"><span class="skel"></span></strong><span class="kpi-caption">Employer viewing key</span></div>
-      </div>
-    </section>
-
-    <div class="env" id="env" role="status"><span class="dot"></span><div><h3>Checking setup…</h3><p>Reading <code>/api/state</code>.</p></div></div>
-
-    <div class="desk-grid">
-      <section class="panel roster" aria-labelledby="roster-h">
-        <div class="panel-h roster-toolbar"><div class="roster-toolbar-title"><h2 id="roster-h">Roster</h2><span class="roster-count" id="roster-count">—</span></div><div class="roster-filter" aria-hidden="true"><span class="selected">All</span><span>Active</span></div></div>
-        <div id="rosterbox"><div class="empty"><span class="skel" style="width:70%"></span><span class="skel" style="width:50%;margin-top:12px"></span><span class="skel" style="width:60%;margin-top:12px"></span></div></div>
-      </section>
-
-      <div style="display:grid;gap:24px;min-width:0">
-        <section class="panel run" aria-labelledby="run-h">
-          <div class="panel-h"><h2 id="run-h">Pay run</h2><span>CLI only</span></div>
-          <div class="panel-b">
-            <button class="btn" id="run" disabled aria-describedby="run-why">Run payroll · disabled here</button>
-            <p id="run-why">The desk does not pay. A one-click payout straight from the treasury could not be proven per employee, so payouts run only from the CLI with <code>pay --two-step</code>.</p>
-          </div>
-        </section>
-        <section class="panel cli" aria-labelledby="cli-h">
-          <div class="panel-h"><h2 id="cli-h">Pay and prove</h2><span>from a terminal</span></div>
-          <div class="panel-b"><ol>
-            <li>Pay through per-employee child wallets, with random block delays between funding and payouts.<pre class="cmd">payroll pay <span class="rp">roster.csv</span> --two-step --label oct-2026</pre></li>
-            <li>Export one employee's employer-signed proof. There is no download here: it had no login.<pre class="cmd">payroll export-proof <span class="rp">roster.csv</span> --employee &lt;id&gt; --label oct-2026</pre></li>
-            <li>The employee's lender checks the signature and the chain.<pre class="cmd">payroll verify-proof proof.txt &lt;txid&gt; --lwd https://&lt;testnet lightwalletd&gt;:443</pre></li>
-          </ol></div>
-        </section>
-      </div>
-    </div>
-
-    <section class="panel audit" aria-labelledby="audit-h">
-      <div class="panel-h"><h2 id="audit-h">Accountant's view</h2><span>employer viewing key · cannot spend</span></div>
-      <div class="panel-b">
-        <div id="audit"><p class="small">A read-only ledger headed by <code>ZCASH_AUDITOR_UFVK</code>, the employer's viewing key. It is for the company's accountant, never for employees.</p></div>
-        <button class="btn line" id="loadAudit" style="margin-top:14px">Open the accountant's view</button>
-      </div>
-    </section>
-  </div>
-</main>
 
 <footer>
   <div class="wrap">
@@ -943,25 +836,15 @@ else if('IntersectionObserver' in window){
   io.observe($('sliptable'));
 } else liftOnce();
 
-/* ---- routing between the payslip and the desk ---- */
+/* ---- the payroll desk lives at /desk; old #desk links land there ---- */
 function route(){
-  const desk=location.hash==='#desk';
-  $('landing').hidden=desk; $('desk-view').hidden=!desk;
-  if(desk){ window.scrollTo(0,0); $('desk-h').focus({preventScroll:true}); return; }
+  if(location.hash==='#desk'){ location.replace('/desk'); return; }
   const t=location.hash.length>1&&document.getElementById(location.hash.slice(1));
   if(t) t.scrollIntoView();
 }
 addEventListener('hashchange',route); route();
-document.querySelectorAll('.desk-nav a').forEach(a=>a.addEventListener('click',e=>{
-  e.preventDefault();
-  document.querySelectorAll('.desk-nav a').forEach(x=>x.classList.toggle('active',x===a));
-  $(a.dataset.scrollTarget).scrollIntoView({block:'start'});
-}));
 
-/* ---- live state from the local server ---- */
-const base=p=>String(p||'').split('/').pop();
-/* POSIX shell quoting, so a roster path with spaces still pastes into a terminal as one argument */
-const shq=p=>/^[\w@%+=:,.\/-]+$/.test(p)?p:"'"+p.replace(/'/g,"'\\''")+"'";
+/* ---- live state from the local server: the nav chip ---- */
 function setChip(el,s){
   if(!s){ el.className='chip bad'; el.textContent='desk API unreachable'; return; }
   const bad=s.missing.length||s.config_error;
@@ -969,106 +852,12 @@ function setChip(el,s){
   let host=''; try{ host=new URL(s.lwd).host; }catch(e){ host=s.lwd; }
   el.textContent=bad?'Setup required':(s.network+' · '+host);
 }
-function setKpi(id,value){
-  const el=$(id); el.classList.remove('skel-value'); el.textContent=value;
-}
-function setDeskSummary(s){
-  if(!s){
-    ['kpi-employees','kpi-total','kpi-network','kpi-auditor'].forEach(id=>setKpi(id,'—'));
-    const status=$('envstatus'); status.className='chip bad'; status.textContent="Can't reach the desk API";
-    return;
-  }
-  let host=''; try{ host=new URL(s.lwd).host; }catch(e){ host=s.lwd; }
-  setKpi('kpi-employees',String(s.roster.length));
-  setKpi('kpi-total',s.roster_total);
-  setKpi('kpi-network',s.network+' · '+host);
-  setKpi('kpi-auditor',s.missing.includes('ZCASH_AUDITOR_UFVK')||s.auditor_error?'missing':'loaded');
-  const status=$('envstatus'), bad=s.missing.length||s.config_error;
-  status.className='chip '+(bad?'bad':'good');
-  status.textContent=bad?'Setup required':'Chain config loaded';
-}
-/* true once /api/state lists ZCASH_AUDITOR_UFVK as missing: /api/audit would only answer 400 */
-let noAuditor=false;
-let auditorError=null;
 async function state(){
   let s=null;
   try{ const r=await fetch('/api/state'); if(!r.ok) throw new Error('HTTP '+r.status); s=await r.json(); }
-  catch(e){
-    setChip($('net'),null);
-    setDeskSummary(null);
-    $('roster-count').textContent='—';
-    $('env').className='env bad';
-    $('env').innerHTML='<span class="dot"></span><div><h3>Can\'t reach the desk API</h3><p>'+esc(e.message)+'. Is <code>payroll serve</code> still running? Start it with <code>cargo run -- serve</code> and reload.</p></div>';
-    $('rosterbox').innerHTML='<p class="empty">No roster: the server did not answer.</p>';
-    return;
-  }
+  catch(e){ setChip($('net'),null); return; }
   setChip($('net'),s);
-  setDeskSummary(s);
-  noAuditor=s.missing.includes('ZCASH_AUDITOR_UFVK');
-  auditorError=s.auditor_error;
-  if(noAuditor) $('desk-lede').textContent="The employer's copy of the roster, with nothing redacted. It cannot pay. It has no login. No employer viewing key is set here, so it shows none; a desk that has one shows it to anyone who can reach its port, so keep that one on 127.0.0.1.";
-  const env=$('env');
-  if(s.missing.length||s.config_error){
-    env.className='env bad';
-    env.innerHTML='<span class="dot"></span><div><h3>Setup required</h3><p>'+(s.config_error?esc(s.config_error)+'. ':'')+'The CLI needs these before it can pay or export a ledger; the desk shows the roster either way.</p>'+
-      (s.missing.length?'<div class="vars">'+s.missing.map(v=>'<code>'+esc(v)+'</code>').join('')+'</div>':'')+'</div>';
-  } else {
-    env.className='env good';
-    env.innerHTML='<span class="dot"></span><div><h3>Chain config loaded</h3><p>Network <code>'+esc(s.network)+'</code> · lightwalletd <code>'+esc(s.lwd)+'</code></p></div>';
-  }
-  $('rpath').textContent=s.roster.length+(s.roster.length===1?' employee':' employees')+' · '+base(s.roster_path);
-  $('rpath').title=s.roster_path;
-  $('roster-count').textContent=String(s.roster.length);
-  document.querySelectorAll('.rp').forEach(x=>x.textContent=shq(s.roster_path||'roster.csv'));
-  if(!s.roster.length){
-    $('rosterbox').innerHTML='<p class="empty">The roster is empty. Add rows (<code>name,ua,amountZEC,memo</code>) to the CSV at <code>PAYROLL_ROSTER_CSV</code> and restart the desk.</p>';
-    return;
-  }
-  $('rosterbox').innerHTML='<table><thead><tr><th>No.</th><th>Employee</th><th class="hide-sm">Payout address</th><th class="r">Amount</th><th class="r hide-sm">On chain</th><th>Status</th></tr></thead><tbody>'+
-    s.roster.map((e,i)=>`<tr><td class="addr">${String(i+1).padStart(2,'0')}<span class="sub">${esc(e.id)}</span></td><td><div class="name-cell"><span class="avatar" aria-hidden="true">${esc(e.name.trim().split(/\s+/).map(x=>x[0]||'').slice(0,2).join('').toUpperCase())}</span><span class="name-stack">${esc(e.name)}${e.active?'':' <span class="sub">inactive</span>'}<span class="sub">${esc(e.memo)}</span></span></div></td><td class="addr addr-c hide-sm" title="${esc(e.address)}">${esc(e.address.slice(0,14))}…${esc(e.address.slice(-6))}</td><td class="r amt">${esc(e.amount)}</td><td class="r hide-sm"><span class="mini" role="img" aria-label="redacted"></span></td><td class="status-cell"><span class="status-pill${e.active?'':' inactive'}">${e.active?'active':'inactive'}</span></td></tr>`).join('')+
-    '</tbody><tfoot><tr><td></td><td>Run total, active employees</td><td class="hide-sm"></td><td class="r amt">'+esc(s.roster_total)+'</td><td class="r hide-sm"><span class="mini" role="img" aria-label="redacted"></span></td><td class="status-cell"></td></tr></tfoot></table>';
 }
-
-/* RFC 4180 rows: quoted fields may hold commas, "" escapes and line breaks (audit.rs quotes them). */
-function parseCsv(text){
-  const rows=[]; let row=[], f='', q=false, i=0;
-  while(i<text.length){
-    const c=text[i];
-    if(q){
-      if(c==='"'&&text[i+1]==='"'){ f+='"'; i+=2; continue; }
-      if(c==='"'){ q=false; i++; continue; }
-      f+=c; i++; continue;
-    }
-    if(c==='"'&&f===''){ q=true; i++; continue; }
-    if(c===','){ row.push(f); f=''; i++; continue; }
-    if(c==='\r'&&text[i+1]==='\n'){ i++; continue; }
-    if(c==='\n'){ row.push(f); rows.push(row); row=[]; f=''; i++; continue; }
-    f+=c; i++;
-  }
-  if(f!==''||row.length){ row.push(f); rows.push(row); }
-  return rows;
-}
-
-$('loadAudit').onclick=async()=>{
-  const box=$('audit'), btn=$('loadAudit');
-  if(noAuditor){ box.innerHTML='<div class="alert"><b>Setup required</b>ZCASH_AUDITOR_UFVK not configured</div>'; return; }
-  if(auditorError){ box.innerHTML='<div class="alert"><b>Setup required</b>'+esc(auditorError)+'</div>'; return; }
-  btn.disabled=true; btn.textContent='Opening…';
-  try{
-    const r=await fetch('/api/audit');
-    if(!r.ok){ let msg='HTTP '+r.status; try{ msg=(await r.json()).error||msg; }catch(e){} box.innerHTML='<div class="alert"><b>Setup required</b>'+esc(msg)+'</div>'; return; }
-    const all=parseCsv((await r.text()).trim());
-    const ufvk=((all.find(r=>r.length===1&&r[0].startsWith('# ufvk='))||[''])[0]).slice(7);
-    const rows=all.filter(r=>!(r.length===1&&r[0].startsWith('#')));
-    const head=rows.shift()||[], want=['run_id','status','txid','name','amount_zec','memo'], ix=want.map(w=>head.indexOf(w));
-    box.innerHTML='<p class="small" style="margin-bottom:8px">UFVK (view-only)</p><div class="ufvk">'+esc(ufvk)+'</div>'+
-      (rows.length?'<table><thead><tr>'+want.map(w=>'<th>'+w+'</th>').join('')+'</tr></thead><tbody>'+
-        rows.map(r=>'<tr>'+ix.map(i=>'<td>'+esc((r[i]||'').slice(0,24))+'</td>').join('')+'</tr>').join('')+'</tbody></table>'
-       :'<p class="small" style="margin-top:12px">No pay runs in this session (the desk does not pay). For a CLI run\'s ledger: <code>payroll audit-export &lt;roster.csv&gt; &lt;txid&gt;</code>.</p>')+
-      '<p class="small" style="margin-top:12px">Import this UFVK into a view-only testnet wallet to check every output on chain yourself.</p>';
-  }catch(e){ box.innerHTML='<div class="alert"><b>Can\'t reach the desk API</b>'+esc(e.message)+'</div>'; }
-  finally{ btn.disabled=false; btn.textContent='Open the accountant\'s view'; }
-};
 
 state();
 </script>
